@@ -35,9 +35,6 @@ const showSignup = usePage().props.multi_user;
 
         <!-- Form Section -->
         <div class="px-8 pb-10">
-            <div v-if="$page.props.status" class="mb-4 font-medium text-sm text-green-600 dark:text-green-400 text-center bg-green-50 dark:bg-green-900/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
-                {{ $page.props.status }}
-            </div>
 
             <form @submit.prevent="submit" class="flex flex-col gap-5">
                 <!-- Email Input -->
