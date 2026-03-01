@@ -28,7 +28,7 @@ class PasswordResetLinkController extends Controller
 
         // Always save email to session and redirect to verify form
         $request->session()->put('password_reset_email', $request->safe()->string('email'));
-        
+
         return redirect()->route('password.verify.form');
     }
 }

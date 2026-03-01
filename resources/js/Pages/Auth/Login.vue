@@ -111,11 +111,13 @@ const showSignup = usePage().props.multi_user;
                     </button>
                 </div>
 
-                <!-- Register Link -->
-                <p v-if="showSignup" class="text-center text-sm text-slate-600 dark:text-slate-400">
-                    Don't have an account? 
-                    <Link href="#" class="font-semibold text-primary hover:text-blue-600 hover:underline transition-colors">Sign up</Link>
-                </p>
+                <!-- Sign Up Link -->
+            <p v-if="showSignup" class="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                Don't have an account?
+                <Link :href="route('register')" class="font-semibold leading-6 text-primary hover:text-primary/80 transition-colors">
+                    Sign up
+                </Link>
+            </p>
             </form>
         </div>
     </AuthLayout>

@@ -27,7 +27,7 @@ class NewPasswordController extends Controller
             'password' => Hash::make($request->safe()->string('password')),
         ])->save();
 
-        $user->notify(new PasswordChangedNotification());
+        $user->notify(new PasswordChangedNotification);
 
         $request->session()->forget('password_reset_email');
 

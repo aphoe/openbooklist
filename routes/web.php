@@ -15,6 +15,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login', LoginViewController::class)->name('login');
 Route::post('/login', LoginController::class);
 
+Route::get('/register', \App\Http\Controllers\Auth\RegisterViewController::class)
+    ->name('register');
+Route::post('/register', \App\Http\Controllers\Auth\RegisterController::class);
+
+Route::get('/verify-registration', \App\Http\Controllers\Auth\VerifyRegistrationOTPViewController::class)
+    ->name('verification.notice');
+Route::post('/verify-registration', \App\Http\Controllers\Auth\VerifyRegistrationController::class)
+    ->name('verification.verify');
+Route::post('/verify-registration/resend', \App\Http\Controllers\Auth\VerifyRegistrationResendController::class)
+    ->name('verification.send');
+
 Route::get('/forgot-password', PasswordResetLinkViewController::class)
     ->name('password.request');
 Route::post('/forgot-password', PasswordResetLinkController::class)
