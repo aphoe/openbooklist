@@ -2,6 +2,7 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import TextInput from '@/Components/Forms/TextInput.vue';
+import PasswordInput from '@/Components/Forms/PasswordInput.vue';
 import SubmitButton from '@/Components/Forms/SubmitButton.vue';
 
 const form = useForm({
@@ -34,6 +35,10 @@ const showSignup = usePage().props.multi_user;
 
         <!-- Form Section -->
         <div class="px-8 pb-10">
+            <div v-if="$page.props.status" class="mb-4 font-medium text-sm text-green-600 dark:text-green-400 text-center bg-green-50 dark:bg-green-900/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
+                {{ $page.props.status }}
+            </div>
+
             <form @submit.prevent="submit" class="flex flex-col gap-5">
                 <!-- Email Input -->
                 <div class="flex flex-col gap-1.5">
@@ -56,23 +61,13 @@ const showSignup = usePage().props.multi_user;
                 <!-- Password Input -->
                 <div class="flex flex-col gap-1.5">
                     <label class="text-sm font-medium text-slate-900 dark:text-white" for="password">Password</label>
-                    <div class="relative flex items-center">
-                        <TextInput
-                            id="password"
-                            v-model="form.password"
-                            type="password"
-                            class="!pr-12"
-                            placeholder="Enter your password"
-                            required
-                        />
-                        <!-- Visibility Toggle -->
-                        <button type="button" class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none flex items-center">
-                            <span class="material-symbols-outlined text-[20px]">visibility_off</span>
-                        </button>
-                    </div>
-                    <div v-if="form.errors.password" class="mt-1 text-sm text-red-600 dark:text-red-400">
-                        {{ form.errors.password }}
-                    </div>
+                    <PasswordInput
+                        id="password"
+                        v-model="form.password"
+                        placeholder="Enter your password"
+                        required
+                        :error="form.errors.password"
+                    />
                 </div>
 
                 <!-- Remember Me & Forgot Password -->
@@ -86,7 +81,7 @@ const showSignup = usePage().props.multi_user;
                         />
                         <label class="text-sm font-medium text-slate-600 dark:text-slate-300 select-none cursor-pointer" for="remember">Remember me</label>
                     </div>
-                    <Link href="#" class="text-sm font-semibold text-primary hover:text-blue-600 hover:underline transition-colors">
+                    <Link :href="route('password.request')" class="text-sm font-semibold text-primary hover:text-blue-600 hover:underline transition-colors">
                         Forgot Password?
                     </Link>
                 </div>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Split-Screen OTP Variant 3</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101722",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col">
+<div class="flex flex-1 min-h-screen w-full">
+<div class="hidden lg:flex w-1/2 relative overflow-hidden bg-primary/10 items-center justify-center">
+<div class="absolute inset-0 w-full h-full bg-cover bg-center" data-alt="Abstract blue liquid wave background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBXbJdO0AryxIiiqh7HSKdfYr1m6PeMtMfbHjrCmeXGPW-hFh8Ak6dyoDGNKkjuZxLvRpA9jHKgXWH4KPxsRm6ilI_0Jzx7xZA4UXMOTcjhunLp-ryoKkB2KKlz3vtHDmHNoQ9VCcrnJw-6AN7njuVCQknmKo9CUC_uq5aG2PTBhXrnAYNfYertcE86hHGcRTiyvb203qJsRZuNOOikTotD6Pp_OFGeKt94OEydPA_Xi56XhlA7o1Pu5O5P98C7KpvBrr8aK_jVlko');">
+</div>
+<div class="absolute inset-0 bg-primary/20 mix-blend-overlay"></div>
+<div class="relative z-10 p-12 text-white">
+<h2 class="text-4xl font-bold mb-4 drop-shadow-md">Secure Your Account</h2>
+<p class="text-lg opacity-90 drop-shadow-sm">We take security seriously. Please verify your identity to proceed with password recovery.</p>
+</div>
+</div>
+<div class="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-16 bg-white dark:bg-slate-900">
+<div class="w-full max-w-md space-y-8">
+<div class="text-center lg:text-left">
+<div class="flex items-center justify-center lg:justify-start mb-6">
+<div class="p-3 bg-primary/10 rounded-xl">
+<span class="material-symbols-outlined text-primary" style="font-size: 32px;">lock_reset</span>
+</div>
+</div>
+<h1 class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">Enter Verification Code</h1>
+<div class="mt-2 text-slate-500 dark:text-slate-400 text-base flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 justify-center lg:justify-start">
+<span>We sent a code to <span class="font-medium text-slate-900 dark:text-slate-200">u***@example.com</span></span>
+<button class="text-primary hover:text-primary/80 font-medium text-sm transition-colors whitespace-nowrap" type="button">Change email</button>
+</div>
+</div>
+<form action="#" class="mt-8 space-y-8" method="POST">
+<div>
+<label class="sr-only" for="otp-1">OTP Code</label>
+<div class="flex justify-between gap-2 sm:gap-4">
+<input autofocus="" class="w-full h-14 sm:h-16 text-center text-2xl font-bold text-slate-900 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none transition-all" id="otp-1" maxlength="1" name="otp-1" type="text"/>
+<input class="w-full h-14 sm:h-16 text-center text-2xl font-bold text-slate-900 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none transition-all" id="otp-2" maxlength="1" name="otp-2" type="text"/>
+<input class="w-full h-14 sm:h-16 text-center text-2xl font-bold text-slate-900 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none transition-all" id="otp-3" maxlength="1" name="otp-3" type="text"/>
+<input class="w-full h-14 sm:h-16 text-center text-2xl font-bold text-slate-900 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none transition-all" id="otp-4" maxlength="1" name="otp-4" type="text"/>
+<input class="w-full h-14 sm:h-16 text-center text-2xl font-bold text-slate-900 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-800 dark:border-slate-700 dark:text-white outline-none transition-all" id="otp-5" maxlength="1" name="otp-5" type="text"/>
+</div>
+</div>
+<div>
+<button class="flex w-full justify-center rounded-lg bg-primary px-3 py-4 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all duration-200" type="submit">
+                            Verify Code
+                        </button>
+</div>
+</form>
+<div class="mt-6 text-center">
+<p class="text-sm text-slate-500 dark:text-slate-400">
+                        Didn't receive the code?
+                        <button class="font-semibold leading-6 text-primary hover:text-primary/80 transition-colors ml-1" type="button">Resend Code</button>
+</p>
+<p class="mt-8 text-sm text-slate-400 dark:text-slate-500">
+<a class="hover:text-slate-600 dark:hover:text-slate-300 transition-colors flex items-center justify-center gap-2" href="#">
+<span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span>
+                            Back to login
+                        </a>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>
