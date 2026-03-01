@@ -39,13 +39,18 @@ const logout = () => {
 
                 <!-- CTA Button / Logout -->
                 <div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
-                    <div class="mb-4 text-sm font-medium text-slate-700 dark:text-slate-300 px-3">
-                        <span class="truncate block">{{ authUser?.first_name }} {{ authUser?.last_name }}</span>
-                        <span class="text-xs text-slate-500 font-normal truncate block">{{ authUser?.email }}</span>
+                    <div class="flex items-center gap-3 mb-4 px-3">
+                        <div class="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 text-primary font-bold text-lg flex-shrink-0">
+                            {{ authUser?.first_name?.charAt(0) }}{{ authUser?.last_name?.charAt(0) }}
+                        </div>
+                        <div class="text-sm font-medium text-slate-700 dark:text-slate-300 overflow-hidden">
+                            <span class="truncate block">{{ authUser?.first_name }} {{ authUser?.last_name }}</span>
+                            <span class="text-xs text-slate-500 font-normal truncate block">{{ authUser?.email }}</span>
+                        </div>
                     </div>
 
                     <form @submit.prevent="logout">
-                        <button type="submit" class="flex w-full cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-bold leading-normal transition-colors shadow-sm">
+                        <button type="submit" class="flex w-full cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 text-sm font-bold leading-normal transition-colors shadow-sm">
                             <span class="material-symbols-outlined mr-2 text-lg">logout</span>
                             <span class="truncate">Log Out</span>
                         </button>
