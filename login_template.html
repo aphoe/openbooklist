@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Minimalist Login Variant 1</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101722",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex items-center justify-center p-4">
+<!-- Login Card Container -->
+<div class="w-full max-w-[480px] bg-white dark:bg-[#1a2332] rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+<!-- Header Section -->
+<div class="px-8 pt-10 pb-6 text-center">
+<div class="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-3xl">lock</span>
+</div>
+<h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back</h1>
+<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Please enter your details to sign in.</p>
+</div>
+<!-- Form Section -->
+<div class="px-8 pb-10">
+<form action="#" class="flex flex-col gap-5" onsubmit="event.preventDefault();">
+<!-- Email Input -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-slate-900 dark:text-white" for="email">Email Address</label>
+<div class="relative">
+<input class="form-input block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-12 px-4 text-base transition-colors" id="email" placeholder="Enter your email" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-medium text-slate-900 dark:text-white" for="password">Password</label>
+<div class="relative flex items-center">
+<input class="form-input block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary h-12 px-4 pr-12 text-base transition-colors" id="password" placeholder="Enter your password" type="password"/>
+<button class="absolute right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none flex items-center" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Remember Me & Forgot Password -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<input class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-700 dark:ring-offset-slate-800" id="remember" type="checkbox"/>
+<label class="text-sm font-medium text-slate-600 dark:text-slate-300 select-none cursor-pointer" for="remember">Remember me</label>
+</div>
+<a class="text-sm font-semibold text-primary hover:text-blue-600 hover:underline transition-colors" href="#">Forgot Password?</a>
+</div>
+<!-- Login Button -->
+<button class="mt-2 flex w-full items-center justify-center rounded-lg bg-primary py-3 text-sm font-bold text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-slate-800" type="submit">
+                    Sign In
+                </button>
+<!-- Divider -->
+<div class="relative my-2">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-slate-200 dark:border-slate-700"></div>
+</div>
+<div class="relative flex justify-center text-xs uppercase">
+<span class="bg-white dark:bg-[#1a2332] px-2 text-slate-400">Or continue with</span>
+</div>
+</div>
+<!-- Social Login Buttons -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-2.5 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700" type="button">
+<img alt="Google Logo" class="h-5 w-5" data-alt="Google logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBTdM-i-BxmBCPd4Jg0cv8euv5ATz7m9nTAJeN9LBBNnYKp83rCuK6EzVGmlLbAyZgKjUzNuzv8Ir-u1q-n4zuV9E9DaOe8y-qjq94Wdu8dWDQ6fFYxR554G0vBdeXXkLGDt4dOc7mPKh-sO3LrNDCpa87SnL-R-rrOHab8OjHq-hUW7pBDHreP09nORPYfD5voewhBVSwy4dqdQ5GC--P-NxgePkqFd1Wx6vkesqRBqSXilaWd4U3_FeOH0PjX0ZOXbmIcgVRUx0"/>
+                        Google
+                    </button>
+<button class="flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-2.5 px-4 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700" type="button">
+<span class="material-symbols-outlined text-[22px]">ios</span>
+                        Apple
+                    </button>
+</div>
+<!-- Register Link -->
+<p class="text-center text-sm text-slate-600 dark:text-slate-400">
+                    Don't have an account? 
+                    <a class="font-semibold text-primary hover:text-blue-600 hover:underline transition-colors" href="#">Sign up</a>
+</p>
+</form>
+</div>
+</div>
+</body></html>

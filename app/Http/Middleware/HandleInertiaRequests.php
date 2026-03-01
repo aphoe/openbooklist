@@ -37,7 +37,10 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+            'multi_user' => config('project.multi_user'),
+            'auth' => [
+                'user' => $request->user(),
+            ],
         ];
     }
 }

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bookmark Manager Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#3c83f6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101722",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen">
+<div class="relative flex min-h-screen w-full flex-row overflow-x-hidden">
+<!-- Sidebar -->
+<aside class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#151c2a] flex flex-col h-screen fixed left-0 top-0 z-30 hidden md:flex">
+<div class="p-6 flex flex-col h-full">
+<!-- User Profile / Branding -->
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 flex-shrink-0" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC8Pjvk4qZBCmCImyfaCJyaKHvOW6YbRDmfHuWkZANOvx19s1X4OTHhaxw3u9x5umfG2K03nJ4-f1XarVsr8mip4yeAJ_SPVYJ_NjTeFqpMAMpO6CdBB30XPEzbwkOzef5uZyDWwjY-NS7DNPCU4xuARyGlPFG2FaT9HL7akr3fCFDMT5aY5ptGG4mwLXG2L-EA8fJca4grkccHg16XuWSQwoGl7v9ua23oNglyhnW5ODE2RXyDheaTTuDZt7I9Czzwm21I_elOif8");'></div>
+<div class="flex flex-col overflow-hidden">
+<h1 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-normal truncate">Bookmark Manager</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal truncate">Manage your web life</p>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex flex-col gap-2 flex-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-xl">bookmark</span>
+<p class="text-sm font-medium leading-normal">All Bookmarks</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">history</span>
+<p class="text-sm font-medium leading-normal">Recently Saved</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">folder</span>
+<p class="text-sm font-medium leading-normal">Categories</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl">label</span>
+<p class="text-sm font-medium leading-normal">Tags</p>
+</a>
+<div class="mt-6">
+<div class="flex items-center justify-between px-3 mb-2">
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">My Categories</span>
+<span class="material-symbols-outlined text-slate-400 text-lg cursor-pointer hover:text-primary">add</span>
+</div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl text-orange-400">circle</span>
+<p class="text-sm font-medium leading-normal">Design Resources</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl text-purple-400">circle</span>
+<p class="text-sm font-medium leading-normal">Development</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+<span class="material-symbols-outlined text-xl text-green-400">circle</span>
+<p class="text-sm font-medium leading-normal">Inspiration</p>
+</a>
+</div>
+</nav>
+<!-- CTA Button -->
+<div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
+<button class="flex w-full cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary hover:bg-blue-600 text-white text-sm font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm">
+<span class="material-symbols-outlined mr-2 text-lg">add</span>
+<span class="truncate">Add New Bookmark</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-h-screen md:ml-64 bg-background-light dark:bg-background-dark">
+<!-- Top Header Bar -->
+<header class="sticky top-0 z-20 bg-white/80 dark:bg-[#151c2a]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-4">
+<div class="flex flex-col sm:flex-row gap-4 justify-between items-center max-w-[1400px] mx-auto w-full">
+<!-- Search -->
+<div class="w-full sm:max-w-md relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg leading-5 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm transition-all" placeholder="Search bookmarks, tags, or URLs..." type="text"/>
+</div>
+<!-- View Toggle -->
+<div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+<button class="p-1.5 rounded-md bg-white dark:bg-slate-700 shadow-sm text-primary transition-all">
+<span class="material-symbols-outlined text-[20px] block">grid_view</span>
+</button>
+<button class="p-1.5 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
+<span class="material-symbols-outlined text-[20px] block">view_list</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Grid Content -->
+<div class="flex-1 p-6 overflow-y-auto">
+<div class="max-w-[1400px] mx-auto">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xl font-semibold text-slate-900 dark:text-white">All Bookmarks</h2>
+<div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+<span>Sort by:</span>
+<select class="bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer pr-8 py-0">
+<option>Date Added (Newest)</option>
+<option>Date Added (Oldest)</option>
+<option>Alphabetical</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Card 1 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Abstract colorful fluid shapes" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBJPDZPVrHYRqFN82faGRCbhbF55CfQUnt1d86XOcpCnz-XWc2U33SiFAEdDE_EL0VptxFuzNYjBa0oUaXpUKMU-28LPsV7rbhxcIi2p2Uen8wzw79ClS8vYGjV5cKG6xiQiWFN6BKH91rqOttbey9XxHA4j461egCSgWNfOuIqPDEBeid5Cq25Tai5F6OrzuLlxTt9A7Icf9uXGCNn-F9Vf91bhJ2dGfajtOAlz-sfF2IvfVSlelZCRkezZV8QBr5sXg9jf1WKuqs");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">Awwwards - Website Awards</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">awwwards.com</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Design</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Inspiration</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Dribbble pink basketball logo concept" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAPLP_1OTjKB3bY8UZTMyf-z6WuiHh39mn8lnAF6hHJpLaTMTwe38URzW61PPI_fM_ANbyqip1v46YX0lA5oAg5TPE69BShlEx6PFvDSVP3W4pF0kkPQiSi8mqYkS2J1fMBjShLlAgCexhkT38Em-iQiclqpAo4TV6zr8n6bkf4cnaQHbAU5EQKYdapySikOj-k6wUWuHCu_FRcXnYPcoVS3thlc98a9wKZ91BZOv6QNAenp4dOHCrVknzKKaE_2iLMzCefBLx-vEY");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">Dribbble - Discover the World's Top Designers</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">dribbble.com</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Social</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Portfolio</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Code editor dark theme interface" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCKSIriPydvpYPailAZMkeJsrPBMw6tkV7d3E_RluJuDdKzWyEm2-ghiM7RCaBsAiS1EtzhhPfbb5rKcFvXwZ05D_CzWns37NN1DD2WvnVVv2YuSifKp6Gggr76gXVTcGpx1ilZrakitx4eJgFG2RJTLlryBMRnsTC23TS8vJ1ig_Iy3kuPiW_QyDEhPbZjP8oPqPbqs_aH0_y8R6337xfGiCSYzCY3BPf9HBo0q5zfoUajhnjr78B5MYujJZa-N0EvjCqIV6i4P_c");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">Refactoring UI - Best Practices</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">refactoringui.com</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Book</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">UI/UX</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Technology abstract circuit board" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCX4sOj9yOHEnpfd5xWud3GlFuJxdQkLQPZ2IOMn8eZo8wnuXo16FrCRXyg9GUSetrSz-jyDbllMJ5dYQF4YOxLV1F6B4e-pSTzQiXfx1EGmgWheeZIGisQX4mgkzQim4_42uzkXyF8SRBXLgym84FIfWXlEH5qaaJxYYEomX3yK-oNhu_uX-qIzr_6dWYHcQxxfZ1XEuayjAMbfhxJ85XRDaf5_nr4BogGfSXJbRrvBEYqdeKYyZp9H5vHHXTtNgUQD5DT4VdZ-DU");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">The Verge - Tech News</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">theverge.com</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Tech</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">News</span>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Figma logo on screen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAliwNC1rm41knlAT7Bd9TlQfoHR5dXl5xM2O1xnX1H7gqCDItFFsZpkOo90_BzJwkDDI0w-_uslU_Q7JWNzb9GPbBSzNTLQ-gOs7yua6uC1AuH2mE4lMWoUqKKqSuHJ7kR_tnUUpOASVm-NklyJ3BvjMkl8o_MmS-oxxKywF2oMX028X03dQX04nk-1ZI509dYkKTs-dDgb3QNRN2y9xMMwbPVwvjgb66UCP0u1_08LXWBIms9wiZRoq0SS2J7BfVhvGiQxulk54U");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">Figma - Collaborative Design Tool</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">figma.com</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Tool</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Design</span>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Linear app interface concept" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAKu4Y1P-MYTjz395d_ys_UR2eQ8-TPvBv-ONQYrQa9VI1CNo8YGmNMLO0sf2w2ULHFvVfFTBDmkzYvVvx8Bkse6m9JVFl8zdArnD_Z9h81QwajjoiWpWujPmY_NMG_VNOV9xoz16YTTCZkkL1mx-Fgl9w5LmTD4E46BmJwBKtTwmdsOuPJB2-vGQHiIVgXalfj9zofaIx-TTIGL4dibArcOr1VXQOu_X-0pRazp4GXeSck8uQaVV4fo1r9ZrsgTP--Xp8B7ffJKpo");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">Linear - Issue Tracking</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">linear.app</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Productivity</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">SaaS</span>
+</div>
+</div>
+</div>
+<!-- Card 7 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="React JS logo blurred background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBzBd2fN70BVPyRRKUlruqKbKg1EeyHv3cbRYp-X5ktdOeefLs91KxJY1a1-Dnn3ARRLcplLLfsrwEGbhiLc-G_hdjrqIpPhULGFky-T_WlvDEonTaPX3yw5CGhSZ-G0ZKES15j3j2cBZnaguv0tOmNbL4-Hdtyg2kFl9OXg04ED16kqbrcf5SUZQYIYjigyozkbXE7RGoGbUSgBMYRy_-MXXQSv0QE153bANCzAbbaYpvvXFrsYa6f-ADtn-dLo84rUWn-88lpDqU");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">React Documentation</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">react.dev</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Dev</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Docs</span>
+</div>
+</div>
+</div>
+<!-- Card 8 -->
+<div class="group bg-white dark:bg-[#1e293b] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/50 dark:hover:border-primary/50 transition-all duration-200 flex flex-col">
+<div class="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+<div class="w-full h-full bg-center bg-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="Artificial Intelligence concept brain" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCPqs4o7FaZV3Yqor7GGdDMKpKWG0YpUJeDuExFS8iHNk3yIGNmL-p2kYnnebcWBjf3Kl0k_7iL9lPTyxR-482HmaCLqcOS3nuifaOX4q8ynnPMC7vZAgzRqi0RJJUStBGzzkSm5x-mEufqwAqCkvny2AdgWg54Z_AVpD1oRcqIUYe4iq4hdJkIjhiwCBqIh0jAHq7bjOf97azECxLKWLLY9LJl4o5QW42qKPTubNQhXfFnpgGFDfd66lut0qS3TIRc52XEQcuADoU");'></div>
+<button class="absolute top-2 right-2 p-1.5 bg-white/90 dark:bg-black/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-white hover:text-primary">
+<span class="material-symbols-outlined text-[18px] block">more_horiz</span>
+</button>
+</div>
+<div class="p-4 flex flex-col flex-1">
+<div class="flex items-start justify-between gap-2 mb-1">
+<h3 class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors">OpenAI Blog</h3>
+</div>
+<a class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline" href="#">openai.com</a>
+<div class="mt-auto flex flex-wrap gap-2">
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">AI</span>
+<span class="inline-flex items-center px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-300">Future</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty State Placeholder (Hidden for this populated view, but good practice to consider structure) -->
+<!-- <div class="flex flex-col items-center justify-center py-20">...</div> -->
+<!-- Pagination / Load More -->
+<div class="flex justify-center mt-12 mb-8">
+<button class="px-6 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                            Load More
+                        </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
