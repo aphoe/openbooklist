@@ -13,6 +13,8 @@
     "sail": false,
     "skills": [
         "inertia-vue-development",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "eloquent-best-practices",
+        "laravel-specialist"
     ]
 }
