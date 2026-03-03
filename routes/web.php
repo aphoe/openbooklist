@@ -42,6 +42,6 @@ Route::post('/reset-password', NewPasswordController::class)
     ->name('password.store');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/', DashboardController::class)->name('dashboard');
     Route::post('/logout', LogoutController::class)->name('logout');
 });
