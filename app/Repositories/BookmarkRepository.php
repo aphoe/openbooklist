@@ -17,9 +17,7 @@ final class BookmarkRepository
         ?Category $category = null,
         ?string $title = null,
         ?string $description = null,
-        ?string $image = null,
-        bool $isFavorite = false,
-        string $aiSummaryStatus = 'pending'
+        ?string $image = null
     ): Bookmark {
         $bookmark = new Bookmark;
 
@@ -29,7 +27,6 @@ final class BookmarkRepository
         $bookmark->title = $title;
         $bookmark->description = $description;
         $bookmark->image = $image;
-        $bookmark->is_favorite = $isFavorite;
 
         $bookmark->save();
 
@@ -46,9 +43,7 @@ final class BookmarkRepository
         ?Category $category = null,
         ?string $title = null,
         ?string $description = null,
-        ?string $image = null,
-        bool $isFavorite = false,
-        string $aiSummaryStatus = 'pending'
+        ?string $image = null
     ): Bookmark {
         $bookmark->user_id = $user->id;
         $bookmark->category_id = $category?->id;
@@ -56,12 +51,27 @@ final class BookmarkRepository
         $bookmark->title = $title;
         $bookmark->description = $description;
         $bookmark->image = $image;
-        $bookmark->is_favorite = $isFavorite;
-        $bookmark->ai_summary_status = $aiSummaryStatus;
 
         $bookmark->save();
 
         return $bookmark;
+    }
+
+    /**
+     * Sync tags for a Bookmark.
+     */
+    public function syncTags(Bookmark $bookmark, array $tags = []): void
+    {
+        $bookmark->tags()->sync($tags);
+    }
+
+    /**
+     * Update the favorite status of a Bookmark.
+     */
+    public function updateFavoriteStatus(Bookmark $bookmark, bool $isFavorite): void
+    {
+        $bookmark->is_favorite = $isFavorite;
+        $bookmark->save();
     }
 
     /**
