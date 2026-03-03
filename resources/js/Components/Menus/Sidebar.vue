@@ -4,6 +4,7 @@ import { computed } from 'vue';
 
 const page = usePage();
 const authUser = computed(() => page.props.auth?.user);
+const categories = computed(() => page.props.categories || []);
 
 const logoutForm = useForm({});
 
@@ -49,26 +50,16 @@ const logout = () => {
                 <span class="text-sm font-medium leading-normal">Tags</span>
             </Link>
 
-            <div class="mt-4">
+            <div class="mt-4" v-if="categories.length > 0">
                 <div class="flex items-center justify-between px-3 mb-2">
-                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">My Categories</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Top Categories</span>
                     <span class="material-symbols-outlined text-slate-400 text-lg cursor-pointer hover:text-primary">add</span>
                 </div>
                 
                 <div class="flex flex-col gap-1">
-                    <Link href="#" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <span class="text-sm font-medium leading-normal">Design Resources</span>
-                        <span class="ml-auto bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 py-0.5 px-2 rounded-full text-xs">12</span>
-                    </Link>
-                    
-                    <Link href="#" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <span class="text-sm font-medium leading-normal">Development</span>
-                        <span class="ml-auto bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 py-0.5 px-2 rounded-full text-xs">8</span>
-                    </Link>
-                    
-                    <Link href="#" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <span class="text-sm font-medium leading-normal">Inspiration</span>
-                        <span class="ml-auto bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 py-0.5 px-2 rounded-full text-xs">24</span>
+                    <Link v-for="category in categories" :key="category.id" :href="route('dashboard', { category: category.slug })" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <span class="text-sm font-medium leading-normal">{{ category.name }}</span>
+                        <span v-if="category.bookmarks_count > 0" class="ml-auto bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 py-0.5 px-2 rounded-full text-xs">{{ category.bookmarks_count }}</span>
                     </Link>
                 </div>
             </div>

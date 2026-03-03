@@ -15,6 +15,11 @@ class Category extends Model
      * Relationships
      */
 
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
     public function children(): HasMany
     {
         return $this->hasMany(Category::class, 'parent_id');

@@ -9,7 +9,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\PasswordResetLinkViewController;
 use App\Http\Controllers\Auth\VerifyOTPController;
 use App\Http\Controllers\Auth\VerifyOTPViewController;
-use App\Http\Controllers\Users\DashboardController;
+use App\Http\Controllers\Users\BookmarkController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', LoginViewController::class)->name('login');
@@ -42,6 +42,6 @@ Route::post('/reset-password', NewPasswordController::class)
     ->name('password.store');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', DashboardController::class)->name('dashboard');
+    Route::get('/', BookmarkController::class)->name('dashboard');
     Route::post('/logout', LogoutController::class)->name('logout');
 });
