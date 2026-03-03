@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->string('image')->nullable();
-            $table->boolean('is_favorite')->default(false);
+            $table->boolean('favorite')->default(false);
             $table->timestamps();
         });
     }

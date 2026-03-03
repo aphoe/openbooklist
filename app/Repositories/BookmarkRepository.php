@@ -68,9 +68,9 @@ final class BookmarkRepository
     /**
      * Update the favorite status of a Bookmark.
      */
-    public function updateFavoriteStatus(Bookmark $bookmark, bool $isFavorite): void
+    public function updateFavoriteStatus(Bookmark $bookmark, bool $favorite): void
     {
-        $bookmark->is_favorite = $isFavorite;
+        $bookmark->favorite = $favorite;
         $bookmark->save();
     }
 

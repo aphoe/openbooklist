@@ -21,7 +21,7 @@ class BookmarkFactory extends Factory
             'title' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
             'image' => $this->faker->imageUrl(),
-            'is_favorite' => $this->faker->boolean(20),
+            'favorite' => $this->faker->boolean(20),
         ];
     }
 }
