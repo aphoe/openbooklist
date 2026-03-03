@@ -11,37 +11,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 final class ProductRepository
 {
-    // — Read methods ————————————————————————————————————————
-
-    public function findById(int $id): ?Product
-    {
-        return Product::find($id);
-    }
-
-    public function findBySlug(string $slug): ?Product
-    {
-        return Product::where('slug', $slug)->first();
-    }
-
-    public function findBySku(string $sku): ?Product
-    {
-        return Product::where('sku', $sku)->first();
-    }
-
-    public function getAll(): Collection
-    {
-        return Product::all();
-    }
-
-    public function getPaginated(int $perPage = 15): LengthAwarePaginator
-    {
-        return Product::paginate($perPage);
-    }
-
-    public function getByCategory(int $categoryId): Collection
-    {
-        return Product::where('category_id', $categoryId)->get();
-    }
 
     // — Write methods ———————————————————————————————————————
 
