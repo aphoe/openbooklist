@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\PasswordResetLinkViewController;
 use App\Http\Controllers\Auth\VerifyOTPController;
 use App\Http\Controllers\Auth\VerifyOTPViewController;
 use App\Http\Controllers\Users\BookmarkController;
+use App\Http\Controllers\Users\FetchBookmarkMetadataController;
+use App\Http\Controllers\Users\StoreBookmarkController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', LoginViewController::class)->name('login');
@@ -43,11 +45,12 @@ Route::post('/reset-password', NewPasswordController::class)
 
 Route::middleware('auth')->group(function () {
     Route::get('/', BookmarkController::class)->name('dashboard');
+    Route::post('/bookmarks', StoreBookmarkController::class)->name('bookmarks.store');
+    Route::post('/bookmarks/fetch-metadata', FetchBookmarkMetadataController::class)->name('bookmarks.fetch-metadata');
     Route::post('/logout', LogoutController::class)->name('logout');
 });
-
 
 Route::prefix('demo')
     ->group(function () {
         Route::get('/playground', [\App\Http\Controllers\DemoController::class, 'playground']);
-});
+    });

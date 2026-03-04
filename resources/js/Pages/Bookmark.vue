@@ -1,10 +1,22 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import AddBookmarkModal from '@/Components/Modals/AddBookmarkModal.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
 defineProps({
     bookmarks: Object,
+    allCategories: {
+        type: Array,
+        default: () => [],
+    },
+    allTags: {
+        type: Array,
+        default: () => [],
+    },
 });
+
+const showAddModal = ref(false);
 </script>
 
 <template>
@@ -62,7 +74,7 @@ defineProps({
                         Save articles, news, research papers, and blog posts. Ready to try?
                     </p>
                     <div class="pt-6">
-                        <button class="bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 px-6 rounded-lg shadow-sm transition-all flex items-center gap-2 mx-auto">
+                        <button class="bg-primary hover:bg-primary/90 text-white font-semibold py-2.5 px-6 rounded-lg shadow-sm transition-all flex items-center gap-2 mx-auto" @click="showAddModal = true">
                             <span class="material-symbols-outlined text-xl">add_link</span>
                             Add First Link
                         </button>
@@ -71,11 +83,22 @@ defineProps({
             </div>
         </div>
 
-        <div v-else class="p-6">
+        <div v-else>
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-xl font-semibold text-slate-900 dark:text-white">All Bookmarks</h2>
+                <button class="bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-all flex items-center gap-2" @click="showAddModal = true">
+                    <span class="material-symbols-outlined text-lg">add</span>
+                    Add Bookmark
+                </button>
             </div>
             <!-- Future grid goes here -->
         </div>
+
+        <AddBookmarkModal
+            :show="showAddModal"
+            :categories="allCategories"
+            :tags="allTags"
+            @close="showAddModal = false"
+        />
     </DashboardLayout>
 </template>
