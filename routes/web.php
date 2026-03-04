@@ -45,3 +45,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/', BookmarkController::class)->name('dashboard');
     Route::post('/logout', LogoutController::class)->name('logout');
 });
+
+
+Route::prefix('demo')
+    ->group(function () {
+        Route::get('/playground', [\App\Http\Controllers\DemoController::class, 'playground']);
+});
