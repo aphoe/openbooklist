@@ -16,6 +16,6 @@ class DeleteCategoryController extends Controller
 
         $repository->delete($category);
 
-        return back()->with('success', 'Category deleted successfully.');
+        return back()->with('info', 'Category deleted successfully.');
     }
 }

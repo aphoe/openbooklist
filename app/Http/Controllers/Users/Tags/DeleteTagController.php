@@ -24,6 +24,6 @@ class DeleteTagController extends Controller
 
         $this->tagRepository->delete($tag);
 
-        return redirect()->back()->with('success', 'Tag deleted successfully.');
+        return redirect()->back()->with('info', 'Tag deleted successfully.');
     }
 }

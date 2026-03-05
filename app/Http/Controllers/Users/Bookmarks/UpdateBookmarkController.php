@@ -51,6 +51,6 @@ class UpdateBookmarkController extends Controller
             $this->bookmarkRepository->syncTags($bookmark, $validated->array('tags'));
         }
 
-        return redirect()->back()->with('status', 'Bookmark updated successfully.');
+        return redirect()->back()->with('success', 'Bookmark updated successfully.');
     }
 }

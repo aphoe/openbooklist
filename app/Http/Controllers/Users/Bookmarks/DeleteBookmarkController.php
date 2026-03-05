@@ -24,6 +24,6 @@ class DeleteBookmarkController extends Controller
 
         $this->bookmarkRepository->delete($bookmark);
 
-        return redirect()->back()->with('status', 'Bookmark deleted successfully.');
+        return redirect()->back()->with('info', 'Bookmark deleted successfully.');
     }
 }

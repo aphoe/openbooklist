@@ -49,6 +49,6 @@ class StoreBookmarkController extends Controller
             $this->bookmarkRepository->syncTags($bookmark, $validated->array('tags'));
         }
 
-        return redirect()->route('dashboard')->with('status', 'Bookmark saved successfully.');
+        return redirect()->route('dashboard')->with('success', 'Bookmark saved successfully.');
     }
 }
