@@ -17,7 +17,7 @@ class Bookmark extends Model
      *
      * @var array
      */
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'domain'];
 
     /**
      * Get the bookmark's image URL.
@@ -35,6 +35,23 @@ class Bookmark extends Model
                 }
                 
                 return asset('storage/' . $this->image);
+            },
+        );
+    }
+
+    /**
+     * Get the bookmark's domain.
+     */
+    protected function domain(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (!$this->url) {
+                    return null;
+                }
+                
+                $host = parse_url($this->url, PHP_URL_HOST);
+                return $host ? preg_replace('/^www\./', '', $host) : null;
             },
         );
     }

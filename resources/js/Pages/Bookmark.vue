@@ -2,6 +2,9 @@
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import AddBookmarkModal from '@/Components/Modals/AddBookmarkModal.vue';
+import InfoBookmarkModal from '@/Components/Modals/InfoBookmarkModal.vue';
+import EditBookmarkModal from '@/Components/Modals/EditBookmarkModal.vue';
+import ConfirmDeleteModal from '@/Components/Modals/ConfirmDeleteModal.vue';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 import BookmarkCard from '@/Components/Bookmarks/BookmarkCard.vue';
 
@@ -34,9 +37,26 @@ const clickOutsideDropdown = (e) => {
     }
 };
 
-const handleInfo = (bookmark) => { console.log('Info', bookmark.id); };
-const handleEdit = (bookmark) => { console.log('Edit', bookmark.id); };
-const handleDelete = (bookmark) => { console.log('Delete', bookmark.id); };
+const selectedBookmark = ref(null);
+const showInfoModal = ref(false);
+const showEditModal = ref(false);
+const showDeleteModal = ref(false);
+
+const handleInfo = (bookmark) => { 
+    selectedBookmark.value = bookmark; 
+    showInfoModal.value = true; 
+};
+const handleEdit = (bookmark) => { 
+    selectedBookmark.value = bookmark; 
+    showEditModal.value = true; 
+};
+const handleDelete = (bookmark) => { 
+    selectedBookmark.value = bookmark; 
+    showDeleteModal.value = true; 
+};
+const handleFavorite = (bookmark) => {
+    router.post(route('bookmarks.favorite', bookmark.id), {}, { preserveScroll: true, preserveState: true });
+};
 
 onMounted(() => {
     document.addEventListener('click', clickOutsideDropdown);
@@ -172,6 +192,7 @@ watch(sortMode, (newVal) => {
                     @info="handleInfo"
                     @edit="handleEdit"
                     @delete="handleDelete" 
+                    @favorite="handleFavorite"
                 />
             </div>
 
@@ -196,7 +217,8 @@ watch(sortMode, (newVal) => {
                                             <img :src="bookmark.image_url" :alt="bookmark.title" class="w-full h-full object-cover">
                                         </div>
                                         <div class="flex flex-col overflow-hidden w-full">
-                                            <a :href="bookmark.url" target="_blank" class="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary truncate">
+                                            <a :href="bookmark.url" target="_blank" class="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary truncate flex items-center gap-1.5">
+                                                <span v-if="bookmark.favorite" class="material-symbols-outlined text-[16px] text-red-500 flex-shrink-0" style="font-variation-settings: 'FILL' 1;">favorite</span>
                                                 {{ bookmark.title }}
                                             </a>
                                             <span class="text-xs text-slate-500 dark:text-slate-400 sm:hidden truncate">{{ bookmark.domain || bookmark.url }}</span>
@@ -234,6 +256,10 @@ watch(sortMode, (newVal) => {
                                                 <button @click="(closeDropdown(), handleInfo(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                     <span class="material-symbols-outlined text-[16px]">info</span>
                                                     Info
+                                                </button>
+                                                <button @click="(closeDropdown(), handleFavorite(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                    <span class="material-symbols-outlined text-[16px]">{{ bookmark.favorite ? 'heart_broken' : 'favorite' }}</span>
+                                                    {{ bookmark.favorite ? 'Unfavorite' : 'Favorite' }}
                                                 </button>
                                                 <button @click="(closeDropdown(), handleEdit(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                     <span class="material-symbols-outlined text-[16px]">edit</span>
@@ -290,6 +316,26 @@ watch(sortMode, (newVal) => {
             :categories="allCategories"
             :tags="allTags"
             @close="showAddModal = false"
+        />
+
+        <InfoBookmarkModal
+            :show="showInfoModal"
+            :bookmark="selectedBookmark"
+            @close="showInfoModal = false"
+        />
+
+        <EditBookmarkModal
+            :show="showEditModal"
+            :bookmark="selectedBookmark"
+            :categories="allCategories"
+            :tags="allTags"
+            @close="showEditModal = false"
+        />
+
+        <ConfirmDeleteModal
+            :show="showDeleteModal"
+            :bookmark="selectedBookmark"
+            @close="showDeleteModal = false"
         />
     </DashboardLayout>
 </template>

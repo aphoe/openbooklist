@@ -12,6 +12,9 @@ use App\Http\Controllers\Auth\VerifyOTPViewController;
 use App\Http\Controllers\Users\BookmarkController;
 use App\Http\Controllers\Users\FetchBookmarkMetadataController;
 use App\Http\Controllers\Users\StoreBookmarkController;
+use App\Http\Controllers\Users\UpdateBookmarkController;
+use App\Http\Controllers\Users\DeleteBookmarkController;
+use App\Http\Controllers\Users\ToggleFavoriteController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', LoginViewController::class)->name('login');
@@ -46,6 +49,9 @@ Route::post('/reset-password', NewPasswordController::class)
 Route::middleware('auth')->group(function () {
     Route::get('/', BookmarkController::class)->name('dashboard');
     Route::post('/bookmarks', StoreBookmarkController::class)->name('bookmarks.store');
+    Route::put('/bookmarks/{bookmark}', UpdateBookmarkController::class)->name('bookmarks.update');
+    Route::delete('/bookmarks/{bookmark}', DeleteBookmarkController::class)->name('bookmarks.destroy');
+    Route::post('/bookmarks/{bookmark}/favorite', ToggleFavoriteController::class)->name('bookmarks.favorite');
     Route::post('/bookmarks/fetch-metadata', FetchBookmarkMetadataController::class)->name('bookmarks.fetch-metadata');
     Route::post('/logout', LogoutController::class)->name('logout');
 });

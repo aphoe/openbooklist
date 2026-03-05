@@ -8,7 +8,7 @@ defineProps({
     },
 });
 
-const emit = defineEmits(['edit', 'delete', 'info']);
+const emit = defineEmits(['edit', 'delete', 'info', 'favorite']);
 
 const showMenu = ref(false);
 const toggleMenu = () => { showMenu.value = !showMenu.value; };
@@ -43,6 +43,10 @@ onUnmounted(() => document.removeEventListener('click', clickOutside));
                         <span class="material-symbols-outlined text-[16px]">info</span>
                         Info
                     </button>
+                    <button @click.stop="(closeMenu(), emit('favorite', bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                        <span class="material-symbols-outlined text-[16px]">{{ bookmark.favorite ? 'heart_broken' : 'favorite' }}</span>
+                        {{ bookmark.favorite ? 'Unfavorite' : 'Favorite' }}
+                    </button>
                     <button @click.stop="(closeMenu(), emit('edit', bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                         <span class="material-symbols-outlined text-[16px]">edit</span>
                         Edit
@@ -53,6 +57,12 @@ onUnmounted(() => document.removeEventListener('click', clickOutside));
                     </button>
                 </div>
             </transition>
+        </div>
+
+        <div class="absolute top-2 left-2 z-10" v-if="bookmark.favorite">
+            <div class="h-8 w-8 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-red-500 shadow-sm border border-slate-200 dark:border-slate-700">
+                <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+            </div>
         </div>
 
         <div class="relative aspect-video w-full overflow-hidden rounded-t-xl bg-slate-100 dark:bg-slate-800">
