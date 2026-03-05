@@ -19,6 +19,10 @@ use App\Http\Controllers\Users\Categories\CategoryController;
 use App\Http\Controllers\Users\Categories\DeleteCategoryController;
 use App\Http\Controllers\Users\Categories\StoreCategoryController;
 use App\Http\Controllers\Users\Categories\UpdateCategoryController;
+use App\Http\Controllers\Users\Tags\DeleteTagController;
+use App\Http\Controllers\Users\Tags\StoreTagController;
+use App\Http\Controllers\Users\Tags\TagController;
+use App\Http\Controllers\Users\Tags\UpdateTagController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', LoginViewController::class)->name('login');
@@ -62,6 +66,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/categories', StoreCategoryController::class)->name('categories.store');
     Route::put('/categories/{category}', UpdateCategoryController::class)->name('categories.update');
     Route::delete('/categories/{category}', DeleteCategoryController::class)->name('categories.destroy');
+
+    Route::get('/tags', TagController::class)->name('tags.index');
+    Route::post('/tags', StoreTagController::class)->name('tags.store');
+    Route::put('/tags/{tag}', UpdateTagController::class)->name('tags.update');
+    Route::delete('/tags/{tag}', DeleteTagController::class)->name('tags.destroy');
 
     Route::post('/logout', LogoutController::class)->name('logout');
 });
