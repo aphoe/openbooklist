@@ -10,11 +10,15 @@ use App\Http\Controllers\Auth\PasswordResetLinkViewController;
 use App\Http\Controllers\Auth\VerifyOTPController;
 use App\Http\Controllers\Auth\VerifyOTPViewController;
 use App\Http\Controllers\Users\BookmarkController;
+use App\Http\Controllers\Users\CategoryController;
+use App\Http\Controllers\Users\DeleteBookmarkController;
+use App\Http\Controllers\Users\DeleteCategoryController;
 use App\Http\Controllers\Users\FetchBookmarkMetadataController;
 use App\Http\Controllers\Users\StoreBookmarkController;
-use App\Http\Controllers\Users\UpdateBookmarkController;
-use App\Http\Controllers\Users\DeleteBookmarkController;
+use App\Http\Controllers\Users\StoreCategoryController;
 use App\Http\Controllers\Users\ToggleFavoriteController;
+use App\Http\Controllers\Users\UpdateBookmarkController;
+use App\Http\Controllers\Users\UpdateCategoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', LoginViewController::class)->name('login');
@@ -53,6 +57,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/bookmarks/{bookmark}', DeleteBookmarkController::class)->name('bookmarks.destroy');
     Route::post('/bookmarks/{bookmark}/favorite', ToggleFavoriteController::class)->name('bookmarks.favorite');
     Route::post('/bookmarks/fetch-metadata', FetchBookmarkMetadataController::class)->name('bookmarks.fetch-metadata');
+
+    Route::get('/categories', CategoryController::class)->name('categories.index');
+    Route::post('/categories', StoreCategoryController::class)->name('categories.store');
+    Route::put('/categories/{category}', UpdateCategoryController::class)->name('categories.update');
+    Route::delete('/categories/{category}', DeleteCategoryController::class)->name('categories.destroy');
+
     Route::post('/logout', LogoutController::class)->name('logout');
 });
 

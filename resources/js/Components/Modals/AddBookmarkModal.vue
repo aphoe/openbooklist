@@ -4,7 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import TextInput from '@/Components/Forms/TextInput.vue';
 import SearchableDropdown from '@/Components/Forms/SearchableDropdown.vue';
-import SubmitButton from '@/Components/Forms/SubmitButton.vue';
+import ModalActionButtons from '@/Components/Forms/ModalActionButtons.vue';
 
 const props = defineProps({
     show: {
@@ -215,13 +215,12 @@ watch(() => form.image, (newVal) => {
                             </div>
                         </div>
 
-                        <!-- Submit -->
-                        <div class="pt-2">
-                            <SubmitButton :processing="form.processing">
-                                <span class="material-symbols-outlined text-lg mr-2">bookmark_add</span>
-                                Save Bookmark
-                            </SubmitButton>
-                        </div>
+                        <ModalActionButtons 
+                            :processing="form.processing" 
+                            submit-text="Save Bookmark" 
+                            submit-icon="bookmark_add" 
+                            @cancel="close" 
+                        />
                     </form>
                 </div>
             </div>

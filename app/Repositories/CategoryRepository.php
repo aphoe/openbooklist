@@ -16,7 +16,6 @@ final class CategoryRepository
         string $name,
         ?Category $parent = null,
         ?string $description = null,
-        int $order = 0
     ): Category {
         $category = new Category;
 
@@ -25,7 +24,6 @@ final class CategoryRepository
         $category->name = $name;
         $category->slug = (new ModelManager)->generateUniqueSlug('categories', $name);
         $category->description = $description;
-        $category->order = $order;
 
         $category->save();
 
@@ -41,18 +39,12 @@ final class CategoryRepository
         string $name,
         ?Category $parent = null,
         ?string $description = null,
-        int $order = 0
     ): Category {
         $category->user_id = $user->id;
         $category->parent_id = $parent?->id;
 
-        if ($category->name !== $name) {
-            $category->slug = (new ModelManager)->generateUniqueSlug('categories', $name);
-        }
-
         $category->name = $name;
         $category->description = $description;
-        $category->order = $order;
 
         $category->save();
 

@@ -4,7 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import TextInput from '@/Components/Forms/TextInput.vue';
 import SearchableDropdown from '@/Components/Forms/SearchableDropdown.vue';
-import SubmitButton from '@/Components/Forms/SubmitButton.vue';
+import ModalActionButtons from '@/Components/Forms/ModalActionButtons.vue';
 
 const props = defineProps({
     show: {
@@ -162,16 +162,12 @@ const close = () => {
                             <p v-if="form.errors.description" class="mt-1 text-sm text-red-500">{{ form.errors.description }}</p>
                         </div>
 
-                        <!-- Submit -->
-                        <div class="pt-2 flex gap-3">
-                            <button type="button" @click="close" class="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-semibold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors hidden sm:block">
-                                Cancel
-                            </button>
-                            <SubmitButton class="flex-1" :processing="form.processing">
-                                <span class="material-symbols-outlined text-lg mr-2">save</span>
-                                Save Changes
-                            </SubmitButton>
-                        </div>
+                        <ModalActionButtons 
+                            :processing="form.processing" 
+                            submit-text="Save Changes" 
+                            submit-icon="save" 
+                            @cancel="close" 
+                        />
                     </form>
                 </div>
             </div>
