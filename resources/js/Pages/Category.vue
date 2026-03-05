@@ -184,37 +184,35 @@ onUnmounted(() => {
                     </tbody>
                 </table>
                 
-                <!-- Footer & Pagination -->
-                <div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4" v-if="(categories.meta ? categories.meta.last_page : categories.last_page) > 1">
-                    <p class="text-xs text-slate-500">
-                        Showing {{ categories.meta ? categories.meta.from : categories.from }} to {{ categories.meta ? categories.meta.to : categories.to }} of {{ categories.meta ? categories.meta.total : categories.total }} categories
-                    </p>
-                    <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
-                        <template v-for="(link, index) in (categories.meta ? categories.meta.links : categories.links)" :key="index">
-                            <Link v-if="link.url" :href="link.url"
-                                :class="[
-                                    'relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 border-y border-slate-300 dark:border-slate-700',
-                                    link.active ? 'z-10 bg-primary text-white border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary' : 'text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-offset-0',
-                                    index === 0 ? 'rounded-l-md px-2 border-l' : '',
-                                    index === (categories.meta ? categories.meta.links.length - 1 : categories.links.length - 1) ? 'rounded-r-md px-2 border-r' : (!link.active ? 'border-r' : '')
-                                ]">
-                                <span v-if="link.label.includes('Previous')" class="material-symbols-outlined text-[20px]">chevron_left</span>
-                                <span v-else-if="link.label.includes('Next')" class="material-symbols-outlined text-[20px]">chevron_right</span>
-                                <span v-else v-html="link.label"></span>
-                            </Link>
-                            <span v-else
-                                :class="[
-                                    'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-slate-400 border-y border-slate-300 dark:border-slate-700',
-                                    index === 0 ? 'rounded-l-md px-2 border-l' : '',
-                                    index === (categories.meta ? categories.meta.links.length - 1 : categories.links.length - 1) ? 'rounded-r-md px-2 border-r' : 'border-r'
-                                ]">
-                                <span v-if="link.label.includes('Previous')" class="material-symbols-outlined text-[20px]">chevron_left</span>
-                                <span v-else-if="link.label.includes('Next')" class="material-symbols-outlined text-[20px]">chevron_right</span>
-                                <span v-else v-html="link.label"></span>
-                            </span>
-                        </template>
-                    </nav>
-                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-8 flex items-center justify-center" v-if="(categories.meta ? categories.meta.last_page : categories.last_page) > 1">
+                <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+                    <template v-for="(link, index) in (categories.meta ? categories.meta.links : categories.links)" :key="index">
+                        <Link v-if="link.url" :href="link.url"
+                            :class="[
+                                'relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 border-y border-slate-300 dark:border-slate-700',
+                                link.active ? 'z-10 bg-primary text-white border-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary' : 'text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-offset-0',
+                                index === 0 ? 'rounded-l-md px-2 border-l' : '',
+                                index === (categories.meta ? categories.meta.links.length - 1 : categories.links.length - 1) ? 'rounded-r-md px-2 border-r' : (!link.active ? 'border-r' : '')
+                            ]">
+                            <span v-if="link.label.includes('Previous')" class="material-symbols-outlined text-[20px]">chevron_left</span>
+                            <span v-else-if="link.label.includes('Next')" class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            <span v-else v-html="link.label"></span>
+                        </Link>
+                        <span v-else
+                            :class="[
+                                'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-slate-400 border-y border-slate-300 dark:border-slate-700',
+                                index === 0 ? 'rounded-l-md px-2 border-l' : '',
+                                index === (categories.meta ? categories.meta.links.length - 1 : categories.links.length - 1) ? 'rounded-r-md px-2 border-r' : 'border-r'
+                            ]">
+                            <span v-if="link.label.includes('Previous')" class="material-symbols-outlined text-[20px]">chevron_left</span>
+                            <span v-else-if="link.label.includes('Next')" class="material-symbols-outlined text-[20px]">chevron_right</span>
+                            <span v-else v-html="link.label"></span>
+                        </span>
+                    </template>
+                </nav>
             </div>
         </div>
 
