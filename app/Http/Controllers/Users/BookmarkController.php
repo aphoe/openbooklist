@@ -16,11 +16,20 @@ class BookmarkController extends Controller
     public function __invoke(Request $request)
     {
         $user = $request->user();
+        $sort = $request->input('sort', 'newest');
 
-        $bookmarks = Bookmark::where('user_id', $user->id)
-            ->with(['category', 'tags'])
-            ->latest()
-            ->paginate(32);
+        $query = Bookmark::where('user_id', $user->id)
+            ->with(['category', 'tags']);
+
+        if ($sort === 'oldest') {
+            $query->oldest();
+        } elseif ($sort === 'alphabetical') {
+            $query->orderBy('title', 'asc');
+        } else {
+            $query->latest();
+        }
+
+        $bookmarks = $query->paginate(32)->withQueryString();
 
         return inertia('Bookmark', [
             'bookmarks' => $bookmarks,
