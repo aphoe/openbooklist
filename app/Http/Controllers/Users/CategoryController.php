@@ -18,7 +18,7 @@ class CategoryController extends Controller
         $categories = Category::where('user_id', $user->id)
             ->withCount('bookmarks')
             ->orderBy('name')
-            ->paginate(32)
+            ->paginate(1)
             ->withQueryString();
 
         return inertia('Category', [

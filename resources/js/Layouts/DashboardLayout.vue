@@ -1,6 +1,7 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
 import Sidebar from '@/Components/Menus/Sidebar.vue';
+import FlashMessages from '@/Components/FlashMessages.vue';
 
 const page = usePage();
 const authUser = page.props.auth?.user;
@@ -28,6 +29,7 @@ const authUser = page.props.auth?.user;
 
             <!-- Page Content Slot -->
             <div class="flex-1 p-6 overflow-y-auto">
+                <FlashMessages />
                 <div class="max-w-[1400px] mx-auto">
                     <slot />
                 </div>

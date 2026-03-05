@@ -84,9 +84,9 @@ const close = () => {
             leave-from-class="opacity-100"
             leave-to-class="opacity-0"
         >
-            <div v-if="show" class="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4" @click.self="close">
+            <div v-if="show" class="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4">
                 <!-- Backdrop -->
-                <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="close"></div>
+                <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
 
                 <!-- Modal -->
                 <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[calc(100vh-8rem)] overflow-y-auto">

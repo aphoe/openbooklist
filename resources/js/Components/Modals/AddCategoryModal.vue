@@ -43,8 +43,8 @@ const close = () => {
             leave-from-class="opacity-100"
             leave-to-class="opacity-0"
         >
-            <div v-if="show" class="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4" @click.self="close">
-                <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="close"></div>
+            <div v-if="show" class="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4">
+                <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
                 
                 <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[calc(100vh-8rem)] overflow-y-auto">
                     <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
