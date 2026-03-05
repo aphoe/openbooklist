@@ -4,6 +4,7 @@ import { useForm } from '@inertiajs/vue3';
 import axios from 'axios';
 import TextInput from '@/Components/Forms/TextInput.vue';
 import SearchableDropdown from '@/Components/Forms/SearchableDropdown.vue';
+import TagMultiSelect from '@/Components/Forms/TagMultiSelect.vue';
 import ModalActionButtons from '@/Components/Forms/ModalActionButtons.vue';
 
 const props = defineProps({
@@ -81,10 +82,6 @@ const toggleTag = (tagId) => {
     }
 };
 
-const isTagSelected = (tagId) => {
-    return form.tags.includes(tagId);
-};
-
 const submit = () => {
     form.post(route('bookmarks.store'), {
         onSuccess: () => {
@@ -109,24 +106,22 @@ watch(() => form.image, (newVal) => {
 
 <template>
     <Teleport to="body">
-        <Transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0"
-            enter-to-class="opacity-100"
-            leave-active-class="transition ease-in duration-150"
-            leave-from-class="opacity-100"
-            leave-to-class="opacity-0"
-        >
+        <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0"
+            enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150"
+            leave-from-class="opacity-100" leave-to-class="opacity-0">
             <div v-if="show" class="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4">
                 <!-- Backdrop -->
                 <div class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
 
                 <!-- Modal -->
-                <div class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[calc(100vh-8rem)] overflow-y-auto">
+                <div
+                    class="relative z-10 w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[calc(100vh-8rem)] overflow-y-auto">
                     <!-- Header -->
                     <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
                         <h2 class="text-lg font-bold text-slate-900 dark:text-white">Add Bookmark</h2>
-                        <button type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors" @click="close">
+                        <button type="button"
+                            class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                            @click="close">
                             <span class="material-symbols-outlined">close</span>
                         </button>
                     </div>
@@ -135,18 +130,19 @@ watch(() => form.image, (newVal) => {
                     <form @submit.prevent="submit" class="p-5 space-y-4">
                         <!-- URL -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">URL <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">URL <span
+                                    class="text-red-500">*</span></label>
                             <div class="relative">
-                                <TextInput
-                                    v-model="form.url"
-                                    type="url"
-                                    placeholder="https://example.com/article"
-                                    @blur="fetchMetadata"
-                                />
+                                <TextInput v-model="form.url" type="url" placeholder="https://example.com/article"
+                                    @blur="fetchMetadata" />
                                 <div v-if="isFetchingMetadata" class="absolute right-3 top-1/2 -translate-y-1/2">
-                                    <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
                                     </svg>
                                 </div>
                             </div>
@@ -155,72 +151,56 @@ watch(() => form.image, (newVal) => {
 
                         <!-- Title -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Title <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Title
+                                <span class="text-red-500">*</span></label>
                             <TextInput v-model="form.title" placeholder="Page title" />
                             <p v-if="form.errors.title" class="mt-1 text-sm text-red-500">{{ form.errors.title }}</p>
                         </div>
 
                         <!-- Category -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Category</label>
-                            <SearchableDropdown
-                                v-model="form.category_id"
-                                :options="categories"
-                                placeholder="Select category..."
-                                search-placeholder="Search categories..."
-                            />
-                            <p v-if="form.errors.category_id" class="mt-1 text-sm text-red-500">{{ form.errors.category_id }}</p>
+                            <label
+                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Category</label>
+                            <SearchableDropdown v-model="form.category_id" :options="categories"
+                                placeholder="Select category..." search-placeholder="Search categories..." />
+                            <p v-if="form.errors.category_id" class="mt-1 text-sm text-red-500">{{
+                                form.errors.category_id }}</p>
                         </div>
 
                         <!-- Tags -->
                         <div v-if="tags.length > 0">
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tags</label>
-                            <div class="flex flex-wrap gap-2">
-                                <button
-                                    v-for="tag in tags"
-                                    :key="tag.id"
-                                    type="button"
-                                    class="px-3 py-1 rounded-full text-sm font-medium transition-all border"
-                                    :class="isTagSelected(tag.id)
-                                        ? 'bg-primary/10 text-primary border-primary/30'
-                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/30'"
-                                    @click="toggleTag(tag.id)"
-                                >
-                                    {{ tag.name }}
-                                </button>
-                            </div>
+                            <label
+                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tags</label>
+                            <TagMultiSelect v-model="form.tags" :options="tags" />
                             <p v-if="form.errors.tags" class="mt-1 text-sm text-red-500">{{ form.errors.tags }}</p>
                         </div>
 
                         <!-- Description -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Description</label>
-                            <textarea
-                                v-model="form.description"
-                                rows="3"
-                                placeholder="Brief description..."
-                                class="form-input block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary px-4 py-3 text-base transition-colors resize-none"
-                            ></textarea>
-                            <p v-if="form.errors.description" class="mt-1 text-sm text-red-500">{{ form.errors.description }}</p>
+                            <label
+                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Description</label>
+                            <textarea v-model="form.description" rows="3" placeholder="Brief description..."
+                                class="form-input block w-full rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-primary px-4 py-3 text-base transition-colors resize-none"></textarea>
+                            <p v-if="form.errors.description" class="mt-1 text-sm text-red-500">{{
+                                form.errors.description }}</p>
                         </div>
 
                         <!-- Image -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Image</label>
+                            <label
+                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Image</label>
                             <TextInput v-model="form.image" placeholder="Image URL" />
                             <p v-if="form.errors.image" class="mt-1 text-sm text-red-500">{{ form.errors.image }}</p>
                             <!-- Image Preview -->
-                            <div v-if="imagePreview" class="mt-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
-                                <img :src="imagePreview" alt="Preview" class="w-full h-32 object-cover" @error="imagePreview = null" />
+                            <div v-if="imagePreview"
+                                class="mt-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                                <img :src="imagePreview" alt="Preview" class="w-full h-32 object-cover"
+                                    @error="imagePreview = null" />
                             </div>
                         </div>
 
-                        <ModalActionButtons 
-                            :processing="form.processing" 
-                            submit-text="Save Bookmark" 
-                            submit-icon="bookmark_add" 
-                            @cancel="close" 
-                        />
+                        <ModalActionButtons :processing="form.processing" submit-text="Save Bookmark"
+                            submit-icon="bookmark_add" @cancel="close" />
                     </form>
                 </div>
             </div>
