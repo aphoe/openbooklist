@@ -241,9 +241,9 @@ watch(sortMode, (newVal) => {
                                 <td class="py-4 px-4 text-right text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                     {{ new Date(bookmark.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) }}
                                 </td>
-                                <td class="py-4 px-4 text-right">
+                                <td class="py-4 px-4 text-right align-middle">
                                     <div class="relative list-dropdown-container inline-block text-left">
-                                        <button @click.stop="toggleDropdown(bookmark.id)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-full outline-none">
+                                        <button @click.stop="toggleDropdown(bookmark.id)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-opacity p-1 rounded-full outline-none">
                                             <span class="material-symbols-outlined text-[20px] block">more_vert</span>
                                         </button>
                                         
