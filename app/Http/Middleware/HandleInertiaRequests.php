@@ -41,8 +41,8 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'categories' => $request->user() 
-                ? $request->user()->categories()->withCount('bookmarks')->orderByDesc('bookmarks_count')->latest()->take(5)->get() 
+            'categories' => $request->user()
+                ? $request->user()->categories()->withCount('bookmarks')->orderByDesc('bookmarks_count')->latest()->take(5)->get()
                 : [],
             'status' => $request->session()->get('status'),
             'error' => $request->session()->get('error'),

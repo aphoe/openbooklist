@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers\Users\Bookmarks;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Users\UpdateBookmarkRequest;
-use App\Models\Bookmark;
+use App\Http\Requests\Users\StoreBookmarkRequest;
 use App\Models\Category;
 use App\Repositories\BookmarkRepository;
 use App\Services\BookmarkService;
 
-class UpdateBookmarkController extends Controller
+class StoreBookmarkController extends Controller
 {
     public function __construct(
         protected BookmarkRepository $bookmarkRepository,
@@ -17,16 +16,16 @@ class UpdateBookmarkController extends Controller
     ) {}
 
     /**
-     * Update the specified bookmark.
+     * Store a new bookmark.
      */
-    public function __invoke(UpdateBookmarkRequest $request, Bookmark $bookmark)
+    public function __invoke(StoreBookmarkRequest $request)
     {
         $validated = $request->safe();
         $user = $request->user();
 
-        // Optional image handling
-        $imagePath = $bookmark->image;
-        if ($validated->string('image')->isNotEmpty() && $validated->string('image')->value() !== $bookmark->image) {
+        // Download and resize image if provided
+        $imagePath = null;
+        if ($validated->string('image')->isNotEmpty()) {
             $imagePath = $this->bookmarkService->downloadAndResizeImage(
                 $validated->string('image')
             );
@@ -36,8 +35,7 @@ class UpdateBookmarkController extends Controller
             ? Category::find($validated->integer('category_id'))
             : null;
 
-        $bookmark = $this->bookmarkRepository->update(
-            bookmark: $bookmark,
+        $bookmark = $this->bookmarkRepository->create(
             user: $user,
             url: $validated->string('url'),
             category: $category,
@@ -51,6 +49,6 @@ class UpdateBookmarkController extends Controller
             $this->bookmarkRepository->syncTags($bookmark, $validated->array('tags'));
         }
 
-        return redirect()->back()->with('status', 'Bookmark updated successfully.');
+        return redirect()->route('dashboard')->with('status', 'Bookmark saved successfully.');
     }
 }

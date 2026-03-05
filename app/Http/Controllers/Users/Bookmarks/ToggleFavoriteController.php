@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers\Users\Bookmarks;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bookmark;
@@ -22,7 +22,7 @@ class ToggleFavoriteController extends Controller
             abort(403);
         }
 
-        $this->bookmarkRepository->updateFavoriteStatus($bookmark, !$bookmark->favorite);
+        $this->bookmarkRepository->updateFavoriteStatus($bookmark, ! $bookmark->favorite);
 
         return redirect()->back();
     }

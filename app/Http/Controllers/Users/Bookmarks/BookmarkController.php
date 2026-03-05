@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers\Users\Bookmarks;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bookmark;
@@ -31,7 +31,7 @@ class BookmarkController extends Controller
 
         $bookmarks = $query->paginate(32)->withQueryString();
 
-        return inertia('Bookmark', [
+        return inertia('Users/Bookmarks/Index', [
             'bookmarks' => $bookmarks,
             'allCategories' => Category::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),
             'allTags' => Tag::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers\Users\Categories;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
@@ -18,10 +18,10 @@ class CategoryController extends Controller
         $categories = Category::where('user_id', $user->id)
             ->withCount('bookmarks')
             ->orderBy('name')
-            ->paginate(1)
+            ->paginate(32)
             ->withQueryString();
 
-        return inertia('Category', [
+        return inertia('Users/Categories/Index', [
             'categories' => $categories,
         ]);
     }

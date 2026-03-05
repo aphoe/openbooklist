@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Bookmark extends Model
 {
@@ -26,15 +26,15 @@ class Bookmark extends Model
     {
         return Attribute::make(
             get: function () {
-                if (!$this->image) {
+                if (! $this->image) {
                     return asset('assets/images/defaults/bookmark.jpg');
                 }
-                
+
                 if (filter_var($this->image, FILTER_VALIDATE_URL)) {
                     return $this->image;
                 }
-                
-                return asset('storage/' . $this->image);
+
+                return asset('storage/'.$this->image);
             },
         );
     }
@@ -46,11 +46,12 @@ class Bookmark extends Model
     {
         return Attribute::make(
             get: function () {
-                if (!$this->url) {
+                if (! $this->url) {
                     return null;
                 }
-                
+
                 $host = parse_url($this->url, PHP_URL_HOST);
+
                 return $host ? preg_replace('/^www\./', '', $host) : null;
             },
         );
