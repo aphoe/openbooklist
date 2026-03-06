@@ -237,7 +237,7 @@ OpenBookList is built and maintained with 💛 in spare time. If it saves you ti
 
 <p align="center">
   <a href="https://buymeacoffee.com/aphoe">
-    <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=aphoe&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee">
+    <img src="public/assets/images/bmc.png" height="80" alt="Buy Me A Coffee">
   </a>
 </p>
 
