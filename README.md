@@ -237,7 +237,7 @@ OpenBookList is built and maintained with 💛 in spare time. If it saves you ti
 
 <p align="center">
   <a href="https://buymeacoffee.com/aphoe" target="_blank">
-    <img src="public/assets/images/bmc.png" height="80" alt="Buy Me A Coffee">
+    <img src="public/assets/images/bmc.png" height="60" alt="Buy Me A Coffee">
   </a>
 </p>
 
