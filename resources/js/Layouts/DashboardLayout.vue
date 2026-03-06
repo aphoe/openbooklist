@@ -1,10 +1,19 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import Sidebar from '@/Components/Menus/Sidebar.vue';
 import FlashMessages from '@/Components/FlashMessages.vue';
 
 const page = usePage();
 const authUser = page.props.auth?.user;
+
+const globalSearchQuery = ref(new URLSearchParams(window.location.search).get('q') || '');
+
+const handleGlobalSearch = () => {
+    if (globalSearchQuery.value.trim().length > 0) {
+        router.get(route('search'), { q: globalSearchQuery.value }, { preserveState: false, replace: false });
+    }
+};
 </script>
 
 <template>
@@ -24,7 +33,7 @@ const authUser = page.props.auth?.user;
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span class="material-symbols-outlined text-slate-400">search</span>
                         </div>
-                        <input
+                        <input v-model="globalSearchQuery" @keyup.enter="handleGlobalSearch"
                             class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg leading-5 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 sm:text-sm transition-all"
                             placeholder="Search..." type="text" />
                     </div>

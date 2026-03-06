@@ -20,6 +20,7 @@ use App\Http\Controllers\Users\Categories\DeleteCategoryController;
 use App\Http\Controllers\Users\Categories\StoreCategoryController;
 use App\Http\Controllers\Users\Categories\UpdateCategoryController;
 use App\Http\Controllers\Users\RecentlySavedController;
+use App\Http\Controllers\Users\SearchController;
 use App\Http\Controllers\Users\Tags\DeleteTagController;
 use App\Http\Controllers\Users\Tags\StoreTagController;
 use App\Http\Controllers\Users\Tags\TagController;
@@ -58,6 +59,7 @@ Route::post('/reset-password', NewPasswordController::class)
 Route::middleware('auth')->group(function () {
     Route::get('/', BookmarkController::class)->name('dashboard');
     Route::get('/recently-saved', RecentlySavedController::class)->name('recently-saved');
+    Route::get('/search', SearchController::class)->name('search');
 
     Route::post('/bookmarks', StoreBookmarkController::class)->name('bookmarks.store');
     Route::put('/bookmarks/{bookmark}', UpdateBookmarkController::class)->name('bookmarks.update');
