@@ -26,7 +26,6 @@ class CategoryFactory extends Factory
             'name' => ucwords($name),
             'slug' => Str::slug($name),
             'description' => fake()->optional()->sentence(),
-            'order' => fake()->numberBetween(0, 50),
         ];
     }
 }
