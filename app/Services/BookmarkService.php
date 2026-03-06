@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Managers\OpenRouterManager;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -17,6 +19,13 @@ class BookmarkService
     protected ?HtmlDomParser $dom = null;
 
     protected ?string $currentUrl = null;
+
+    protected OpenRouterManager $openRouterManager;
+
+    public function __construct()
+    {
+        $this->openRouterManager = new OpenRouterManager;
+    }
 
     /**
      * Fetch the HTML of the page using PHPScraper.
@@ -46,7 +55,7 @@ class BookmarkService
     }
 
     /**
-     * Get description from meta description or og:description tags.
+     * Get description from AI generation (if enabled), or meta/og:description tags.
      */
     public function getDescription(): ?string
     {
@@ -54,10 +63,41 @@ class BookmarkService
             return null;
         }
 
+        // Use AI-generated description as primary option when enabled
+        $user = Auth::user();
+
+        if ($user && $user->use_ai_description && $user->ai_model) {
+            $bodyHtml = $this->getBodyHtml();
+
+            if ($bodyHtml) {
+                $aiDescription = $this->openRouterManager->generateDescription($bodyHtml, $user->ai_model);
+
+                if ($aiDescription) {
+                    return $aiDescription;
+                }
+            }
+        }
+
+        // Fall back to og:description or meta description
         $og = $this->scraper->openGraph();
 
-        // Try og:description first, then meta description
         return $og['og:description'] ?? $this->scraper->description;
+    }
+
+    /**
+     * Get the raw HTML content of the page body.
+     */
+    public function getBodyHtml(): ?string
+    {
+        if (! $this->scraper) {
+            return null;
+        }
+
+        try {
+            return $this->scraper->client()->getResponse()->getContent();
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     /**
@@ -165,7 +205,7 @@ class BookmarkService
         }
 
         try {
-            $html = $this->scraper->rawContent ?? '';
+            $html = $this->scraper->client()->getResponse()->getContent();
             if (empty($html)) {
                 return null;
             }
@@ -206,7 +246,7 @@ class BookmarkService
         }
 
         try {
-            $html = $this->scraper->rawContent ?? '';
+            $html = $this->scraper->client()->getResponse()->getContent();
             if (empty($html)) {
                 return null;
             }

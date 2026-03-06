@@ -10,7 +10,7 @@ class DemoController extends Controller
     {
         $url = 'https://spatie.be/docs/crawler/v9/basic-usage/handling-crawl-responses';
         $service = new BookmarkService;
-        $result = $service->fetchHtml($url)->getImage();
+        $result = $service->fetchHtml($url)->getDescription();
         var_dump($result);
     }
 }
