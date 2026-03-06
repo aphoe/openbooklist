@@ -14,6 +14,12 @@ class SearchControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     public function test_unauthenticated_user_cannot_access_search(): void
     {
         $response = $this->get(route('search'));

@@ -14,6 +14,12 @@ class BookmarkControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     public function test_unauthenticated_user_is_redirected_to_login(): void
     {
         $response = $this->get(route('dashboard'));
