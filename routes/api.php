@@ -9,4 +9,5 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->prefix('v1/ext')->group(function () {
     Route::get('/categories', \App\Http\Controllers\Api\V1\Ext\FetchCategoriesController::class);
+    Route::get('/tags', \App\Http\Controllers\Api\V1\Ext\FetchTagsController::class);
 });
