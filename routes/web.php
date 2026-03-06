@@ -21,6 +21,12 @@ use App\Http\Controllers\Users\Categories\StoreCategoryController;
 use App\Http\Controllers\Users\Categories\UpdateCategoryController;
 use App\Http\Controllers\Users\RecentlySavedController;
 use App\Http\Controllers\Users\SearchController;
+use App\Http\Controllers\Users\Settings\DestroyAccessTokenController;
+use App\Http\Controllers\Users\Settings\IndexController as SettingsIndexController;
+use App\Http\Controllers\Users\Settings\StoreAccessTokenController;
+use App\Http\Controllers\Users\Settings\UpdateAiConfigController;
+use App\Http\Controllers\Users\Settings\UpdateGeneralController;
+use App\Http\Controllers\Users\Settings\UpdatePasswordController;
 use App\Http\Controllers\Users\Tags\DeleteTagController;
 use App\Http\Controllers\Users\Tags\StoreTagController;
 use App\Http\Controllers\Users\Tags\TagController;
@@ -78,6 +84,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/tags/{tag}', DeleteTagController::class)->name('tags.destroy');
 
     Route::post('/logout', LogoutController::class)->name('logout');
+
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', SettingsIndexController::class)->name('index');
+        Route::put('/general', UpdateGeneralController::class)->name('general');
+        Route::put('/password', UpdatePasswordController::class)->name('password');
+        Route::put('/ai', UpdateAiConfigController::class)->name('ai');
+        Route::post('/tokens', StoreAccessTokenController::class)->name('tokens.store');
+        Route::delete('/tokens/{token}', DestroyAccessTokenController::class)->name('tokens.destroy');
+    });
 });
 
 Route::prefix('demo')

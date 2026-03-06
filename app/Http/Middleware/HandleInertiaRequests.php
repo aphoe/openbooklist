@@ -53,6 +53,7 @@ class HandleInertiaRequests extends Middleware
                 'danger' => $request->session()->get('danger'),
                 'warning' => $request->session()->get('warning'),
                 'error' => $request->session()->get('error'),
+                'newToken' => $request->session()->get('newToken'),
             ],
         ];
     }
