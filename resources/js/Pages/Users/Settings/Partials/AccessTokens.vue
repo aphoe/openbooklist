@@ -1,18 +1,31 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import TextInput from '@/Components/Forms/TextInput.vue';
 import SubmitButton from '@/Components/Forms/SubmitButton.vue';
 
 const page = usePage();
 const tokens = computed(() => page.props.tokens || []);
-const newToken = computed(() => page.props.flash?.newToken || null);
+const availableAbilities = computed(() => page.props.availableAbilities || {});
+
+// Local ref so we can dismiss the banner, synced from flash via watch
+const newToken = ref(page.props.flash?.newToken || null);
+
+watch(() => page.props.flash?.newToken, (val) => {
+    if (val) {
+        newToken.value = val;
+        copied.value = false;
+    }
+});
 
 const showCreateForm = ref(false);
 const confirmingRevoke = ref(null);
+const copied = ref(false);
 
 const form = useForm({
     name: '',
+    abilities: [],
+    expires_in: '',
 });
 
 const createToken = () => {
@@ -21,6 +34,7 @@ const createToken = () => {
         onSuccess: () => {
             form.reset();
             showCreateForm.value = false;
+            copied.value = false;
         },
     });
 };
@@ -33,13 +47,53 @@ const revokeToken = (tokenId) => {
         },
     });
 };
+
+const copyToken = async () => {
+    if (newToken.value) {
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(newToken.value);
+            } else {
+                // Fallback for non-HTTPS environments
+                const textArea = document.createElement("textarea");
+                textArea.value = newToken.value;
+                textArea.style.position = "absolute";
+                textArea.style.left = "-999999px";
+                document.body.prepend(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (error) {
+                    console.error('Fallback copy failed', error);
+                } finally {
+                    textArea.remove();
+                }
+            }
+            copied.value = true;
+            setTimeout(() => copied.value = false, 2000);
+        } catch (err) {
+            console.error('Failed to copy token: ', err);
+        }
+    }
+};
+
+const closeTokenBanner = () => {
+    newToken.value = null;
+    page.props.flash.newToken = null;
+};
 </script>
 
 <template>
     <div class="space-y-8">
         <!-- New Token Flash Banner -->
         <div v-if="newToken"
-            class="rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 p-4">
+            class="rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 p-4 relative pr-12">
+
+            <button @click="closeTokenBanner"
+                class="absolute top-4 right-4 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
             <div class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-green-600 dark:text-green-400 shrink-0">check_circle</span>
                 <div class="flex-1 min-w-0">
@@ -47,8 +101,19 @@ const revokeToken = (tokenId) => {
                     </h4>
                     <p class="text-xs text-green-700 dark:text-green-400 mb-2">Make sure to copy this token now. You
                         won't be able to see it again.</p>
-                    <code
-                        class="block w-full p-3 bg-white dark:bg-slate-900 border border-green-200 dark:border-green-800 rounded-lg text-sm text-slate-900 dark:text-white font-mono break-all select-all">{{ newToken }}</code>
+                    <div class="flex items-center gap-2">
+                        <code
+                            class="block flex-1 p-3 bg-white dark:bg-slate-900 border border-green-200 dark:border-green-800 rounded-lg text-sm text-slate-900 dark:text-white font-mono break-all select-all">{{ newToken }}</code>
+                        <button @click="copyToken"
+                            class="shrink-0 p-3 bg-white dark:bg-slate-900 border border-green-200 dark:border-green-800 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center relative group"
+                            title="Copy to clipboard">
+                            <span v-if="copied"
+                                class="material-symbols-outlined text-green-500 text-xl absolute">check</span>
+                            <span v-else class="material-symbols-outlined text-xl absolute">content_copy</span>
+                            <!-- Placeholder to keep size constant -->
+                            <span class="material-symbols-outlined text-xl opacity-0">content_copy</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -73,18 +138,49 @@ const revokeToken = (tokenId) => {
             <!-- Create Token Inline Form -->
             <div v-if="showCreateForm"
                 class="p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                <form @submit.prevent="createToken" class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-                    <div class="flex-1 w-full">
-                        <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Token Name</label>
-                        <TextInput v-model="form.name" placeholder="e.g. Production API Key" />
-                        <span v-if="form.errors.name" class="text-xs text-red-500 mt-1">{{ form.errors.name }}</span>
+                <form @submit.prevent="createToken" class="flex flex-col gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Left side: Name and Expiry -->
+                        <div class="flex flex-col gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Token
+                                    Name</label>
+                                <TextInput v-model="form.name" placeholder="e.g. Production API Key" />
+                                <span v-if="form.errors.name" class="text-xs text-red-500 mt-1">{{ form.errors.name
+                                }}</span>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Expiration
+                                    (Days, optional)</label>
+                                <TextInput v-model="form.expires_in" type="number" min="1" placeholder="e.g. 30" />
+                                <span v-if="form.errors.expires_in" class="text-xs text-red-500 mt-1">{{
+                                    form.errors.expires_in }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Right side: Abilities -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-900 dark:text-white mb-3">Abilities
+                                (optional)</label>
+                            <div class="flex flex-col gap-3">
+                                <label v-for="(label, value) in availableAbilities" :key="value"
+                                    class="flex items-center">
+                                    <input type="checkbox" :value="value" v-model="form.abilities"
+                                        class="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary accent-primary" />
+                                    <span class="ml-2 text-sm text-slate-700 dark:text-slate-300">{{ label }}</span>
+                                </label>
+                            </div>
+                            <span v-if="form.errors.abilities" class="text-xs text-red-500 mt-1 block">{{
+                                form.errors.abilities }}</span>
+                        </div>
                     </div>
-                    <div class="flex gap-2 shrink-0">
+
+                    <div class="flex items-center gap-3 pt-2">
                         <SubmitButton :processing="form.processing" class="!w-auto !px-6">
                             Create Token
                         </SubmitButton>
                         <button @click="showCreateForm = false; form.reset()" type="button"
-                            class="px-4 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                            class="px-5 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                             Cancel
                         </button>
                     </div>
@@ -101,6 +197,8 @@ const revokeToken = (tokenId) => {
                             <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                                 scope="col">Last Used</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                                scope="col">Expires</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                                 scope="col">Abilities</th>
                             <th class="px-6 py-3 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                                 scope="col">Actions</th>
@@ -116,7 +214,7 @@ const revokeToken = (tokenId) => {
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">{{ token.name
-                                        }}</div>
+                                            }}</div>
                                         <div class="text-xs text-slate-500 dark:text-slate-400">Created on {{
                                             token.created_at }}</div>
                                     </div>
@@ -127,10 +225,16 @@ const revokeToken = (tokenId) => {
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span
-                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    {{ token.abilities.join(', ') }}
-                                </span>
+                                <div class="text-sm text-slate-900 dark:text-white">{{ token.expires_at }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 max-w-[200px]">
+                                <div class="flex flex-wrap gap-1">
+                                    <span v-for="ability in token.abilities" :key="ability"
+                                        class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300">
+                                        {{ ability }}
+                                    </span>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button v-if="confirmingRevoke !== token.id" @click="confirmingRevoke = token.id"
