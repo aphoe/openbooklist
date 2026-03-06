@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/assets/images/defaults/bookmark.jpg" width="120" alt="OpenBookList Logo">
+  <img src="public/assets/images/logo.png" width="200" alt="OpenBookList Logo">
 </p>
 
 <h1 align="center">OpenBookList</h1>
