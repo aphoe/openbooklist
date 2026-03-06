@@ -38,4 +38,14 @@ class UserRepository
 
         return $user->save();
     }
+
+    /**
+     * Update the user's preferred AI model.
+     */
+    public function updateAiModel(User $user, ?string $aiModel): bool
+    {
+        $user->ai_model = $aiModel;
+
+        return $user->save();
+    }
 }

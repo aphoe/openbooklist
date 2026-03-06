@@ -1,14 +1,17 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import SearchableDropdown from '@/Components/Forms/SearchableDropdown.vue';
 import SubmitButton from '@/Components/Forms/SubmitButton.vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
 const hasOpenRouterKey = computed(() => page.props.hasOpenRouterKey);
+const aiModels = computed(() => page.props.aiModels || []);
 
 const form = useForm({
     use_ai_description: user.value?.use_ai_description ?? false,
+    ai_model: user.value?.ai_model ?? null,
 });
 
 const submit = () => {
@@ -69,6 +72,39 @@ const submit = () => {
                                     the page using your configured AI model.
                                 </p>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="h-px bg-slate-200 dark:bg-slate-800 w-full"></div>
+
+                <!-- AI Model Selection -->
+                <section>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">model_training</span>
+                        AI Model
+                    </h3>
+                    <div
+                        class="bg-slate-50 dark:bg-slate-800 p-5 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Preferred
+                            Model</label>
+                        <div v-if="aiModels.length === 0"
+                            class="h-12 rounded-lg bg-slate-200 dark:bg-slate-700 animate-pulse">
+                        </div>
+                        <SearchableDropdown v-else v-model="form.ai_model" :options="aiModels"
+                            placeholder="Select an AI model..." search-placeholder="Search models..." />
+                        <span v-if="form.errors.ai_model" class="text-xs text-red-500 mt-1">{{ form.errors.ai_model
+                            }}</span>
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-xs text-slate-400 dark:text-slate-500">
+                                Choose the AI model to use for generating bookmark descriptions.
+                            </p>
+                            <a href="https://openrouter.ai/models" target="_blank" rel="noopener noreferrer"
+                                class="text-xs text-primary hover:underline hover:text-primary/80 inline-flex items-center gap-1 font-medium transition-colors">
+                                View Models & Pricing
+                                <span class="material-symbols-outlined"
+                                    style="font-size: 14px; width: 14px; height: 14px; line-height: 14px;">open_in_new</span>
+                            </a>
                         </div>
                     </div>
                 </section>

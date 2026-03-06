@@ -15,6 +15,7 @@ class UpdateAiConfigController extends Controller
     public function __invoke(UpdateAiConfigRequest $request, UserRepository $repository): RedirectResponse
     {
         $repository->updateAiDescription($request->user(), $request->safe()->boolean('use_ai_description'));
+        $repository->updateAiModel($request->user(), $request->safe()->string('ai_model') ?: null);
 
         return back()->with('success', 'AI Configuration updated successfully.');
     }

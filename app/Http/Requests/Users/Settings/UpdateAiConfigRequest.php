@@ -28,6 +28,7 @@ class UpdateAiConfigRequest extends FormRequest
     {
         return [
             'use_ai_description' => ['required', 'boolean'],
+            'ai_model' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
