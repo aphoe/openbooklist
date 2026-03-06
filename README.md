@@ -236,7 +236,7 @@ Please run `vendor/bin/pint` before submitting to ensure your code follows the p
 OpenBookList is built and maintained with 💛 in spare time. If it saves you time, keeps you organized, or just makes your day a little better — consider buying me a coffee. Every contribution fuels late-night commits and new features.
 
 <p align="center">
-  <a href="https://buymeacoffee.com/aphoe">
+  <a href="https://buymeacoffee.com/aphoe" target="_blank">
     <img src="public/assets/images/bmc.png" height="80" alt="Buy Me A Coffee">
   </a>
 </p>
