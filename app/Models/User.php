@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HasApiTokens;
     use HasFactory;
     use Notifiable;
 
@@ -23,6 +25,7 @@ class User extends Authenticatable
         'last_name',
         'email',
         'password',
+        'use_ai_description',
     ];
 
     /**
@@ -45,6 +48,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'use_ai_description' => 'boolean',
         ];
     }
 
