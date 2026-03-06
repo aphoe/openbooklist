@@ -1,59 +1,250 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/assets/images/defaults/bookmark.jpg" width="120" alt="OpenBookList Logo">
 </p>
 
-## About Laravel
+<h1 align="center">OpenBookList</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  <strong>Your personal, self-hosted bookmark manager — clean, fast, and fully yours.</strong>
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#self-hosting">Self-Hosting</a> •
+  <a href="#configuration">Configuration</a> •
+  <a href="#api">API</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#support">Support</a>
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## What is OpenBookList?
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+OpenBookList is a modern, open-source bookmark manager designed for people who want to **own their data**. No third-party syncing services, no tracking, no subscriptions — just a beautiful interface for saving, organizing, and rediscovering the links that matter to you.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Whether you're a developer curating documentation, a researcher collecting references, or someone who simply saves too many tabs — OpenBookList gives you a **private, self-hosted home for all your bookmarks**.
 
-## Laravel Sponsors
+## Features
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Bookmark Management** — Save links with auto-fetched metadata (title, description, image). Edit, delete, and favorite your bookmarks.
+- **Categories & Tags** — Organize bookmarks into categories and apply multiple tags for flexible filtering.
+- **Favorites** — Mark your most important bookmarks and access them instantly.
+- **Search** — Full-text search across all your saved bookmarks.
+- **Recently Saved** — Quick access to your latest additions.
+- **Multi-User Support** — Enable multi-user mode and let each user manage their own bookmarks privately.
+- **API Access** — Generate personal access tokens to interact with your bookmarks programmatically via the Sanctum-powered API.
+- **AI Configuration** — Configure AI settings from the dashboard to enhance your workflow.
+- **OTP Verification** — Secure registration and password reset with one-time password verification.
+- **Modern SPA Experience** — No page reloads. Fully client-side rendered with Inertia.js and Vue 3.
+- **Responsive Design** — Works beautifully on desktop, tablet, and mobile.
 
-### Premium Partners
+## Tech Stack
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+| Layer      | Technology                                         |
+| ---------- | -------------------------------------------------- |
+| Backend    | [Laravel 12](https://laravel.com)                  |
+| Frontend   | [Vue 3](https://vuejs.org) + [Inertia.js v2](https://inertiajs.com) |
+| Styling    | [Tailwind CSS v4](https://tailwindcss.com)         |
+| Auth       | [Laravel Sanctum](https://laravel.com/docs/sanctum)|
+| Database   | MySQL (default) — any Laravel-supported DB works   |
+| Build Tool | [Vite](https://vite.dev)                           |
+
+## Self-Hosting
+
+### Requirements
+
+- **PHP** >= 8.2
+- **Composer**
+- **Node.js** >= 18 & **npm**
+- **MySQL** (or any Laravel-supported database: PostgreSQL, SQLite, SQL Server)
+- A web server (Apache, Nginx, [Laravel Herd](https://herd.laravel.com), [Laragon](https://laragon.org), etc.)
+
+### Quick Start
+
+**1. Clone the repository**
+
+```bash
+git clone https://github.com/aphoe/openbooklist.git
+cd openbooklist
+```
+
+**2. Run the setup script**
+
+The included setup script will install PHP and JS dependencies, generate your app key, run migrations, and build the frontend in one command:
+
+```bash
+composer setup
+```
+
+**3. Configure your environment**
+
+Open `.env` and update the following values:
+
+```dotenv
+APP_NAME="OpenBookList"
+APP_URL=http://your-domain.com
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+**4. Start the application**
+
+For local development, run:
+
+```bash
+composer run dev
+```
+
+This starts the Laravel server, queue worker, and Vite dev server concurrently.
+
+For production, point your web server's document root to the `public/` directory and ensure you've built the frontend assets:
+
+```bash
+npm run build
+```
+
+### Manual Setup (Step-by-Step)
+
+If you prefer to set things up manually:
+
+```bash
+# Install PHP dependencies
+composer install
+
+# Copy environment file
+cp .env.example .env
+
+# Generate application key
+php artisan key:generate
+
+# Run database migrations
+php artisan migrate
+
+# Install JS dependencies
+npm install
+
+# Build frontend assets
+npm run build
+```
+
+### Docker (Laravel Sail)
+
+OpenBookList ships with [Laravel Sail](https://laravel.com/docs/sail) for Docker-based development:
+
+```bash
+# Start the containers
+./vendor/bin/sail up -d
+
+# Run migrations
+./vendor/bin/sail artisan migrate
+
+# Build frontend
+./vendor/bin/sail npm run build
+```
+
+## Configuration
+
+### Multi-User Mode
+
+By default, OpenBookList runs in **single-user mode**. To enable multi-user registration:
+
+```dotenv
+MULTI_USER=true
+```
+
+### AI-Powered Descriptions (OpenRouter)
+
+OpenBookList can automatically generate descriptions for your bookmarks using AI. This is powered by [OpenRouter](https://openrouter.ai), which gives you access to a wide range of AI models (GPT-4o, Claude, Gemini, Llama, and more) through a single API key.
+
+To enable this feature, get an API key from [openrouter.ai/keys](https://openrouter.ai/keys) and add it to your `.env`:
+
+```dotenv
+OPENROUTER_KEY=sk-or-v1-your-key-here
+```
+
+Once configured, head to **Settings → AI Configuration** in the app to:
+
+- Enable automatic description generation for new bookmarks
+- Choose your preferred AI model from the full OpenRouter catalog
+
+> Without this key, AI features will be disabled but the rest of the app works perfectly.
+
+### Mail
+
+Configure a mail driver for password resets and OTP verification:
+
+```dotenv
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.your-provider.com
+MAIL_PORT=587
+MAIL_USERNAME=your@email.com
+MAIL_PASSWORD=your-password
+MAIL_FROM_ADDRESS=noreply@your-domain.com
+MAIL_FROM_NAME="OpenBookList"
+```
+
+### Queue
+
+For production, use a dedicated queue driver (Redis, database, etc.) and run a worker:
+
+```bash
+php artisan queue:work
+```
+
+## API
+
+OpenBookList includes a **Sanctum-powered API**. Generate personal access tokens from **Settings → Access Tokens** in the app, then use them to interact with your bookmarks programmatically:
+
+```bash
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+     https://your-domain.com/api/user
+```
+
+## Running Tests
+
+```bash
+php artisan test
+```
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Contributions are welcome! Whether it's a bug fix, feature request, or documentation improvement — open an issue or submit a pull request.
 
-## Code of Conduct
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Please run `vendor/bin/pint` before submitting to ensure your code follows the project's style.
 
-## Security Vulnerabilities
+## Need Help Setting Up?
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**We offer paid consultation and professional setup services.** If you'd like a hands-off deployment, custom integrations, or expert guidance tailored to your infrastructure — we're here for you.
+
+📧 **Reach out:** [aphoextra@gmail.com](mailto:aphoextra@gmail.com)
+
+## Support the Project
+
+OpenBookList is built and maintained with 💛 in spare time. If it saves you time, keeps you organized, or just makes your day a little better — consider buying me a coffee. Every contribution fuels late-night commits and new features.
+
+<p align="center">
+  <a href="https://buymeacoffee.com/aphoe">
+    <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=aphoe&button_colour=FFDD00&font_colour=000000&font_family=Inter&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me A Coffee">
+  </a>
+</p>
+
+**👉 [buymeacoffee.com/aphoe](https://buymeacoffee.com/aphoe)**
+
+Your support — whether it's a coffee, a star ⭐ on GitHub, or sharing the project — means the world. Thank you for being part of this.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+OpenBookList is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

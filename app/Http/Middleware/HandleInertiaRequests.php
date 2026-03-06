@@ -37,7 +37,24 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+            'multi_user' => config('project.multi_user'),
+            'auth' => [
+                'user' => $request->user(),
+            ],
+            'categories' => $request->user()
+                ? $request->user()->categories()->withCount('bookmarks')->orderByDesc('bookmarks_count')->latest()->take(5)->get()
+                : [],
+            'status' => $request->session()->get('status'),
+            'error' => $request->session()->get('error'),
+            'flash' => [
+                'status' => $request->session()->get('status'),
+                'success' => $request->session()->get('success'),
+                'info' => $request->session()->get('info'),
+                'danger' => $request->session()->get('danger'),
+                'warning' => $request->session()->get('warning'),
+                'error' => $request->session()->get('error'),
+                'newToken' => $request->session()->get('newToken'),
+            ],
         ];
     }
 }
