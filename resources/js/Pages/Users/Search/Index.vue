@@ -54,7 +54,7 @@ const switchTab = (tabValue) => {
 
         <Head title="Search Results" />
 
-        <div class="p-8 max-w-7xl mx-auto space-y-10 w-full overflow-y-auto">
+        <div class="space-y-10 w-full">
 
             <div v-if="query.length === 0"
                 class="flex flex-col items-center justify-center p-20 text-center text-slate-500">
@@ -189,7 +189,7 @@ const switchTab = (tabValue) => {
                                     <div class="flex items-center gap-3">
                                         <span class="material-symbols-outlined text-primary">folder_open</span>
                                         <span class="text-slate-900 dark:text-slate-100 font-medium">{{ category.name
-                                        }}</span>
+                                            }}</span>
                                     </div>
                                     <span
                                         class="text-xs text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">{{
