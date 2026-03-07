@@ -83,7 +83,7 @@ class CreateBookmarkTest extends TestCase
         $response = $this->postJson('/api/v1/ext/bookmarks', [
             'url' => 'https://example.com',
             'category' => 'tech',
-            'tag' => ['laravel', 'php'],
+            'tags' => ['laravel', 'php'],
         ]);
 
         $response->assertCreated();

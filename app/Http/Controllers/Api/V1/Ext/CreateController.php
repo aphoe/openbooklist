@@ -52,9 +52,9 @@ class CreateController extends Controller
         );
 
         // Handle Tags
-        if ($validated->array('tag')) {
+        if ($validated->array('tags')) {
             $tagIds = [];
-            foreach ($validated->array('tag') as $tagSlug) {
+            foreach ($validated->array('tags') as $tagSlug) {
                 // Ignore empty tags
                 if (empty(trim($tagSlug))) {
                     continue;

@@ -24,8 +24,8 @@ class CreateBookmarkRequest extends FormRequest
         return [
             'url' => ['required', 'url', 'max:2048'],
             'category' => ['nullable', 'string', 'exists:categories,slug'],
-            'tag' => ['nullable', 'array'],
-            'tag.*' => ['string'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['string'],
         ];
     }
 }
