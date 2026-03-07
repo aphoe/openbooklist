@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\User;
 use App\Services\BookmarkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -22,11 +23,24 @@ class CreateBookmarkTest extends TestCase
         $response->assertUnauthorized();
     }
 
+    public function test_authenticated_user_without_ability_cannot_create_bookmark(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user, ['bookmarks:read']);
+
+        $response = $this->postJson('/api/v1/ext/bookmarks', [
+            'url' => 'https://example.com',
+        ]);
+
+        $response->assertForbidden();
+    }
+
     public function test_bookmark_creation_requires_url(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->postJson('/api/v1/ext/bookmarks', []);
+        Sanctum::actingAs($user, ['bookmarks:write']);
+        $response = $this->postJson('/api/v1/ext/bookmarks', []);
 
         $response->assertJsonValidationErrors(['url']);
     }
@@ -35,7 +49,8 @@ class CreateBookmarkTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->postJson('/api/v1/ext/bookmarks', [
+        Sanctum::actingAs($user, ['bookmarks:write']);
+        $response = $this->postJson('/api/v1/ext/bookmarks', [
             'url' => 'https://example.com',
             'category' => 'non-existent-category',
         ]);
@@ -64,7 +79,8 @@ class CreateBookmarkTest extends TestCase
                 ->andReturn('bookmarks/fake-image.png');
         });
 
-        $response = $this->actingAs($user)->postJson('/api/v1/ext/bookmarks', [
+        Sanctum::actingAs($user, ['bookmarks:write']);
+        $response = $this->postJson('/api/v1/ext/bookmarks', [
             'url' => 'https://example.com',
             'category' => 'tech',
             'tag' => ['laravel', 'php'],
