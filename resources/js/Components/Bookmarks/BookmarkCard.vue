@@ -85,6 +85,12 @@ onUnmounted(() => document.removeEventListener('click', clickOutside));
             </div>
         </div>
         <div class="p-4 flex flex-col flex-1 bg-white dark:bg-[#1e293b] rounded-b-xl z-0">
+            <div v-if="bookmark.category" class="mb-2">
+                <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-300">
+                    {{ bookmark.category.name }}
+                </span>
+            </div>
             <div class="flex items-start justify-between gap-2 mb-1">
                 <h3
                     class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors flex items-center gap-1 w-full">
