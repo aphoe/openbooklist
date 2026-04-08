@@ -7,11 +7,9 @@
     "guidelines": true,
     "herd_mcp": false,
     "mcp": true,
-    "packages": [
-        "inertiajs/inertia-laravel"
-    ],
     "sail": false,
     "skills": [
+        "laravel-best-practices",
         "inertia-vue-development",
         "tailwindcss-development",
         "eloquent-best-practices",
