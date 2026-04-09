@@ -7,7 +7,7 @@
 
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, naming.
 - When creating a new controller, except otherwise stated, always create an invokable controller.
-- For controller validation, always create a Form Request class in the appropriate namespace. For example, if the Controller is in \App\Http\Controllers\Admin\Auth, then the Form Request should be in \App\Http\Requests\Admin\Auth.
+- For controller validation, always create a Form Request class in the matching request namespace already used by the feature. For example, `\App\Http\Controllers\Users\Bookmarks\StoreBookmarkController` uses `\App\Http\Requests\Users\StoreBookmarkRequest`, while `\App\Http\Controllers\Api\V1\Ext\CreateController` uses `\App\Http\Requests\Api\V1\Ext\CreateBookmarkRequest`.
 - When getting a form request object value in a controller action use $request->safe()->string('property_name'). Use the appropriate method for the type of value you are getting. eg array(), inetger() etc
 - When creating a new model, always create a repository class in the appropriate namespace. For example, if the Model is in \App\Models, then the Repository should be in \App\Repositories.
 - When creating an object of a model, use $object = new Model(); $object->property = value; $object->save();
@@ -83,10 +83,12 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Stick to existing directory structure; don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
+- Keep the existing split between the Inertia web UI in `routes/web.php` and the token-based extension API in `routes/api.php` under `/api/v1/ext`; the API is guarded by `auth:sanctum` plus `CheckReadAbility` / `CheckWriteAbility`.
+- Follow the current service boundaries: repositories in `app/Repositories` handle persistence writes, while `App\Services\BookmarkService` and `App\Managers\OpenRouterManager` handle bookmark metadata scraping, image downloads, and AI description generation.
 
 ## Frontend Bundling
 
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. `composer run dev` starts `php artisan serve`, `php artisan queue:listen --tries=1`, and Vite together. Ask them.
 
 ## Documentation Files
 
@@ -142,7 +144,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Always use curly braces for control structures, even for single-line bodies.
 - Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
 - Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
+- Follow the enum casing already used by the surrounding enum. In this codebase, `App\Enums\AccessTokenAbility` uses uppercase case names such as `READ`, `WRITE`, `DELETE`, and `ADMIN`.
 - Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
 
@@ -159,6 +161,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Inertia creates fully client-side rendered SPAs without modern SPA complexity, leveraging existing server-side patterns.
 - Components live in `resources/js/Pages` (unless specified in `vite.config.js`). Use `Inertia::render()` for server-side routing instead of Blade views.
+- The app boots Inertia in `resources/js/app.js` with `createInertiaApp`, eager `import.meta.glob('./Pages/**/*.vue')`, and `ZiggyVue`.
 - ALWAYS use `search-docs` tool for version-specific Inertia documentation and updated code examples.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
@@ -168,7 +171,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - New v3 features: standalone HTTP requests (`useHttp` hook), optimistic updates with automatic rollback, layout props (`useLayoutProps` hook), instant visits, simplified SSR via `@inertiajs/vite` plugin, custom exception handling for error pages.
 - Carried over from v2: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
 - When using deferred props, add an empty state with a pulsing or animated skeleton.
-- Axios has been removed. Use the built-in XHR client with interceptors, or install Axios separately if needed.
+- `axios` is already installed in `package.json`; prefer the existing Inertia + Vue + `ZiggyVue` setup in `resources/js/app.js` before adding new frontend HTTP helpers.
 - `Inertia::lazy()` / `LazyProp` has been removed. Use `Inertia::optional()` instead.
 - Prop types (`Inertia::optional()`, `Inertia::defer()`, `Inertia::merge()`) work inside nested arrays with dot-notation paths.
 - SSR works automatically in Vite dev mode with `@inertiajs/vite` - no separate Node.js server needed during development.
@@ -234,6 +237,8 @@ This project has domain-specific skills available. You MUST activate the relevan
 - To run all tests: `php artisan test --compact`.
 - To run all tests in a file: `php artisan test --compact tests/Feature/ExampleTest.php`.
 - To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
+- In Inertia feature tests, follow the existing `setUp()` pattern from `tests/Feature/Users/Bookmarks/BookmarkControllerTest.php` and call `$this->withoutVite()`.
+- For `/api/v1/ext` tests, use `Sanctum::actingAs($user, ['bookmarks:read'])` or `Sanctum::actingAs($user, ['bookmarks:write'])` as in `tests/Feature/Api/V1/Ext/*.php`, and mock `App\Services\BookmarkService` when metadata or image fetching would hit the network.
 
 === inertia-vue/core rules ===
 
@@ -296,10 +301,12 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Stick to existing directory structure; don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
+- Keep the existing split between the Inertia web UI in `routes/web.php` and the token-based extension API in `routes/api.php` under `/api/v1/ext`; the API is guarded by `auth:sanctum` plus `CheckReadAbility` / `CheckWriteAbility`.
+- Follow the current service boundaries: repositories in `app/Repositories` handle persistence writes, while `App\Services\BookmarkService` and `App\Managers\OpenRouterManager` handle bookmark metadata scraping, image downloads, and AI description generation.
 
 ## Frontend Bundling
 
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. `composer run dev` starts `php artisan serve`, `php artisan queue:listen --tries=1`, and Vite together. Ask them.
 
 ## Documentation Files
 
@@ -355,7 +362,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Always use curly braces for control structures, even for single-line bodies.
 - Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
 - Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
+- Follow the enum casing already used by the surrounding enum. In this codebase, `App\Enums\AccessTokenAbility` uses uppercase case names such as `READ`, `WRITE`, `DELETE`, and `ADMIN`.
 - Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
 
@@ -372,6 +379,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Inertia creates fully client-side rendered SPAs without modern SPA complexity, leveraging existing server-side patterns.
 - Components live in `resources/js/Pages` (unless specified in `vite.config.js`). Use `Inertia::render()` for server-side routing instead of Blade views.
+- The app boots Inertia in `resources/js/app.js` with `createInertiaApp`, eager `import.meta.glob('./Pages/**/*.vue')`, and `ZiggyVue`.
 - ALWAYS use `search-docs` tool for version-specific Inertia documentation and updated code examples.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
@@ -381,7 +389,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - New v3 features: standalone HTTP requests (`useHttp` hook), optimistic updates with automatic rollback, layout props (`useLayoutProps` hook), instant visits, simplified SSR via `@inertiajs/vite` plugin, custom exception handling for error pages.
 - Carried over from v2: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
 - When using deferred props, add an empty state with a pulsing or animated skeleton.
-- Axios has been removed. Use the built-in XHR client with interceptors, or install Axios separately if needed.
+- `axios` is already installed in `package.json`; prefer the existing Inertia + Vue + `ZiggyVue` setup in `resources/js/app.js` before adding new frontend HTTP helpers.
 - `Inertia::lazy()` / `LazyProp` has been removed. Use `Inertia::optional()` instead.
 - Prop types (`Inertia::optional()`, `Inertia::defer()`, `Inertia::merge()`) work inside nested arrays with dot-notation paths.
 - SSR works automatically in Vite dev mode with `@inertiajs/vite` - no separate Node.js server needed during development.
@@ -447,6 +455,8 @@ This project has domain-specific skills available. You MUST activate the relevan
 - To run all tests: `php artisan test --compact`.
 - To run all tests in a file: `php artisan test --compact tests/Feature/ExampleTest.php`.
 - To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
+- In Inertia feature tests, follow the existing `setUp()` pattern from `tests/Feature/Users/Bookmarks/BookmarkControllerTest.php` and call `$this->withoutVite()`.
+- For `/api/v1/ext` tests, use `Sanctum::actingAs($user, ['bookmarks:read'])` or `Sanctum::actingAs($user, ['bookmarks:write'])` as in `tests/Feature/Api/V1/Ext/*.php`, and mock `App\Services\BookmarkService` when metadata or image fetching would hit the network.
 
 === inertia-vue/core rules ===
 
@@ -509,10 +519,12 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Stick to existing directory structure; don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
+- Keep the existing split between the Inertia web UI in `routes/web.php` and the token-based extension API in `routes/api.php` under `/api/v1/ext`; the API is guarded by `auth:sanctum` plus `CheckReadAbility` / `CheckWriteAbility`.
+- Follow the current service boundaries: repositories in `app/Repositories` handle persistence writes, while `App\Services\BookmarkService` and `App\Managers\OpenRouterManager` handle bookmark metadata scraping, image downloads, and AI description generation.
 
 ## Frontend Bundling
 
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. `composer run dev` starts `php artisan serve`, `php artisan queue:listen --tries=1`, and Vite together. Ask them.
 
 ## Documentation Files
 
@@ -568,7 +580,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Always use curly braces for control structures, even for single-line bodies.
 - Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
 - Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
+- Follow the enum casing already used by the surrounding enum. In this codebase, `App\Enums\AccessTokenAbility` uses uppercase case names such as `READ`, `WRITE`, `DELETE`, and `ADMIN`.
 - Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
 
@@ -585,6 +597,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Inertia creates fully client-side rendered SPAs without modern SPA complexity, leveraging existing server-side patterns.
 - Components live in `resources/js/Pages` (unless specified in `vite.config.js`). Use `Inertia::render()` for server-side routing instead of Blade views.
+- The app boots Inertia in `resources/js/app.js` with `createInertiaApp`, eager `import.meta.glob('./Pages/**/*.vue')`, and `ZiggyVue`.
 - ALWAYS use `search-docs` tool for version-specific Inertia documentation and updated code examples.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
@@ -594,7 +607,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - New v3 features: standalone HTTP requests (`useHttp` hook), optimistic updates with automatic rollback, layout props (`useLayoutProps` hook), instant visits, simplified SSR via `@inertiajs/vite` plugin, custom exception handling for error pages.
 - Carried over from v2: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
 - When using deferred props, add an empty state with a pulsing or animated skeleton.
-- Axios has been removed. Use the built-in XHR client with interceptors, or install Axios separately if needed.
+- `axios` is already installed in `package.json`; prefer the existing Inertia + Vue + `ZiggyVue` setup in `resources/js/app.js` before adding new frontend HTTP helpers.
 - `Inertia::lazy()` / `LazyProp` has been removed. Use `Inertia::optional()` instead.
 - Prop types (`Inertia::optional()`, `Inertia::defer()`, `Inertia::merge()`) work inside nested arrays with dot-notation paths.
 - SSR works automatically in Vite dev mode with `@inertiajs/vite` - no separate Node.js server needed during development.
@@ -660,6 +673,8 @@ This project has domain-specific skills available. You MUST activate the relevan
 - To run all tests: `php artisan test --compact`.
 - To run all tests in a file: `php artisan test --compact tests/Feature/ExampleTest.php`.
 - To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
+- In Inertia feature tests, follow the existing `setUp()` pattern from `tests/Feature/Users/Bookmarks/BookmarkControllerTest.php` and call `$this->withoutVite()`.
+- For `/api/v1/ext` tests, use `Sanctum::actingAs($user, ['bookmarks:read'])` or `Sanctum::actingAs($user, ['bookmarks:write'])` as in `tests/Feature/Api/V1/Ext/*.php`, and mock `App\Services\BookmarkService` when metadata or image fetching would hit the network.
 
 === inertia-vue/core rules ===
 
@@ -722,10 +737,12 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Stick to existing directory structure; don't create new base folders without approval.
 - Do not change the application's dependencies without approval.
+- Keep the existing split between the Inertia web UI in `routes/web.php` and the token-based extension API in `routes/api.php` under `/api/v1/ext`; the API is guarded by `auth:sanctum` plus `CheckReadAbility` / `CheckWriteAbility`.
+- Follow the current service boundaries: repositories in `app/Repositories` handle persistence writes, while `App\Services\BookmarkService` and `App\Managers\OpenRouterManager` handle bookmark metadata scraping, image downloads, and AI description generation.
 
 ## Frontend Bundling
 
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. `composer run dev` starts `php artisan serve`, `php artisan queue:listen --tries=1`, and Vite together. Ask them.
 
 ## Documentation Files
 
@@ -781,7 +798,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - Always use curly braces for control structures, even for single-line bodies.
 - Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
 - Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
+- Follow the enum casing already used by the surrounding enum. In this codebase, `App\Enums\AccessTokenAbility` uses uppercase case names such as `READ`, `WRITE`, `DELETE`, and `ADMIN`.
 - Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
 
@@ -798,6 +815,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - Inertia creates fully client-side rendered SPAs without modern SPA complexity, leveraging existing server-side patterns.
 - Components live in `resources/js/Pages` (unless specified in `vite.config.js`). Use `Inertia::render()` for server-side routing instead of Blade views.
+- The app boots Inertia in `resources/js/app.js` with `createInertiaApp`, eager `import.meta.glob('./Pages/**/*.vue')`, and `ZiggyVue`.
 - ALWAYS use `search-docs` tool for version-specific Inertia documentation and updated code examples.
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
@@ -807,7 +825,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 - New v3 features: standalone HTTP requests (`useHttp` hook), optimistic updates with automatic rollback, layout props (`useLayoutProps` hook), instant visits, simplified SSR via `@inertiajs/vite` plugin, custom exception handling for error pages.
 - Carried over from v2: deferred props, infinite scroll, merging props, polling, prefetching, once props, flash data.
 - When using deferred props, add an empty state with a pulsing or animated skeleton.
-- Axios has been removed. Use the built-in XHR client with interceptors, or install Axios separately if needed.
+- `axios` is already installed in `package.json`; prefer the existing Inertia + Vue + `ZiggyVue` setup in `resources/js/app.js` before adding new frontend HTTP helpers.
 - `Inertia::lazy()` / `LazyProp` has been removed. Use `Inertia::optional()` instead.
 - Prop types (`Inertia::optional()`, `Inertia::defer()`, `Inertia::merge()`) work inside nested arrays with dot-notation paths.
 - SSR works automatically in Vite dev mode with `@inertiajs/vite` - no separate Node.js server needed during development.
@@ -873,6 +891,8 @@ This project has domain-specific skills available. You MUST activate the relevan
 - To run all tests: `php artisan test --compact`.
 - To run all tests in a file: `php artisan test --compact tests/Feature/ExampleTest.php`.
 - To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
+- In Inertia feature tests, follow the existing `setUp()` pattern from `tests/Feature/Users/Bookmarks/BookmarkControllerTest.php` and call `$this->withoutVite()`.
+- For `/api/v1/ext` tests, use `Sanctum::actingAs($user, ['bookmarks:read'])` or `Sanctum::actingAs($user, ['bookmarks:write'])` as in `tests/Feature/Api/V1/Ext/*.php`, and mock `App\Services\BookmarkService` when metadata or image fetching would hit the network.
 
 === inertia-vue/core rules ===
 
