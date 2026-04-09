@@ -10,11 +10,12 @@ class UserRepository
     /**
      * Update the user's profile information.
      */
-    public function updateProfile(User $user, string $firstName, string $lastName, string $email): bool
+    public function updateProfile(User $user, string $firstName, string $lastName, string $email, string $language = 'eng'): bool
     {
         $user->first_name = $firstName;
         $user->last_name = $lastName;
         $user->email = $email;
+        $user->language = $language;
 
         return $user->save();
     }

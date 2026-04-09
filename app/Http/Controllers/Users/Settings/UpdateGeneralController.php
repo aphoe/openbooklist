@@ -14,11 +14,14 @@ class UpdateGeneralController extends Controller
      */
     public function __invoke(UpdateGeneralRequest $request, UserRepository $repository): RedirectResponse
     {
+        $language = trim((string) $request->safe()->string('language'));
+
         $repository->updateProfile(
             $request->user(),
             $request->safe()->string('first_name'),
             $request->safe()->string('last_name'),
-            $request->safe()->string('email')
+            $request->safe()->string('email'),
+            $language !== '' ? $language : 'eng',
         );
 
         return back()->with('success', 'Profile information updated successfully.');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Users\Settings;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +19,7 @@ class UpdateGeneralRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -32,6 +33,7 @@ class UpdateGeneralRequest extends FormRequest
                 'max:255',
                 Rule::unique('users')->ignore($this->user()->id),
             ],
+            'language' => ['required', 'string', Rule::in(array_keys(config('project.language_options', [])))],
         ];
     }
 }

@@ -5,11 +5,13 @@ import TextInput from '@/Components/Forms/TextInput.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
+const languageOptions = page.props.languageOptions || [];
 
 const profileForm = useForm({
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
     email: user?.email || '',
+    language: user?.language || 'eng',
 });
 
 const passwordForm = useForm({
@@ -63,6 +65,23 @@ const updatePassword = () => {
                     <TextInput v-model="profileForm.email" type="email" />
                     <span v-if="profileForm.errors.email" class="text-xs text-red-500 mt-1">{{ profileForm.errors.email
                     }}</span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Preferred Language</label>
+                    <select
+                        v-model="profileForm.language"
+                        class="form-input flex w-full items-center justify-between rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white h-12 px-4 text-base transition-colors"
+                    >
+                        <option
+                            v-for="option in languageOptions"
+                            :key="option.id"
+                            :value="option.id"
+                        >
+                            {{ option.name }}
+                        </option>
+                    </select>
+                    <span v-if="profileForm.errors.language" class="text-xs text-red-500 mt-1">{{ profileForm.errors.language }}</span>
                 </div>
 
                 <div class="h-px bg-slate-200 dark:bg-slate-800 w-full mt-6"></div>

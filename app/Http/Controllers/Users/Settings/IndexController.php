@@ -19,6 +19,10 @@ class IndexController extends Controller
         return Inertia::render('Users/Settings/Index', [
             'hasOpenRouterKey' => ! empty(config('project.openrouter_key')),
             'tab' => $request->query('tab', 'general'),
+            'languageOptions' => collect(config('project.language_options', []))
+                ->map(fn (string $name, string $code): array => ['id' => $code, 'name' => sprintf('%s (%s)', $name, $code)])
+                ->values()
+                ->toArray(),
             'aiModels' => Inertia::defer(fn () => collect($openRouterManager->getModels())->map(fn ($name, $id) => ['id' => $id, 'name' => $name])->values()->toArray()),
             'availableAbilities' => AccessTokenAbility::labelArray(),
             'tokens' => $request->user()->tokens()->orderByDesc('created_at')->get()->map(fn ($token) => [
