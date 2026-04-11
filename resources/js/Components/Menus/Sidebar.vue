@@ -59,8 +59,9 @@ const logout = () => {
 
             <div class="mt-4" v-if="categories.length > 0">
                 <div class="flex items-center justify-between px-3 mb-2">
-                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Top
-                        Categories</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                        Top Categories
+                    </span>
                     <span
                         class="material-symbols-outlined text-slate-400 text-lg cursor-pointer hover:text-primary">add</span>
                 </div>

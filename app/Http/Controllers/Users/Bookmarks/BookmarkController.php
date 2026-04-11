@@ -17,9 +17,22 @@ class BookmarkController extends Controller
     {
         $user = $request->user();
         $sort = $request->input('sort', 'newest');
+        $categorySlug = $request->input('category');
 
         $query = Bookmark::where('user_id', $user->id)
             ->with(['category', 'tags']);
+
+        if (is_string($categorySlug) && $categorySlug !== '') {
+            $category = Category::where('user_id', $user->id)
+                ->where('slug', $categorySlug)
+                ->first();
+
+            if ($category) {
+                $query->where('category_id', $category->id);
+            } else {
+                $query->where('id', -1);
+            }
+        }
 
         if ($sort === 'oldest') {
             $query->oldest();

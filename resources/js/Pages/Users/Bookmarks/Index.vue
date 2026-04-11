@@ -42,17 +42,17 @@ const showInfoModal = ref(false);
 const showEditModal = ref(false);
 const showDeleteModal = ref(false);
 
-const handleInfo = (bookmark) => { 
-    selectedBookmark.value = bookmark; 
-    showInfoModal.value = true; 
+const handleInfo = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showInfoModal.value = true;
 };
-const handleEdit = (bookmark) => { 
-    selectedBookmark.value = bookmark; 
-    showEditModal.value = true; 
+const handleEdit = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showEditModal.value = true;
 };
-const handleDelete = (bookmark) => { 
-    selectedBookmark.value = bookmark; 
-    showDeleteModal.value = true; 
+const handleDelete = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showDeleteModal.value = true;
 };
 const handleFavorite = (bookmark) => {
     router.post(route('bookmarks.favorite', bookmark.id), {}, { preserveScroll: true, preserveState: true });
@@ -71,10 +71,14 @@ onUnmounted(() => {
 });
 
 watch(sortMode, (newVal) => {
-    router.get(page.url.split('?')[0], { sort: newVal }, { 
-        replace: true, 
-        preserveState: true, 
-        preserveScroll: true 
+    const params = new URLSearchParams(window.location.search);
+
+    params.set('sort', newVal);
+
+    router.get(page.url.split('?')[0], Object.fromEntries(params.entries()), {
+        replace: true,
+        preserveState: true,
+        preserveScroll: true,
     });
 });
 </script>
@@ -149,7 +153,7 @@ watch(sortMode, (newVal) => {
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-white">All Bookmarks</h2>
                 </div>
-                
+
                 <div class="flex items-center gap-4 w-full sm:w-auto">
                     <!-- Sort -->
                     <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
@@ -163,12 +167,12 @@ watch(sortMode, (newVal) => {
 
                     <!-- View Toggle -->
                     <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 hidden sm:flex">
-                        <button 
+                        <button
                             @click="viewMode = 'grid'"
                             :class="['p-1.5 rounded-md transition-all', viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
                             <span class="material-symbols-outlined text-[20px] block">grid_view</span>
                         </button>
-                        <button 
+                        <button
                             @click="viewMode = 'list'"
                             :class="['p-1.5 rounded-md transition-all', viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
                             <span class="material-symbols-outlined text-[20px] block">view_list</span>
@@ -185,13 +189,13 @@ watch(sortMode, (newVal) => {
             <!-- Grid View -->
             <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Card loop -->
-                <BookmarkCard 
-                    v-for="bookmark in bookmarks.data" 
-                    :key="bookmark.id" 
+                <BookmarkCard
+                    v-for="bookmark in bookmarks.data"
+                    :key="bookmark.id"
                     :bookmark="bookmark"
                     @info="handleInfo"
                     @edit="handleEdit"
-                    @delete="handleDelete" 
+                    @delete="handleDelete"
                     @favorite="handleFavorite"
                 />
             </div>
@@ -246,7 +250,7 @@ watch(sortMode, (newVal) => {
                                         <button @click.stop="toggleDropdown(bookmark.id)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-opacity p-1 rounded-full outline-none">
                                             <span class="material-symbols-outlined text-[20px] block">more_vert</span>
                                         </button>
-                                        
+
                                         <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                             <div v-if="activeDropdown === bookmark.id" class="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-700 z-[100] py-1 origin-top-right">
                                                 <a :href="bookmark.url" target="_blank" @click="closeDropdown" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
