@@ -1,5 +1,6 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
+import SearchableDropdown from '@/Components/Forms/SearchableDropdown.vue';
 import SubmitButton from '@/Components/Forms/SubmitButton.vue';
 import TextInput from '@/Components/Forms/TextInput.vue';
 
@@ -85,18 +86,12 @@ const updatePassword = () => {
 
                 <div>
                     <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Preferred Language</label>
-                    <select
+                    <SearchableDropdown
                         v-model="profileForm.language"
-                        class="form-input flex w-full items-center justify-between rounded-lg border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white h-12 px-4 text-base transition-colors"
-                    >
-                        <option
-                            v-for="option in languageOptions"
-                            :key="option.id"
-                            :value="option.id"
-                        >
-                            {{ option.name }}
-                        </option>
-                    </select>
+                        :options="languageOptions"
+                        placeholder="Select a language..."
+                        search-placeholder="Search languages..."
+                    />
                     <span v-if="profileForm.errors.language" class="text-xs text-red-500 mt-1">{{ profileForm.errors.language }}</span>
                 </div>
 
