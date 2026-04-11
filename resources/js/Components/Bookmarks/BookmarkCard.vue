@@ -93,13 +93,13 @@ onUnmounted(() => document.removeEventListener('click', clickOutside));
             </div>
             <div class="flex items-start justify-between gap-2 mb-1">
                 <h3
-                    class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-2 group-hover:text-primary transition-colors flex items-center gap-1 w-full">
-                    <span class="truncate">{{ bookmark.title }}</span>
-                    <a :href="bookmark.url" target="_blank" class="text-slate-400 hover:text-primary shrink-0 ml-auto"
-                        title="Visit">
-                        <span class="material-symbols-outlined text-[18px]">open_in_new</span>
-                    </a>
+                    class="text-slate-900 dark:text-slate-100 text-base font-semibold leading-snug line-clamp-3 group-hover:text-primary transition-colors min-w-0">
+                    {{ bookmark.title }}
                 </h3>
+                <a :href="bookmark.url" target="_blank" class="text-slate-400 hover:text-primary shrink-0"
+                    title="Visit">
+                    <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                </a>
             </div>
             <a :href="bookmark.url" target="_blank"
                 class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline truncate block">
