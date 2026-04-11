@@ -2,11 +2,12 @@
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import AddBookmarkModal from '@/Components/Modals/AddBookmarkModal.vue';
-import InfoBookmarkModal from '@/Components/Modals/InfoBookmarkModal.vue';
-import EditBookmarkModal from '@/Components/Modals/EditBookmarkModal.vue';
 import ConfirmDeleteModal from '@/Components/Modals/ConfirmDeleteModal.vue';
-import DashboardLayout from '@/Layouts/DashboardLayout.vue';
+import EditBookmarkModal from '@/Components/Modals/EditBookmarkModal.vue';
+import InfoBookmarkModal from '@/Components/Modals/InfoBookmarkModal.vue';
+import SetBookmarkImageModal from '@/Components/Modals/SetBookmarkImageModal.vue';
 import BookmarkCard from '@/Components/Bookmarks/BookmarkCard.vue';
+import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
 const page = usePage();
 
@@ -41,6 +42,7 @@ const selectedBookmark = ref(null);
 const showInfoModal = ref(false);
 const showEditModal = ref(false);
 const showDeleteModal = ref(false);
+const showSetImageModal = ref(false);
 
 const handleInfo = (bookmark) => {
     selectedBookmark.value = bookmark;
@@ -59,6 +61,10 @@ const handleFavorite = (bookmark) => {
 };
 const handleRefetch = (bookmark) => {
     router.post(route('bookmarks.refetch-metadata', bookmark.id), {}, { preserveScroll: true });
+};
+const handleSetImage = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showSetImageModal.value = true;
 };
 
 onMounted(() => {
@@ -201,6 +207,7 @@ watch(sortMode, (newVal) => {
                     @delete="handleDelete"
                     @favorite="handleFavorite"
                     @refetch="handleRefetch"
+                    @set-image="handleSetImage"
                 />
             </div>
 
@@ -273,6 +280,10 @@ watch(sortMode, (newVal) => {
                                                     <span class="material-symbols-outlined text-[16px]">refresh</span>
                                                     Refetch Metadata
                                                 </button>
+                                                <button @click="(closeDropdown(), handleSetImage(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                    <span class="material-symbols-outlined text-[16px]">image</span>
+                                                    Set Image
+                                                </button>
                                                 <button @click="(closeDropdown(), handleEdit(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                     <span class="material-symbols-outlined text-[16px]">edit</span>
                                                     Edit
@@ -342,6 +353,12 @@ watch(sortMode, (newVal) => {
             :categories="allCategories"
             :tags="allTags"
             @close="showEditModal = false"
+        />
+
+        <SetBookmarkImageModal
+            :show="showSetImageModal"
+            :bookmark="selectedBookmark"
+            @close="showSetImageModal = false"
         />
 
         <ConfirmDeleteModal

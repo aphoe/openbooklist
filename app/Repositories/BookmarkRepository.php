@@ -95,4 +95,16 @@ final class BookmarkRepository
 
         return $bookmark;
     }
+
+    /**
+     * Update only the image field for an existing Bookmark.
+     */
+    public function updateImage(Bookmark $bookmark, ?string $image): Bookmark
+    {
+        $bookmark->image = $image;
+
+        $bookmark->save();
+
+        return $bookmark;
+    }
 }

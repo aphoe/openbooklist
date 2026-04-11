@@ -19,6 +19,7 @@ use App\Http\Controllers\Users\Bookmarks\BookmarkController;
 use App\Http\Controllers\Users\Bookmarks\DeleteBookmarkController;
 use App\Http\Controllers\Users\Bookmarks\FetchBookmarkMetadataController;
 use App\Http\Controllers\Users\Bookmarks\RefetchBookmarkMetadataController;
+use App\Http\Controllers\Users\Bookmarks\SetBookmarkImageController;
 use App\Http\Controllers\Users\Bookmarks\StoreBookmarkController;
 use App\Http\Controllers\Users\Bookmarks\ToggleFavoriteController;
 use App\Http\Controllers\Users\Bookmarks\UpdateBookmarkController;
@@ -78,6 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/bookmarks/{bookmark}', UpdateBookmarkController::class)->name('bookmarks.update');
     Route::delete('/bookmarks/{bookmark}', DeleteBookmarkController::class)->name('bookmarks.destroy');
     Route::post('/bookmarks/{bookmark}/favorite', ToggleFavoriteController::class)->name('bookmarks.favorite');
+    Route::post('/bookmarks/{bookmark}/set-image', SetBookmarkImageController::class)->name('bookmarks.set-image');
     Route::post('/bookmarks/{bookmark}/refetch-metadata', RefetchBookmarkMetadataController::class)->name('bookmarks.refetch-metadata');
     Route::post('/bookmarks/fetch-metadata', FetchBookmarkMetadataController::class)->name('bookmarks.fetch-metadata');
 

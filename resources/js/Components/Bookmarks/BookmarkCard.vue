@@ -8,7 +8,7 @@ defineProps({
     },
 });
 
-const emit = defineEmits(['edit', 'delete', 'info', 'favorite', 'refetch']);
+const emit = defineEmits(['edit', 'delete', 'info', 'favorite', 'refetch', 'set-image']);
 
 const showMenu = ref(false);
 const toggleMenu = () => { showMenu.value = !showMenu.value; };
@@ -61,6 +61,11 @@ onUnmounted(() => document.removeEventListener('click', clickOutside));
                         class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                         <span class="material-symbols-outlined text-[16px]">refresh</span>
                         Refetch Metadata
+                    </button>
+                    <button @click.stop="(closeMenu(), emit('set-image', bookmark))"
+                        class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                        <span class="material-symbols-outlined text-[16px]">image</span>
+                        Set Image
                     </button>
                     <button @click.stop="(closeMenu(), emit('edit', bookmark))"
                         class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
