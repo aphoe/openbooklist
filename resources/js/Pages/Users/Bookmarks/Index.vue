@@ -57,6 +57,9 @@ const handleDelete = (bookmark) => {
 const handleFavorite = (bookmark) => {
     router.post(route('bookmarks.favorite', bookmark.id), {}, { preserveScroll: true, preserveState: true });
 };
+const handleRefetch = (bookmark) => {
+    router.post(route('bookmarks.refetch-metadata', bookmark.id), {}, { preserveScroll: true });
+};
 
 onMounted(() => {
     document.addEventListener('click', clickOutsideDropdown);
@@ -197,6 +200,7 @@ watch(sortMode, (newVal) => {
                     @edit="handleEdit"
                     @delete="handleDelete"
                     @favorite="handleFavorite"
+                    @refetch="handleRefetch"
                 />
             </div>
 
@@ -264,6 +268,10 @@ watch(sortMode, (newVal) => {
                                                 <button @click="(closeDropdown(), handleFavorite(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                     <span class="material-symbols-outlined text-[16px]">{{ bookmark.favorite ? 'heart_broken' : 'favorite' }}</span>
                                                     {{ bookmark.favorite ? 'Unfavorite' : 'Favorite' }}
+                                                </button>
+                                                <button @click="(closeDropdown(), handleRefetch(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                    <span class="material-symbols-outlined text-[16px]">refresh</span>
+                                                    Refetch Metadata
                                                 </button>
                                                 <button @click="(closeDropdown(), handleEdit(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                     <span class="material-symbols-outlined text-[16px]">edit</span>
