@@ -18,7 +18,7 @@ const logout = () => {
         class="hidden w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark md:flex sticky top-0 h-full flex-shrink-0">
         <!-- Brand/Logo Area -->
         <div class="flex h-16 items-center gap-3 px-6 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
-            <img :src="'/assets/images/logo.png'" alt="Logo" class="h-8 w-auto flex-shrink-0" />
+            <img :src="'/assets/images/logo-obl.png'" alt="Logo" class="h-8 w-auto flex-shrink-0" />
             <h1 class="text-slate-900 dark:text-white text-lg font-bold tracking-tight truncate">OpenBooklist</h1>
         </div>
 

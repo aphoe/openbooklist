@@ -25,7 +25,7 @@ const submit = () => {
 
         <div class="px-8 pt-8 pb-6 text-center">
             <div class="mx-auto mb-6 flex items-center justify-center">
-                <img :src="'/assets/images/logo.png'" alt="Logo" class="h-12 w-auto" />
+                <img :src="'/assets/images/logo-obl.png'" alt="Logo" class="h-12 w-auto" />
             </div>
             <h1 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Create Account</h1>
             <p class="mt-2 text-slate-500 dark:text-slate-400 text-sm">Sign up to get started</p>
@@ -33,7 +33,7 @@ const submit = () => {
 
         <div class="px-8 pb-10">
             <form @submit.prevent="submit" class="flex flex-col gap-5">
-                
+
                 <div class="flex flex-col sm:flex-row gap-5">
                     <!-- First Name -->
                     <div class="flex-1">
@@ -101,19 +101,19 @@ const submit = () => {
                 <div class="flex flex-col gap-1.5">
                     <div class="flex items-start">
                         <div class="flex h-6 items-center">
-                            <input 
-                                id="terms" 
+                            <input
+                                id="terms"
                                 v-model="form.terms"
-                                type="checkbox" 
+                                type="checkbox"
                                 class="h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary dark:border-slate-600 dark:bg-slate-800 dark:ring-offset-slate-900"
-                                required 
+                                required
                             />
                         </div>
                         <div class="ml-3 text-sm leading-6">
                             <label for="terms" class="text-slate-500 dark:text-slate-400">
-                                I agree to the 
-                                <a href="#" class="font-medium text-primary hover:text-primary/80 transition-colors">Terms of Service</a> 
-                                and 
+                                I agree to the
+                                <a href="#" class="font-medium text-primary hover:text-primary/80 transition-colors">Terms of Service</a>
+                                and
                                 <a href="#" class="font-medium text-primary hover:text-primary/80 transition-colors">Privacy Policy</a>
                             </label>
                         </div>

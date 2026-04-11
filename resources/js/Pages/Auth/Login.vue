@@ -27,7 +27,7 @@ const showSignup = usePage().props.multi_user;
         <!-- Header Section -->
         <div class="px-8 pt-10 pb-6 text-center">
             <div class="mx-auto mb-6 flex items-center justify-center">
-                <img :src="'/assets/images/logo.png'" alt="Logo" class="h-12 w-auto" />
+                <img :src="'/assets/images/logo-obl.png'" alt="Logo" class="h-12 w-auto" />
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome Back</h1>
             <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Please enter your details to sign in.</p>
