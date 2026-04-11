@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Users\Settings;
 
+use App\Services\LanguageOptionsService;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -33,7 +34,7 @@ class UpdateGeneralRequest extends FormRequest
                 'max:255',
                 Rule::unique('users')->ignore($this->user()->id),
             ],
-            'language' => ['required', 'string', Rule::in(array_keys(config('project.language_options', [])))],
+            'language' => ['required', 'string', Rule::in(app(LanguageOptionsService::class)->codes())],
         ];
     }
 }

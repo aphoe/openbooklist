@@ -26,6 +26,7 @@ class IndexControllerTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Users/Settings/Index')
             ->has('tokens', 2)
+            ->has('languageOptions')
         );
     }
 

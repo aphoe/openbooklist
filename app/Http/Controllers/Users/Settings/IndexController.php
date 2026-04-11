@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Users\Settings;
 use App\Enums\AccessTokenAbility;
 use App\Http\Controllers\Controller;
 use App\Managers\OpenRouterManager;
+use App\Services\LanguageOptionsService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -14,12 +15,12 @@ class IndexController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request, OpenRouterManager $openRouterManager): Response
+    public function __invoke(Request $request, OpenRouterManager $openRouterManager, LanguageOptionsService $languageOptionsService): Response
     {
         return Inertia::render('Users/Settings/Index', [
             'hasOpenRouterKey' => ! empty(config('project.openrouter_key')),
             'tab' => $request->query('tab', 'general'),
-            'languageOptions' => collect(config('project.language_options', []))
+            'languageOptions' => collect($languageOptionsService->options())
                 ->map(fn (string $name, string $code): array => ['id' => $code, 'name' => sprintf('%s (%s)', $name, $code)])
                 ->values()
                 ->toArray(),
