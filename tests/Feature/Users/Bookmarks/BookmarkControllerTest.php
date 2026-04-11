@@ -87,4 +87,55 @@ class BookmarkControllerTest extends TestCase
             ->where('bookmarks.data.1.title', 'Zebra')
         );
     }
+
+    public function test_bookmarks_can_be_filtered_by_category_slug(): void
+    {
+        $user = User::factory()->create();
+
+        $workCategory = Category::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Work',
+            'slug' => 'work',
+        ]);
+
+        $newsCategory = Category::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'News',
+            'slug' => 'news',
+        ]);
+
+        Bookmark::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $workCategory->id,
+            'title' => 'Work Alpha',
+            'created_at' => now()->subDay(),
+        ]);
+
+        Bookmark::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $workCategory->id,
+            'title' => 'Work Beta',
+            'created_at' => now(),
+        ]);
+
+        Bookmark::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $newsCategory->id,
+            'title' => 'News Alpha',
+            'created_at' => now(),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('dashboard', [
+            'category' => 'work',
+            'sort' => 'alphabetical',
+        ]));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Users/Bookmarks/Index')
+            ->has('bookmarks.data', 2)
+            ->where('bookmarks.data.0.title', 'Work Alpha')
+            ->where('bookmarks.data.1.title', 'Work Beta')
+        );
+    }
 }

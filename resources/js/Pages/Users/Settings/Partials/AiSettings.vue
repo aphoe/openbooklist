@@ -14,9 +14,22 @@ const form = useForm({
     ai_model: user.value?.ai_model ?? null,
 });
 
+const scrollToTop = () => {
+    const scrollContainer = document.querySelector('main .overflow-y-auto');
+
+    if (scrollContainer instanceof HTMLElement) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+
+        return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 const submit = () => {
     form.put(route('settings.ai'), {
         preserveScroll: true,
+        onSuccess: () => scrollToTop(),
     });
 };
 </script>

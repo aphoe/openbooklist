@@ -81,4 +81,30 @@ final class BookmarkRepository
     {
         return (bool) $bookmark->delete();
     }
+
+    /**
+     * Update fetched metadata fields on an existing Bookmark.
+     */
+    public function updateMetadata(Bookmark $bookmark, ?string $title, ?string $description, ?string $image): Bookmark
+    {
+        $bookmark->title = $title;
+        $bookmark->description = $description;
+        $bookmark->image = $image;
+
+        $bookmark->save();
+
+        return $bookmark;
+    }
+
+    /**
+     * Update only the image field for an existing Bookmark.
+     */
+    public function updateImage(Bookmark $bookmark, ?string $image): Bookmark
+    {
+        $bookmark->image = $image;
+
+        $bookmark->save();
+
+        return $bookmark;
+    }
 }

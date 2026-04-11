@@ -1,15 +1,18 @@
 <script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
+import SearchableDropdown from '@/Components/Forms/SearchableDropdown.vue';
 import SubmitButton from '@/Components/Forms/SubmitButton.vue';
 import TextInput from '@/Components/Forms/TextInput.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
+const languageOptions = page.props.languageOptions || [];
 
 const profileForm = useForm({
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
     email: user?.email || '',
+    language: user?.language || 'en',
 });
 
 const passwordForm = useForm({
@@ -18,16 +21,32 @@ const passwordForm = useForm({
     password_confirmation: '',
 });
 
+const scrollToTop = () => {
+    const scrollContainer = document.querySelector('main .overflow-y-auto');
+
+    if (scrollContainer instanceof HTMLElement) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+
+        return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 const updateProfileInformation = () => {
     profileForm.put(route('settings.general'), {
         preserveScroll: true,
+        onSuccess: () => scrollToTop(),
     });
 };
 
 const updatePassword = () => {
     passwordForm.put(route('settings.password'), {
         preserveScroll: true,
-        onSuccess: () => passwordForm.reset(),
+        onSuccess: () => {
+            passwordForm.reset();
+            scrollToTop();
+        },
     });
 };
 </script>
@@ -63,6 +82,17 @@ const updatePassword = () => {
                     <TextInput v-model="profileForm.email" type="email" />
                     <span v-if="profileForm.errors.email" class="text-xs text-red-500 mt-1">{{ profileForm.errors.email
                     }}</span>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Preferred Language</label>
+                    <SearchableDropdown
+                        v-model="profileForm.language"
+                        :options="languageOptions"
+                        placeholder="Select a language..."
+                        search-placeholder="Search languages..."
+                    />
+                    <span v-if="profileForm.errors.language" class="text-xs text-red-500 mt-1">{{ profileForm.errors.language }}</span>
                 </div>
 
                 <div class="h-px bg-slate-200 dark:bg-slate-800 w-full mt-6"></div>

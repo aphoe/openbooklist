@@ -2,11 +2,12 @@
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { ref, watch, onMounted, onUnmounted } from 'vue';
 import AddBookmarkModal from '@/Components/Modals/AddBookmarkModal.vue';
-import InfoBookmarkModal from '@/Components/Modals/InfoBookmarkModal.vue';
-import EditBookmarkModal from '@/Components/Modals/EditBookmarkModal.vue';
 import ConfirmDeleteModal from '@/Components/Modals/ConfirmDeleteModal.vue';
-import DashboardLayout from '@/Layouts/DashboardLayout.vue';
+import EditBookmarkModal from '@/Components/Modals/EditBookmarkModal.vue';
+import InfoBookmarkModal from '@/Components/Modals/InfoBookmarkModal.vue';
+import SetBookmarkImageModal from '@/Components/Modals/SetBookmarkImageModal.vue';
 import BookmarkCard from '@/Components/Bookmarks/BookmarkCard.vue';
+import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
 const page = usePage();
 
@@ -41,21 +42,29 @@ const selectedBookmark = ref(null);
 const showInfoModal = ref(false);
 const showEditModal = ref(false);
 const showDeleteModal = ref(false);
+const showSetImageModal = ref(false);
 
-const handleInfo = (bookmark) => { 
-    selectedBookmark.value = bookmark; 
-    showInfoModal.value = true; 
+const handleInfo = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showInfoModal.value = true;
 };
-const handleEdit = (bookmark) => { 
-    selectedBookmark.value = bookmark; 
-    showEditModal.value = true; 
+const handleEdit = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showEditModal.value = true;
 };
-const handleDelete = (bookmark) => { 
-    selectedBookmark.value = bookmark; 
-    showDeleteModal.value = true; 
+const handleDelete = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showDeleteModal.value = true;
 };
 const handleFavorite = (bookmark) => {
     router.post(route('bookmarks.favorite', bookmark.id), {}, { preserveScroll: true, preserveState: true });
+};
+const handleRefetch = (bookmark) => {
+    router.post(route('bookmarks.refetch-metadata', bookmark.id), {}, { preserveScroll: true });
+};
+const handleSetImage = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showSetImageModal.value = true;
 };
 
 onMounted(() => {
@@ -71,10 +80,14 @@ onUnmounted(() => {
 });
 
 watch(sortMode, (newVal) => {
-    router.get(page.url.split('?')[0], { sort: newVal }, { 
-        replace: true, 
-        preserveState: true, 
-        preserveScroll: true 
+    const params = new URLSearchParams(window.location.search);
+
+    params.set('sort', newVal);
+
+    router.get(page.url.split('?')[0], Object.fromEntries(params.entries()), {
+        replace: true,
+        preserveState: true,
+        preserveScroll: true,
     });
 });
 </script>
@@ -149,7 +162,7 @@ watch(sortMode, (newVal) => {
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-white">All Bookmarks</h2>
                 </div>
-                
+
                 <div class="flex items-center gap-4 w-full sm:w-auto">
                     <!-- Sort -->
                     <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
@@ -163,12 +176,12 @@ watch(sortMode, (newVal) => {
 
                     <!-- View Toggle -->
                     <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 hidden sm:flex">
-                        <button 
+                        <button
                             @click="viewMode = 'grid'"
                             :class="['p-1.5 rounded-md transition-all', viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
                             <span class="material-symbols-outlined text-[20px] block">grid_view</span>
                         </button>
-                        <button 
+                        <button
                             @click="viewMode = 'list'"
                             :class="['p-1.5 rounded-md transition-all', viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
                             <span class="material-symbols-outlined text-[20px] block">view_list</span>
@@ -185,39 +198,41 @@ watch(sortMode, (newVal) => {
             <!-- Grid View -->
             <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- Card loop -->
-                <BookmarkCard 
-                    v-for="bookmark in bookmarks.data" 
-                    :key="bookmark.id" 
+                <BookmarkCard
+                    v-for="bookmark in bookmarks.data"
+                    :key="bookmark.id"
                     :bookmark="bookmark"
                     @info="handleInfo"
                     @edit="handleEdit"
-                    @delete="handleDelete" 
+                    @delete="handleDelete"
                     @favorite="handleFavorite"
+                    @refetch="handleRefetch"
+                    @set-image="handleSetImage"
                 />
             </div>
 
             <!-- List View -->
-            <div v-else class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-visible">
-                <div class="overflow-visible">
-                    <table class="w-full text-left border-collapse">
+            <div v-else class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-fixed text-left border-collapse">
                         <thead>
                             <tr class="border-b border-slate-100 dark:border-slate-800">
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-2/5">Title</th>
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/5 hidden sm:table-cell">Domain</th>
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/5 hidden md:table-cell">Category</th>
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/5 text-right">Date Added</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-3/5">Title</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[15%] hidden sm:table-cell">Domain</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[10%] hidden md:table-cell">Category</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[15%] text-right">Date Added</th>
                                 <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-10"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                             <tr v-for="bookmark in bookmarks.data" :key="bookmark.id" class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                <td class="py-4 px-4">
-                                    <div class="flex items-center gap-3">
+                                <td class="py-4 px-4 max-w-0">
+                                    <div class="flex items-center gap-3 min-w-0">
                                         <div class="h-10 w-10 sm:h-12 sm:w-12 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 border border-slate-200 dark:border-slate-700 overflow-hidden">
                                             <img :src="bookmark.image_url" :alt="bookmark.title" class="w-full h-full object-cover">
                                         </div>
-                                        <div class="flex flex-col overflow-hidden w-full">
-                                            <a :href="bookmark.url" target="_blank" class="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary truncate flex items-center gap-1.5">
+                                        <div class="flex flex-col overflow-hidden min-w-0 w-full">
+                                            <a :href="bookmark.url" target="_blank" class="block text-sm font-semibold text-slate-900 dark:text-white hover:text-primary whitespace-normal break-words">
                                                 <span v-if="bookmark.favorite" class="material-symbols-outlined text-[16px] text-red-500 flex-shrink-0" style="font-variation-settings: 'FILL' 1;">favorite</span>
                                                 {{ bookmark.title }}
                                             </a>
@@ -241,12 +256,12 @@ watch(sortMode, (newVal) => {
                                 <td class="py-4 px-4 text-right text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                     {{ new Date(bookmark.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) }}
                                 </td>
-                                <td class="py-4 px-4 text-right align-middle">
+                                <td class="py-4 px-0 text-right align-middle">
                                     <div class="relative list-dropdown-container inline-block text-left">
                                         <button @click.stop="toggleDropdown(bookmark.id)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-opacity p-1 rounded-full outline-none">
                                             <span class="material-symbols-outlined text-[20px] block">more_vert</span>
                                         </button>
-                                        
+
                                         <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
                                             <div v-if="activeDropdown === bookmark.id" class="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-700 z-[100] py-1 origin-top-right">
                                                 <a :href="bookmark.url" target="_blank" @click="closeDropdown" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
@@ -260,6 +275,14 @@ watch(sortMode, (newVal) => {
                                                 <button @click="(closeDropdown(), handleFavorite(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                     <span class="material-symbols-outlined text-[16px]">{{ bookmark.favorite ? 'heart_broken' : 'favorite' }}</span>
                                                     {{ bookmark.favorite ? 'Unfavorite' : 'Favorite' }}
+                                                </button>
+                                                <button @click="(closeDropdown(), handleRefetch(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                    <span class="material-symbols-outlined text-[16px]">refresh</span>
+                                                    Refetch Metadata
+                                                </button>
+                                                <button @click="(closeDropdown(), handleSetImage(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                    <span class="material-symbols-outlined text-[16px]">image</span>
+                                                    Set Image
                                                 </button>
                                                 <button @click="(closeDropdown(), handleEdit(bookmark))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                     <span class="material-symbols-outlined text-[16px]">edit</span>
@@ -330,6 +353,12 @@ watch(sortMode, (newVal) => {
             :categories="allCategories"
             :tags="allTags"
             @close="showEditModal = false"
+        />
+
+        <SetBookmarkImageModal
+            :show="showSetImageModal"
+            :bookmark="selectedBookmark"
+            @close="showSetImageModal = false"
         />
 
         <ConfirmDeleteModal

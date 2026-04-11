@@ -17,7 +17,7 @@ class UserRepositoryTest extends TestCase
         $user = User::factory()->create();
 
         $repo = new UserRepository;
-        $result = $repo->updateProfile($user, 'Jane', 'Doe', 'jane@example.com');
+        $result = $repo->updateProfile($user, 'Jane', 'Doe', 'jane@example.com', 'fr');
 
         $this->assertTrue($result);
         $this->assertDatabaseHas('users', [
@@ -25,6 +25,7 @@ class UserRepositoryTest extends TestCase
             'first_name' => 'Jane',
             'last_name' => 'Doe',
             'email' => 'jane@example.com',
+            'language' => 'fr',
         ]);
     }
 

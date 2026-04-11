@@ -7,11 +7,19 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\NewPasswordViewController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\PasswordResetLinkViewController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\RegisterViewController;
 use App\Http\Controllers\Auth\VerifyOTPController;
 use App\Http\Controllers\Auth\VerifyOTPViewController;
+use App\Http\Controllers\Auth\VerifyRegistrationController;
+use App\Http\Controllers\Auth\VerifyRegistrationOTPViewController;
+use App\Http\Controllers\Auth\VerifyRegistrationResendController;
+use App\Http\Controllers\DemoController;
 use App\Http\Controllers\Users\Bookmarks\BookmarkController;
 use App\Http\Controllers\Users\Bookmarks\DeleteBookmarkController;
 use App\Http\Controllers\Users\Bookmarks\FetchBookmarkMetadataController;
+use App\Http\Controllers\Users\Bookmarks\RefetchBookmarkMetadataController;
+use App\Http\Controllers\Users\Bookmarks\SetBookmarkImageController;
 use App\Http\Controllers\Users\Bookmarks\StoreBookmarkController;
 use App\Http\Controllers\Users\Bookmarks\ToggleFavoriteController;
 use App\Http\Controllers\Users\Bookmarks\UpdateBookmarkController;
@@ -36,15 +44,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/login', LoginViewController::class)->name('login');
 Route::post('/login', LoginController::class);
 
-Route::get('/register', \App\Http\Controllers\Auth\RegisterViewController::class)
+Route::get('/register', RegisterViewController::class)
     ->name('register');
-Route::post('/register', \App\Http\Controllers\Auth\RegisterController::class);
+Route::post('/register', RegisterController::class);
 
-Route::get('/verify-registration', \App\Http\Controllers\Auth\VerifyRegistrationOTPViewController::class)
+Route::get('/verify-registration', VerifyRegistrationOTPViewController::class)
     ->name('verification.notice');
-Route::post('/verify-registration', \App\Http\Controllers\Auth\VerifyRegistrationController::class)
+Route::post('/verify-registration', VerifyRegistrationController::class)
     ->name('verification.verify');
-Route::post('/verify-registration/resend', \App\Http\Controllers\Auth\VerifyRegistrationResendController::class)
+Route::post('/verify-registration/resend', VerifyRegistrationResendController::class)
     ->name('verification.send');
 
 Route::get('/forgot-password', PasswordResetLinkViewController::class)
@@ -71,6 +79,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/bookmarks/{bookmark}', UpdateBookmarkController::class)->name('bookmarks.update');
     Route::delete('/bookmarks/{bookmark}', DeleteBookmarkController::class)->name('bookmarks.destroy');
     Route::post('/bookmarks/{bookmark}/favorite', ToggleFavoriteController::class)->name('bookmarks.favorite');
+    Route::post('/bookmarks/{bookmark}/set-image', SetBookmarkImageController::class)->name('bookmarks.set-image');
+    Route::post('/bookmarks/{bookmark}/refetch-metadata', RefetchBookmarkMetadataController::class)->name('bookmarks.refetch-metadata');
     Route::post('/bookmarks/fetch-metadata', FetchBookmarkMetadataController::class)->name('bookmarks.fetch-metadata');
 
     Route::get('/categories', CategoryController::class)->name('categories.index');
@@ -97,5 +107,5 @@ Route::middleware('auth')->group(function () {
 
 Route::prefix('demo')
     ->group(function () {
-        Route::get('/playground', [\App\Http\Controllers\DemoController::class, 'playground']);
+        Route::get('/playground', [DemoController::class, 'playground']);
     });

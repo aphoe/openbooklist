@@ -22,6 +22,7 @@ class UpdateGeneralControllerTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john@gmail.com',
+            'language' => 'es',
         ]);
 
         $response->assertRedirect();
@@ -32,6 +33,7 @@ class UpdateGeneralControllerTest extends TestCase
         $this->assertEquals('John', $user->first_name);
         $this->assertEquals('Doe', $user->last_name);
         $this->assertEquals('john@gmail.com', $user->email);
+        $this->assertEquals('es', $user->language);
     }
 
     public function test_it_validates_required_fields(): void
@@ -45,6 +47,20 @@ class UpdateGeneralControllerTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors(['first_name', 'last_name', 'email']);
+    }
+
+    public function test_it_validates_language_against_available_options(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->put(route('settings.general'), [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john@example.com',
+            'language' => 'xx-yy',
+        ]);
+
+        $response->assertSessionHasErrors(['language']);
     }
 
     public function test_guests_cannot_update_general_settings(): void

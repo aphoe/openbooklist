@@ -18,7 +18,7 @@ const logout = () => {
         class="hidden w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark md:flex sticky top-0 h-full flex-shrink-0">
         <!-- Brand/Logo Area -->
         <div class="flex h-16 items-center gap-3 px-6 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
-            <img :src="'/assets/images/logo.png'" alt="Logo" class="h-8 w-auto flex-shrink-0" />
+            <img :src="'/assets/images/logo-obl.png'" alt="Logo" class="h-8 w-auto flex-shrink-0" />
             <h1 class="text-slate-900 dark:text-white text-lg font-bold tracking-tight truncate">OpenBooklist</h1>
         </div>
 
@@ -59,8 +59,9 @@ const logout = () => {
 
             <div class="mt-4" v-if="categories.length > 0">
                 <div class="flex items-center justify-between px-3 mb-2">
-                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Top
-                        Categories</span>
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                        Top Categories
+                    </span>
                     <span
                         class="material-symbols-outlined text-slate-400 text-lg cursor-pointer hover:text-primary">add</span>
                 </div>
