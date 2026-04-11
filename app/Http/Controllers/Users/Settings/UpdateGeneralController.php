@@ -21,7 +21,7 @@ class UpdateGeneralController extends Controller
             $request->safe()->string('first_name'),
             $request->safe()->string('last_name'),
             $request->safe()->string('email'),
-            $language !== '' ? $language : 'eng',
+            $language !== '' ? $language : 'en',
         );
 
         return back()->with('success', 'Profile information updated successfully.');
