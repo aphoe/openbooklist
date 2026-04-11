@@ -201,27 +201,27 @@ watch(sortMode, (newVal) => {
             </div>
 
             <!-- List View -->
-            <div v-else class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-visible">
-                <div class="overflow-visible">
-                    <table class="w-full text-left border-collapse">
+            <div v-else class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full table-fixed text-left border-collapse">
                         <thead>
                             <tr class="border-b border-slate-100 dark:border-slate-800">
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-2/5">Title</th>
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/5 hidden sm:table-cell">Domain</th>
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/5 hidden md:table-cell">Category</th>
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/5 text-right">Date Added</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-3/5">Title</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[15%] hidden sm:table-cell">Domain</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[10%] hidden md:table-cell">Category</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[15%] text-right">Date Added</th>
                                 <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-10"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                             <tr v-for="bookmark in bookmarks.data" :key="bookmark.id" class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                <td class="py-4 px-4">
-                                    <div class="flex items-center gap-3">
+                                <td class="py-4 px-4 max-w-0">
+                                    <div class="flex items-center gap-3 min-w-0">
                                         <div class="h-10 w-10 sm:h-12 sm:w-12 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 border border-slate-200 dark:border-slate-700 overflow-hidden">
                                             <img :src="bookmark.image_url" :alt="bookmark.title" class="w-full h-full object-cover">
                                         </div>
-                                        <div class="flex flex-col overflow-hidden w-full">
-                                            <a :href="bookmark.url" target="_blank" class="text-sm font-semibold text-slate-900 dark:text-white hover:text-primary truncate flex items-center gap-1.5">
+                                        <div class="flex flex-col overflow-hidden min-w-0 w-full">
+                                            <a :href="bookmark.url" target="_blank" class="block text-sm font-semibold text-slate-900 dark:text-white hover:text-primary whitespace-normal break-words">
                                                 <span v-if="bookmark.favorite" class="material-symbols-outlined text-[16px] text-red-500 flex-shrink-0" style="font-variation-settings: 'FILL' 1;">favorite</span>
                                                 {{ bookmark.title }}
                                             </a>
@@ -245,7 +245,7 @@ watch(sortMode, (newVal) => {
                                 <td class="py-4 px-4 text-right text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                     {{ new Date(bookmark.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) }}
                                 </td>
-                                <td class="py-4 px-4 text-right align-middle">
+                                <td class="py-4 px-0 text-right align-middle">
                                     <div class="relative list-dropdown-container inline-block text-left">
                                         <button @click.stop="toggleDropdown(bookmark.id)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-opacity p-1 rounded-full outline-none">
                                             <span class="material-symbols-outlined text-[20px] block">more_vert</span>
