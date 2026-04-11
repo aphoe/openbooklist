@@ -20,16 +20,32 @@ const passwordForm = useForm({
     password_confirmation: '',
 });
 
+const scrollToTop = () => {
+    const scrollContainer = document.querySelector('main .overflow-y-auto');
+
+    if (scrollContainer instanceof HTMLElement) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+
+        return;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 const updateProfileInformation = () => {
     profileForm.put(route('settings.general'), {
         preserveScroll: true,
+        onSuccess: () => scrollToTop(),
     });
 };
 
 const updatePassword = () => {
     passwordForm.put(route('settings.password'), {
         preserveScroll: true,
-        onSuccess: () => passwordForm.reset(),
+        onSuccess: () => {
+            passwordForm.reset();
+            scrollToTop();
+        },
     });
 };
 </script>
