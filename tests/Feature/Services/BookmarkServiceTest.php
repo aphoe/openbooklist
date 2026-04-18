@@ -69,6 +69,27 @@ class BookmarkServiceTest extends TestCase
         });
     }
 
+    public function test_it_deletes_local_bookmark_image_from_public_storage(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('bookmarks/delete-me.jpg', 'content');
+
+        $service = new BookmarkService;
+        $service->deleteStoredImage('bookmarks/delete-me.jpg');
+
+        Storage::disk('public')->assertMissing('bookmarks/delete-me.jpg');
+    }
+
+    public function test_it_does_not_delete_remote_image_urls(): void
+    {
+        Storage::fake('public');
+
+        $service = new BookmarkService;
+        $service->deleteStoredImage('https://example.com/image.jpg');
+
+        $this->assertSame([], Storage::disk('public')->allFiles());
+    }
+
     public function test_make_absolute_url(): void
     {
         $service = new BookmarkService;

@@ -21,6 +21,7 @@ class SetBookmarkImageController extends Controller
      */
     public function __invoke(SetBookmarkImageRequest $request, Bookmark $bookmark): RedirectResponse
     {
+        $previousImagePath = $bookmark->image;
         $imageSource = $request->safe()->string('image_source')->toString();
 
         if ($imageSource === 'screenshot') {
@@ -39,6 +40,10 @@ class SetBookmarkImageController extends Controller
         }
 
         $this->bookmarkRepository->updateImage($bookmark, $imagePath);
+
+        if (is_string($previousImagePath) && $previousImagePath !== '' && $previousImagePath !== $imagePath) {
+            $this->bookmarkService->deleteStoredImage($previousImagePath);
+        }
 
         return redirect()->back()->with('success', 'Bookmark image updated successfully.');
     }

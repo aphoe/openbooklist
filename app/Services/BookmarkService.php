@@ -204,6 +204,35 @@ class BookmarkService
     }
 
     /**
+     * Delete a bookmark image from the public storage disk when applicable.
+     */
+    public function deleteStoredImage(?string $imagePath): void
+    {
+        if (! is_string($imagePath) || $imagePath === '') {
+            return;
+        }
+
+        if (filter_var($imagePath, FILTER_VALIDATE_URL)) {
+            return;
+        }
+
+        $normalizedPath = str_replace('\\', '/', $imagePath);
+        $normalizedPath = ltrim($normalizedPath, '/');
+
+        if (Str::startsWith($normalizedPath, 'storage/')) {
+            $normalizedPath = substr($normalizedPath, strlen('storage/'));
+        }
+
+        if (! Str::startsWith($normalizedPath, 'bookmarks/') || str_contains($normalizedPath, '..')) {
+            return;
+        }
+
+        if (Storage::disk('public')->exists($normalizedPath)) {
+            Storage::disk('public')->delete($normalizedPath);
+        }
+    }
+
+    /**
      * Fetch all metadata for a URL.
      *
      * @return array{title: ?string, description: ?string, image: ?string}

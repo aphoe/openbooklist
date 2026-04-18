@@ -26,6 +26,9 @@ class SetBookmarkImageControllerTest extends TestCase
                 ->once()
                 ->with('https://example.com/new-image.jpg')
                 ->andReturn('bookmarks/new-image.jpg');
+            $mock->shouldReceive('deleteStoredImage')
+                ->once()
+                ->with('bookmarks/old.jpg');
         });
 
         $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
@@ -70,6 +73,9 @@ class SetBookmarkImageControllerTest extends TestCase
                 ->once()
                 ->with('https://example.com/article')
                 ->andReturn('bookmarks/screenshot.jpg');
+            $mock->shouldReceive('deleteStoredImage')
+                ->once()
+                ->with('bookmarks/old.jpg');
         });
 
         $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
@@ -104,6 +110,7 @@ class SetBookmarkImageControllerTest extends TestCase
         $bookmark = Bookmark::factory()->create([
             'user_id' => $user->id,
             'url' => 'https://example.com/article',
+            'image' => null,
         ]);
 
         $this->mock(BookmarkService::class, function (MockInterface $mock) {
@@ -111,6 +118,7 @@ class SetBookmarkImageControllerTest extends TestCase
                 ->once()
                 ->with('https://example.com/article')
                 ->andReturn('bookmarks/screenshot.jpg');
+            $mock->shouldNotReceive('deleteStoredImage');
         });
 
         $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
@@ -133,6 +141,7 @@ class SetBookmarkImageControllerTest extends TestCase
                 ->once()
                 ->with('https://example.com/new-image.jpg')
                 ->andReturn(null);
+            $mock->shouldNotReceive('deleteStoredImage');
         });
 
         $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
@@ -163,6 +172,7 @@ class SetBookmarkImageControllerTest extends TestCase
                 ->once()
                 ->with('https://example.com/article')
                 ->andReturn(null);
+            $mock->shouldNotReceive('deleteStoredImage');
         });
 
         $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
