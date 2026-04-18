@@ -176,6 +176,58 @@ Once configured, head to **Settings → AI Configuration** in the app to:
 
 > Without this key, AI features will be disabled but the rest of the app works perfectly.
 
+### Screenshot Capture (spatie/laravel-screenshot)
+
+OpenBookList uses [`spatie/laravel-screenshot`](https://spatie.be/docs/laravel-screenshot/v1/introduction) to generate website screenshots for bookmark images.
+
+If you are upgrading from an older OpenBookList version and do not have the package yet, install it (and the Browsershot dependency):
+
+```bash
+composer require spatie/laravel-screenshot
+composer require spatie/browsershot
+```
+
+Optionally publish the config file so you can tune driver settings:
+
+```bash
+php artisan vendor:publish --tag=screenshot-config
+```
+
+#### Browsershot driver (default)
+
+Browsershot is the default driver and runs Chromium via Node.js.
+
+1. Make sure your server has Node.js and the dependencies required by Browsershot.
+2. Follow the Browsershot requirements guide: <https://spatie.be/docs/browsershot/v4/requirements>
+3. Configure `.env` as needed (minimum example below):
+
+```dotenv
+LARAVEL_SCREENSHOT_DRIVER=browsershot
+
+# Optional binary overrides (set only when auto-detection fails)
+LARAVEL_SCREENSHOT_NODE_BINARY=
+LARAVEL_SCREENSHOT_NPM_BINARY=
+LARAVEL_SCREENSHOT_CHROME_PATH=
+LARAVEL_SCREENSHOT_NODE_MODULES_PATH=
+LARAVEL_SCREENSHOT_NO_SANDBOX=false
+```
+
+#### Cloudflare driver
+
+Cloudflare uses Browser Rendering API and does not require Node.js/Chrome on your app server.
+
+1. Create a Cloudflare API token with `Account.Browser Rendering` permission.
+2. Find your Cloudflare Account ID.
+3. Configure `.env`:
+
+```dotenv
+LARAVEL_SCREENSHOT_DRIVER=cloudflare
+CLOUDFLARE_API_TOKEN=your-api-token
+CLOUDFLARE_ACCOUNT_ID=your-account-id
+```
+
+Use Browsershot when you control the host and can install Chromium dependencies. Use Cloudflare when you want simpler server setup or managed browser rendering.
+
 ### Mail
 
 Configure a mail driver for password resets and OTP verification:
