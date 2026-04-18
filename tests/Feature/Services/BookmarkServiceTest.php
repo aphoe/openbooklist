@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use ReflectionClass;
+use Spatie\LaravelScreenshot\Facades\Screenshot;
 use Tests\TestCase;
 
 class BookmarkServiceTest extends TestCase
@@ -46,6 +47,47 @@ class BookmarkServiceTest extends TestCase
         $filename = $service->downloadAndResizeImage('https://example.com/missing.png');
 
         $this->assertNull($filename);
+    }
+
+    public function test_it_takes_website_screenshot_with_expected_settings(): void
+    {
+        Screenshot::fake();
+
+        $service = new BookmarkService;
+        $filename = $service->takeWebsiteScreenshot('https://example.com/article');
+
+        $this->assertNotNull($filename);
+        $this->assertStringStartsWith('bookmarks/', $filename);
+        $this->assertStringEndsWith('.jpg', $filename);
+
+        Screenshot::assertSaved(function ($builder, $path) {
+            return $builder->url === 'https://example.com/article'
+                && $builder->width === 512
+                && $builder->height === 269
+                && $builder->quality === 80
+                && str_ends_with($path, '.jpg');
+        });
+    }
+
+    public function test_it_deletes_local_bookmark_image_from_public_storage(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('bookmarks/delete-me.jpg', 'content');
+
+        $service = new BookmarkService;
+        $service->deleteStoredImage('bookmarks/delete-me.jpg');
+
+        Storage::disk('public')->assertMissing('bookmarks/delete-me.jpg');
+    }
+
+    public function test_it_does_not_delete_remote_image_urls(): void
+    {
+        Storage::fake('public');
+
+        $service = new BookmarkService;
+        $service->deleteStoredImage('https://example.com/image.jpg');
+
+        $this->assertSame([], Storage::disk('public')->allFiles());
     }
 
     public function test_make_absolute_url(): void

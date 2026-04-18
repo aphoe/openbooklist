@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Users\Bookmarks;
 use App\Http\Controllers\Controller;
 use App\Models\Bookmark;
 use App\Repositories\BookmarkRepository;
+use App\Services\BookmarkService;
 use Illuminate\Http\Request;
 
 class DeleteBookmarkController extends Controller
 {
     public function __construct(
         protected BookmarkRepository $bookmarkRepository,
+        protected BookmarkService $bookmarkService,
     ) {}
 
     /**
@@ -22,7 +24,11 @@ class DeleteBookmarkController extends Controller
             abort(403);
         }
 
-        $this->bookmarkRepository->delete($bookmark);
+        $imagePath = $bookmark->image;
+
+        if ($this->bookmarkRepository->delete($bookmark)) {
+            $this->bookmarkService->deleteStoredImage($imagePath);
+        }
 
         return redirect()->back()->with('info', 'Bookmark deleted successfully.');
     }

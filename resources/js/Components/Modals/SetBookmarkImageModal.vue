@@ -18,6 +18,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const form = useForm({
+    image_source: 'url',
     image_url: '',
 });
 
@@ -28,6 +29,12 @@ watch(() => props.show, (isOpen) => {
 
     form.reset();
     form.clearErrors();
+});
+
+watch(() => form.image_source, (imageSource) => {
+    if (imageSource === 'screenshot') {
+        form.image_url = '';
+    }
 });
 
 const submit = () => {
@@ -73,11 +80,38 @@ const close = () => {
                     <form @submit.prevent="submit" class="p-5 space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                                Image Source <span class="text-red-500">*</span>
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <label class="flex items-start gap-2 rounded-lg border border-slate-200 dark:border-slate-700 p-3 cursor-pointer">
+                                    <input v-model="form.image_source" type="radio" value="url" class="mt-0.5" />
+                                    <span class="text-sm text-slate-700 dark:text-slate-300">
+                                        <span class="font-medium">Image URL</span>
+                                        <span class="block text-xs text-slate-500 dark:text-slate-400">Upload from a direct image link</span>
+                                    </span>
+                                </label>
+                                <label class="flex items-start gap-2 rounded-lg border border-slate-200 dark:border-slate-700 p-3 cursor-pointer">
+                                    <input v-model="form.image_source" type="radio" value="screenshot" class="mt-0.5" />
+                                    <span class="text-sm text-slate-700 dark:text-slate-300">
+                                        <span class="font-medium">Website Screenshot</span>
+                                        <span class="block text-xs text-slate-500 dark:text-slate-400">Capture the bookmark page automatically</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <p v-if="form.errors.image_source" class="mt-1 text-sm text-red-500">{{ form.errors.image_source }}</p>
+                        </div>
+
+                        <div v-if="form.image_source === 'url'">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                                 Image URL <span class="text-red-500">*</span>
                             </label>
                             <TextInput v-model="form.image_url" type="url" placeholder="https://example.com/image.jpg" />
                             <p v-if="form.errors.image_url" class="mt-1 text-sm text-red-500">{{ form.errors.image_url }}</p>
                         </div>
+
+                        <p v-else class="text-xs text-slate-500 dark:text-slate-400">
+                            We will capture a 512x269 JPEG screenshot of <span class="font-medium">{{ bookmark?.url }}</span>.
+                        </p>
 
                         <ModalActionButtons
                             :processing="form.processing"
