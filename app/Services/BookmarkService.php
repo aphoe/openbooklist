@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use Spatie\LaravelScreenshot\Facades\Screenshot;
 use Spekulatius\PHPScraper\PHPScraper;
 use voku\helper\HtmlDomParser;
 
@@ -170,6 +171,29 @@ class BookmarkService
             $encodedImage = $image->encodeByExtension($extension);
 
             Storage::disk('public')->put($filename, (string) $encodedImage);
+
+            return $filename;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+    }
+
+    /**
+     * Capture a screenshot of a webpage as 512x269 JPEG.
+     */
+    public function takeWebsiteScreenshot(string $url): ?string
+    {
+        try {
+            $filename = 'bookmarks/'.Str::uuid().'.jpg';
+
+            Storage::disk('public')->makeDirectory('bookmarks');
+
+            Screenshot::url($url)
+                ->size(512, 269)
+                ->quality(80)
+                ->save(Storage::disk('public')->path($filename));
 
             return $filename;
         } catch (\Throwable $e) {

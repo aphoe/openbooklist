@@ -4,6 +4,7 @@ namespace App\Http\Requests\Users;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SetBookmarkImageRequest extends FormRequest
 {
@@ -23,7 +24,8 @@ class SetBookmarkImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image_url' => ['required', 'url', 'max:2048'],
+            'image_source' => ['required', 'string', Rule::in(['url', 'screenshot'])],
+            'image_url' => ['nullable', 'required_if:image_source,url', 'url', 'max:2048'],
         ];
     }
 }
