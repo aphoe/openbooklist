@@ -22,7 +22,8 @@ class FetchBookmarkMetadataController extends Controller
 
         try {
             $metadata = $this->bookmarkService->fetchMetadata(
-                $request->input('url')
+                $request->input('url'),
+                $request->user(),
             );
 
             return response()->json([

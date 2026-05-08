@@ -16,8 +16,8 @@ class FetchBookmarkMetadataControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->mock(BookmarkService::class, function (MockInterface $mock) {
-            $mock->shouldReceive('fetchMetadata')->with('https://laravel.com')->andReturn([
+        $this->mock(BookmarkService::class, function (MockInterface $mock) use ($user) {
+            $mock->shouldReceive('fetchMetadata')->with('https://laravel.com', $user)->andReturn([
                 'title' => 'Laravel',
                 'description' => 'PHP Framework',
                 'image' => 'https://laravel.com/img/logomark.min.svg',

@@ -63,10 +63,10 @@ class CreateBookmarkTest extends TestCase
         $user = User::factory()->create();
         $category = Category::factory()->create(['name' => 'Tech', 'slug' => 'tech']);
 
-        $this->mock(BookmarkService::class, function (MockInterface $mock) {
+        $this->mock(BookmarkService::class, function (MockInterface $mock) use ($user) {
             $mock->shouldReceive('fetchMetadata')
                 ->once()
-                ->with('https://example.com')
+                ->with('https://example.com', $user)
                 ->andReturn([
                     'title' => 'Example Site',
                     'description' => 'This is an example',

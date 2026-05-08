@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Services;
 
+use Alaouy\Youtube\Youtube as YoutubeClient;
+use App\Models\User;
 use App\Services\BookmarkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -35,6 +37,81 @@ class BookmarkServiceTest extends TestCase
         $this->assertNotNull($filename);
         $this->assertStringStartsWith('bookmarks/', $filename);
         Storage::disk('public')->assertExists($filename);
+    }
+
+    public function test_it_fetches_youtube_metadata_using_authenticated_user_language(): void
+    {
+        config()->set('project.youtube_api_key', 'youtube-api-key');
+
+        $user = User::factory()->create(['language' => 'de']);
+
+        $youtubeClient = \Mockery::mock(YoutubeClient::class);
+        $youtubeClient->shouldReceive('getLocalizedVideoInfo')
+            ->once()
+            ->with('abcdefghijk', 'de', ['snippet'])
+            ->andReturn((object) [
+                'snippet' => (object) [
+                    'title' => 'Deutscher Titel',
+                    'description' => 'Deutsche Beschreibung',
+                    'thumbnails' => (object) [
+                        'high' => (object) ['url' => 'https://img.youtube.com/high.jpg', 'width' => 480, 'height' => 360],
+                        'maxres' => (object) ['url' => 'https://img.youtube.com/maxres.jpg', 'width' => 1280, 'height' => 720],
+                    ],
+                ],
+            ]);
+
+        $service = \Mockery::mock(BookmarkService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+        $service->shouldReceive('createYoutubeClient')->once()->andReturn($youtubeClient);
+
+        $metadata = $service->fetchMetadata('https://www.youtube.com/watch?v=abcdefghijk', $user);
+
+        $this->assertSame('Deutscher Titel', $metadata['title']);
+        $this->assertSame('Deutsche Beschreibung', $metadata['description']);
+        $this->assertSame('https://img.youtube.com/maxres.jpg', $metadata['image']);
+    }
+
+    public function test_it_defaults_to_english_for_youtube_metadata_when_user_is_not_provided(): void
+    {
+        config()->set('project.youtube_api_key', 'youtube-api-key');
+
+        $youtubeClient = \Mockery::mock(YoutubeClient::class);
+        $youtubeClient->shouldReceive('getLocalizedVideoInfo')
+            ->once()
+            ->with('abcdefghijk', 'en', ['snippet'])
+            ->andReturn((object) [
+                'snippet' => (object) [
+                    'title' => 'English Title',
+                    'description' => 'English Description',
+                    'thumbnails' => (object) [
+                        'default' => (object) ['url' => 'https://img.youtube.com/default.jpg', 'width' => 120, 'height' => 90],
+                    ],
+                ],
+            ]);
+
+        $service = \Mockery::mock(BookmarkService::class)->makePartial()->shouldAllowMockingProtectedMethods();
+        $service->shouldReceive('createYoutubeClient')->once()->andReturn($youtubeClient);
+
+        $metadata = $service->fetchMetadata('https://www.youtube.com/watch?v=abcdefghijk');
+
+        $this->assertSame('English Title', $metadata['title']);
+        $this->assertSame('English Description', $metadata['description']);
+        $this->assertSame('https://img.youtube.com/default.jpg', $metadata['image']);
+    }
+
+    public function test_it_returns_null_youtube_metadata_when_youtube_parsing_throws_exception(): void
+    {
+        $service = new BookmarkService;
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('fetchYoutubeMetadata');
+
+        $metadata = $method->invoke($service, 'https://www.youtube.com/', 'en');
+
+        $this->assertSame([
+            'title' => null,
+            'description' => null,
+            'image' => null,
+        ], $metadata);
     }
 
     public function test_it_returns_null_on_failed_download(): void
