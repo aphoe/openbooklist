@@ -176,6 +176,35 @@ Once configured, head to **Settings → AI Configuration** in the app to:
 
 > Without this key, AI features will be disabled but the rest of the app works perfectly.
 
+### YouTube Metadata (Update)
+
+OpenBookList now has YouTube-aware metadata fetching.
+
+When saving or re-fetching a bookmark:
+
+- If the URL is a YouTube link and `YOUTUBE_API_KEY` is configured, OpenBookList uses **YouTube Data API v3** to fetch the title, description, and thumbnail.
+- It always selects the **largest available thumbnail URL**.
+- It requests localized metadata using the authenticated user's language, with `en` as the fallback.
+- If no API key is configured (or YouTube lookup fails), OpenBookList falls back to normal metadata scraping.
+
+Add this to your `.env`:
+
+```dotenv
+YOUTUBE_API_KEY=your-youtube-data-api-v3-key
+```
+
+#### How to get a YouTube Data API v3 key (Google Cloud Console)
+
+1. Go to <https://console.cloud.google.com/> and create/select a project.
+2. Open **APIs & Services → Library**.
+3. Search for **YouTube Data API v3** and click **Enable**.
+4. Go to **APIs & Services → Credentials**.
+5. Click **Create Credentials → API key**.
+6. Copy the generated key into your `.env` as `YOUTUBE_API_KEY`.
+7. (Recommended) Click **Restrict key** and apply restrictions:
+   - **Application restriction**: HTTP referrers (web) or IP addresses (server), depending on your deployment.
+   - **API restriction**: limit to **YouTube Data API v3**.
+
 ### Screenshot Capture (spatie/laravel-screenshot)
 
 OpenBookList uses [`spatie/laravel-screenshot`](https://spatie.be/docs/laravel-screenshot/v1/introduction) to generate website screenshots for bookmark images.
