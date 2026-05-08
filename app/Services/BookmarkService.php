@@ -267,23 +267,33 @@ class BookmarkService
      */
     protected function fetchYoutubeMetadata(string $url, string $language): array
     {
-        $videoId = YoutubeClient::parseVidFromURL($url);
+        try {
+            $videoId = YoutubeClient::parseVidFromURL($url);
 
-        $videoInfo = $this->createYoutubeClient()->getLocalizedVideoInfo($videoId, $language, ['snippet']);
+            $videoInfo = $this->createYoutubeClient()->getLocalizedVideoInfo($videoId, $language, ['snippet']);
 
-        if (! $videoInfo || ! isset($videoInfo->snippet)) {
+            if (! $videoInfo || ! isset($videoInfo->snippet)) {
+                return [
+                    'title' => null,
+                    'description' => null,
+                    'image' => null,
+                ];
+            }
+
+            return [
+                'title' => $videoInfo->snippet->title ?? null,
+                'description' => $videoInfo->snippet->description ?? null,
+                'image' => $this->getLargestYoutubeThumbnailUrl($videoInfo->snippet->thumbnails ?? null),
+            ];
+        } catch (\Throwable $e) {
+            report($e);
+
             return [
                 'title' => null,
                 'description' => null,
                 'image' => null,
             ];
         }
-
-        return [
-            'title' => $videoInfo->snippet->title ?? null,
-            'description' => $videoInfo->snippet->description ?? null,
-            'image' => $this->getLargestYoutubeThumbnailUrl($videoInfo->snippet->thumbnails ?? null),
-        ];
     }
 
     /**

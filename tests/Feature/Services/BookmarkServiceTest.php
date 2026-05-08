@@ -98,6 +98,22 @@ class BookmarkServiceTest extends TestCase
         $this->assertSame('https://img.youtube.com/default.jpg', $metadata['image']);
     }
 
+    public function test_it_returns_null_youtube_metadata_when_youtube_parsing_throws_exception(): void
+    {
+        $service = new BookmarkService;
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('fetchYoutubeMetadata');
+
+        $metadata = $method->invoke($service, 'https://www.youtube.com/', 'en');
+
+        $this->assertSame([
+            'title' => null,
+            'description' => null,
+            'image' => null,
+        ], $metadata);
+    }
+
     public function test_it_returns_null_on_failed_download(): void
     {
         Http::fake([
