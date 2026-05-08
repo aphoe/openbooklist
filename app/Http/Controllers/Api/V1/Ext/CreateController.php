@@ -28,7 +28,7 @@ class CreateController extends Controller
         $url = $validated->string('url')->toString();
 
         // Fetch Metadata
-        $metadata = $this->bookmarkService->fetchMetadata($url);
+        $metadata = $this->bookmarkService->fetchMetadata($url, $user);
 
         $imagePath = null;
         if (! empty($metadata['image'])) {

@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use Alaouy\Youtube\Youtube as YoutubeClient;
 use App\Managers\OpenRouterManager;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -237,8 +239,18 @@ class BookmarkService
      *
      * @return array{title: ?string, description: ?string, image: ?string}
      */
-    public function fetchMetadata(string $url): array
+    public function fetchMetadata(string $url, ?User $user = null): array
     {
+        $language = $user?->language ?: 'en';
+
+        if ($this->isYoutubeUrl($url) && config('project.youtube_api_key') !== null) {
+            try {
+                return $this->fetchYoutubeMetadata($url, $language);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
         $this->fetchHtml($url);
 
         return [
@@ -246,6 +258,87 @@ class BookmarkService
             'description' => $this->getDescription(),
             'image' => $this->getImage(),
         ];
+    }
+
+    /**
+     * Fetch metadata from YouTube when a valid API key is configured.
+     *
+     * @return array{title: ?string, description: ?string, image: ?string}
+     */
+    protected function fetchYoutubeMetadata(string $url, string $language): array
+    {
+        $videoId = YoutubeClient::parseVidFromURL($url);
+
+        $videoInfo = $this->createYoutubeClient()->getLocalizedVideoInfo($videoId, $language, ['snippet']);
+
+        if (! $videoInfo || ! isset($videoInfo->snippet)) {
+            return [
+                'title' => null,
+                'description' => null,
+                'image' => null,
+            ];
+        }
+
+        return [
+            'title' => $videoInfo->snippet->title ?? null,
+            'description' => $videoInfo->snippet->description ?? null,
+            'image' => $this->getLargestYoutubeThumbnailUrl($videoInfo->snippet->thumbnails ?? null),
+        ];
+    }
+
+    /**
+     * Determine whether a URL belongs to YouTube.
+     */
+    protected function isYoutubeUrl(string $url): bool
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+
+        if (! is_string($host) || $host === '') {
+            return false;
+        }
+
+        return str_contains($host, 'youtube.com') || str_contains($host, 'youtu.be');
+    }
+
+    /**
+     * Return the largest thumbnail URL available from the YouTube snippet.
+     */
+    protected function getLargestYoutubeThumbnailUrl(mixed $thumbnails): ?string
+    {
+        if (! is_object($thumbnails)) {
+            return null;
+        }
+
+        /** @var array<string, object> $thumbnailOptions */
+        $thumbnailOptions = get_object_vars($thumbnails);
+
+        $largestUrl = null;
+        $largestArea = -1;
+
+        foreach ($thumbnailOptions as $thumbnail) {
+            if (! is_object($thumbnail) || ! isset($thumbnail->url) || ! is_string($thumbnail->url)) {
+                continue;
+            }
+
+            $width = isset($thumbnail->width) ? (int) $thumbnail->width : 0;
+            $height = isset($thumbnail->height) ? (int) $thumbnail->height : 0;
+            $area = $width * $height;
+
+            if ($area > $largestArea) {
+                $largestArea = $area;
+                $largestUrl = $thumbnail->url;
+            }
+        }
+
+        return $largestUrl;
+    }
+
+    /**
+     * Build the YouTube client from project configuration.
+     */
+    protected function createYoutubeClient(): YoutubeClient
+    {
+        return new YoutubeClient((string) config('project.youtube_api_key'));
     }
 
     /**
