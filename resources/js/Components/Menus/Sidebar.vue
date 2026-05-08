@@ -62,8 +62,6 @@ const logout = () => {
                     <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                         Top Categories
                     </span>
-                    <span
-                        class="material-symbols-outlined text-slate-400 text-lg cursor-pointer hover:text-primary">add</span>
                 </div>
 
                 <div class="flex flex-col gap-1">
