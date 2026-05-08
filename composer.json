@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "alaouy/youtube": "^2.2",
         "ichtrojan/laravel-otp": "^2.0",
         "inertiajs/inertia-laravel": "*",
         "intervention/image": "^3.11",
