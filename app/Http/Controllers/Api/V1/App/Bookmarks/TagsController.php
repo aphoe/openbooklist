@@ -13,6 +13,6 @@ class TagsController extends Controller
     {
         return Tag::where('user_id', $request->user()->id)
             ->orderBy('name')
-            ->pluck('name', 'id');
+            ->pluck('name', 'slug');
     }
 }

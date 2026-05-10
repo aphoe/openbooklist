@@ -13,6 +13,6 @@ class CategoriesController extends Controller
     {
         return Category::where('user_id', $request->user()->id)
             ->orderBy('name')
-            ->pluck('name', 'id');
+            ->pluck('name', 'slug');
     }
 }
