@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api\V1\App\Bookmarks;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Users\UpdateBookmarkRequest;
+use App\Http\Requests\Api\V1\App\UpdateBookmarkRequest;
 use App\Models\Bookmark;
 use App\Models\Category;
+use App\Models\Tag;
 use App\Repositories\BookmarkRepository;
 use App\Services\BookmarkService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class UpdateController extends Controller
 {
@@ -34,9 +36,13 @@ class UpdateController extends Controller
             );
         }
 
-        $category = $validated->integer('category_id')
-            ? Category::find($validated->integer('category_id'))
-            : null;
+        // Handle Category by slug
+        $category = null;
+        if ($validated->string('category')->isNotEmpty()) {
+            $category = Category::where('user_id', $user->id)
+                ->where('slug', $validated->string('category')->toString())
+                ->first();
+        }
 
         $bookmark = $this->bookmarkRepository->update(
             bookmark: $bookmark,
@@ -50,7 +56,23 @@ class UpdateController extends Controller
 
         // Sync tags if provided
         if ($validated->array('tags')) {
-            $this->bookmarkRepository->syncTags($bookmark, $validated->array('tags'));
+            $tagIds = [];
+            foreach ($validated->array('tags') as $tagSlug) {
+                if (empty(trim($tagSlug))) {
+                    continue;
+                }
+
+                $tag = Tag::firstOrCreate(
+                    ['slug' => $tagSlug, 'user_id' => $user->id],
+                    ['name' => Str::headline($tagSlug)]
+                );
+
+                $tagIds[] = $tag->id;
+            }
+
+            if (count($tagIds) > 0) {
+                $this->bookmarkRepository->syncTags($bookmark, $tagIds);
+            }
         }
 
         return response()->json([
