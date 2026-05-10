@@ -22,8 +22,8 @@ class ShowController extends Controller
             'description' => $bookmark->description,
             'image_url' => $bookmark->image_url,
             'domain' => $bookmark->domain,
-            'category' => $bookmark->category?->name,
-            'tags' => $bookmark->tags->pluck('name')->toArray(),
+            'category' => $bookmark->category ? [$bookmark->category->id => $bookmark->category->name] : null,
+            'tags' => $bookmark->tags->pluck('name', 'id')->toArray(),
             'date_added' => $bookmark->created_at->format('M d, Y \a\t h:i A'),
         ];
     }
