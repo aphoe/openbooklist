@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\V1\App\Auth\LoginController;
+use App\Http\Controllers\Api\V1\App\Bookmarks\CategoriesController;
+use App\Http\Controllers\Api\V1\App\Bookmarks\IndexController as BookmarksIndexController;
+use App\Http\Controllers\Api\V1\App\Bookmarks\TagsController;
 use App\Http\Controllers\Api\V1\Ext\CreateController;
 use App\Http\Controllers\Api\V1\Ext\FetchCategoriesController;
 use App\Http\Controllers\Api\V1\Ext\FetchTagsController;
@@ -16,6 +19,12 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->prefix('v1/app')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/login', LoginController::class);
+    });
+
+    Route::prefix('bookmarks')->group(function () {
+        Route::get('/', BookmarksIndexController::class);
+        Route::get('/categories', CategoriesController::class);
+        Route::get('/tags', TagsController::class);
     });
 });
 
