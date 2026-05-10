@@ -3,11 +3,13 @@
 use App\Http\Controllers\Api\V1\App\Auth\LoginController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\CategoriesController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\CreateController as BookmarksCreateController;
+use App\Http\Controllers\Api\V1\App\Bookmarks\DestroyController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\IndexController as BookmarksIndexController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\RefetchMetadataController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\SetImageController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\ShowController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\TagsController;
+use App\Http\Controllers\Api\V1\App\Bookmarks\UpdateController;
 use App\Http\Controllers\Api\V1\Ext\CreateController;
 use App\Http\Controllers\Api\V1\Ext\FetchCategoriesController;
 use App\Http\Controllers\Api\V1\Ext\FetchTagsController;
@@ -29,6 +31,8 @@ Route::middleware('auth:sanctum')->prefix('v1/app')->group(function () {
         Route::get('/', BookmarksIndexController::class);
         Route::post('/', BookmarksCreateController::class);
         Route::get('/{bookmark}', ShowController::class);
+        Route::put('/{bookmark}', UpdateController::class);
+        Route::delete('/{bookmark}', DestroyController::class);
         Route::post('/{bookmark}/refetch-metadata', RefetchMetadataController::class);
         Route::post('/{bookmark}/set-image', SetImageController::class);
         Route::get('/categories', CategoriesController::class);
