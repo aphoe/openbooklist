@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\App\Bookmarks\CategoriesController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\CreateController as BookmarksCreateController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\IndexController as BookmarksIndexController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\RefetchMetadataController;
+use App\Http\Controllers\Api\V1\App\Bookmarks\SetImageController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\ShowController;
 use App\Http\Controllers\Api\V1\App\Bookmarks\TagsController;
 use App\Http\Controllers\Api\V1\Ext\CreateController;
@@ -29,6 +30,7 @@ Route::middleware('auth:sanctum')->prefix('v1/app')->group(function () {
         Route::post('/', BookmarksCreateController::class);
         Route::get('/{bookmark}', ShowController::class);
         Route::post('/{bookmark}/refetch-metadata', RefetchMetadataController::class);
+        Route::post('/{bookmark}/set-image', SetImageController::class);
         Route::get('/categories', CategoriesController::class);
         Route::get('/tags', TagsController::class);
     });
