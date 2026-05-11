@@ -30,13 +30,13 @@ Route::middleware('auth:sanctum')->prefix('v1/app')->group(function () {
     Route::prefix('bookmarks')->group(function () {
         Route::get('/', BookmarksIndexController::class);
         Route::post('/', BookmarksCreateController::class);
+        Route::get('/categories', CategoriesController::class);
+        Route::get('/tags', TagsController::class);
         Route::get('/{bookmark}', ShowController::class);
         Route::put('/{bookmark}', UpdateController::class);
         Route::delete('/{bookmark}', DestroyController::class);
         Route::post('/{bookmark}/refetch-metadata', RefetchMetadataController::class);
         Route::post('/{bookmark}/set-image', SetImageController::class);
-        Route::get('/categories', CategoriesController::class);
-        Route::get('/tags', TagsController::class);
     });
 });
 
