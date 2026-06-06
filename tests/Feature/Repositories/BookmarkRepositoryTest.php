@@ -8,11 +8,42 @@ use App\Models\Tag;
 use App\Models\User;
 use App\Repositories\BookmarkRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class BookmarkRepositoryTest extends TestCase
 {
     use RefreshDatabase;
+
+    /**
+     * Get the maximum title length from the database schema.
+     */
+    private function getTitleMaxLength(): int
+    {
+        $columns = Schema::getColumns('bookmarks');
+        foreach ($columns as $column) {
+            if ($column['name'] === 'title' && isset($column['length'])) {
+                return $column['length'];
+            }
+        }
+
+        return 255;
+    }
+
+    /**
+     * Get the maximum description length from the database schema.
+     */
+    private function getDescriptionMaxLength(): int
+    {
+        $columns = Schema::getColumns('bookmarks');
+        foreach ($columns as $column) {
+            if ($column['name'] === 'description' && isset($column['length'])) {
+                return $column['length'];
+            }
+        }
+
+        return 65535;
+    }
 
     public function test_it_creates_a_bookmark(): void
     {
@@ -66,6 +97,60 @@ class BookmarkRepositoryTest extends TestCase
             'description' => 'New Desc',
             'image' => 'new.jpg',
         ]);
+    }
+
+    public function test_it_truncates_title_and_description_when_creating_a_bookmark(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::factory()->create(['user_id' => $user->id]);
+
+        $longTitle = str_repeat('t', 300);
+        $longDescription = str_repeat('d', 70000);
+
+        $repo = new BookmarkRepository;
+        $bookmark = $repo->create(
+            user: $user,
+            url: 'https://example.com',
+            category: $category,
+            title: $longTitle,
+            description: $longDescription,
+            image: null,
+        );
+
+        $freshBookmark = $bookmark->fresh();
+        $titleMaxLength = $this->getTitleMaxLength();
+        $descriptionMaxLength = $this->getDescriptionMaxLength();
+
+        $this->assertSame($titleMaxLength, mb_strlen((string) $freshBookmark?->title));
+        $this->assertSame($descriptionMaxLength, mb_strlen((string) $freshBookmark?->description));
+    }
+
+    public function test_it_truncates_title_and_description_when_updating_a_bookmark(): void
+    {
+        $user = User::factory()->create();
+        $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+        $category = Category::factory()->create(['user_id' => $user->id]);
+
+        $longTitle = str_repeat('u', 300);
+        $longDescription = str_repeat('v', 70000);
+
+        $repo = new BookmarkRepository;
+        $repo->update(
+            bookmark: $bookmark,
+            user: $user,
+            url: 'https://updated.com',
+            category: $category,
+            title: $longTitle,
+            description: $longDescription,
+            image: null,
+        );
+
+        $freshBookmark = $bookmark->fresh();
+        $titleMaxLength = $this->getTitleMaxLength();
+        $descriptionMaxLength = $this->getDescriptionMaxLength();
+
+        $this->assertSame($titleMaxLength, mb_strlen((string) $freshBookmark?->title));
+        $this->assertSame($descriptionMaxLength, mb_strlen((string) $freshBookmark?->description));
     }
 
     public function test_it_syncs_tags(): void

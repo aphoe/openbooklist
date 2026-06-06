@@ -62,6 +62,19 @@ const handleFavorite = (bookmark) => {
 const handleRefetch = (bookmark) => {
     router.post(route('bookmarks.refetch-metadata', bookmark.id), {}, { preserveScroll: true });
 };
+const isRefreshLoading = ref(false);
+
+const refreshBookmarks = () => {
+    isRefreshLoading.value = true;
+    router.reload({
+        only: ['bookmarks'],
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: () => {
+            isRefreshLoading.value = false;
+        },
+    });
+};
 const handleSetImage = (bookmark) => {
     selectedBookmark.value = bookmark;
     showSetImageModal.value = true;
@@ -187,6 +200,13 @@ watch(sortMode, (newVal) => {
                             <span class="material-symbols-outlined text-[20px] block">view_list</span>
                         </button>
                     </div>
+
+                    <button
+                        class="h-10 rounded-lg border border-slate-300 px-3 text-slate-700 transition-all hover:bg-slate-100 hover:border-slate-400 hover:shadow-sm dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        @click="refreshBookmarks"
+                        :disabled="isRefreshLoading">
+                        <span :class="['material-symbols-outlined text-[20px] block', isRefreshLoading && 'animate-spin']">refresh</span>
+                    </button>
 
                     <button class="bg-primary hover:bg-blue-600 text-white font-semibold flex-1 sm:flex-none h-10 px-4 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2" @click="showAddModal = true">
                         <span class="material-symbols-outlined text-lg">add</span>
