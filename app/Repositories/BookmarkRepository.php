@@ -5,9 +5,41 @@ namespace App\Repositories;
 use App\Models\Bookmark;
 use App\Models\Category;
 use App\Models\User;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 final class BookmarkRepository
 {
+    /**
+     * Get the maximum title length from the database schema.
+     */
+    private static function getTitleMaxLength(): int
+    {
+        $columns = Schema::getColumns('bookmarks');
+        foreach ($columns as $column) {
+            if ($column['name'] === 'title' && isset($column['length'])) {
+                return $column['length'];
+            }
+        }
+
+        return 255; // Fallback to Laravel's default string length
+    }
+
+    /**
+     * Get the maximum description length from the database schema.
+     */
+    private static function getDescriptionMaxLength(): int
+    {
+        $columns = Schema::getColumns('bookmarks');
+        foreach ($columns as $column) {
+            if ($column['name'] === 'description' && isset($column['length'])) {
+                return $column['length'];
+            }
+        }
+
+        return 65535; // Fallback to text field max
+    }
+
     /**
      * Create a new Bookmark record.
      */
@@ -24,8 +56,8 @@ final class BookmarkRepository
         $bookmark->user_id = $user->id;
         $bookmark->category_id = $category?->id;
         $bookmark->url = $url;
-        $bookmark->title = $title;
-        $bookmark->description = $description;
+        $bookmark->title = $title !== null ? Str::limit($title, self::getTitleMaxLength(), '') : null;
+        $bookmark->description = $description !== null ? Str::limit($description, self::getDescriptionMaxLength(), '') : null;
         $bookmark->image = $image;
 
         $bookmark->save();
@@ -48,8 +80,8 @@ final class BookmarkRepository
         $bookmark->user_id = $user->id;
         $bookmark->category_id = $category?->id;
         $bookmark->url = $url;
-        $bookmark->title = $title;
-        $bookmark->description = $description;
+        $bookmark->title = $title !== null ? Str::limit($title, self::getTitleMaxLength(), '') : null;
+        $bookmark->description = $description !== null ? Str::limit($description, self::getDescriptionMaxLength(), '') : null;
         $bookmark->image = $image;
 
         $bookmark->save();
