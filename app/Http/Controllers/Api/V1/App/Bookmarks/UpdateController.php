@@ -10,7 +10,6 @@ use App\Models\Tag;
 use App\Repositories\BookmarkRepository;
 use App\Services\BookmarkService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Str;
 
 class UpdateController extends Controller
 {
@@ -64,7 +63,7 @@ class UpdateController extends Controller
 
                 $tag = Tag::firstOrCreate(
                     ['slug' => $tagSlug, 'user_id' => $user->id],
-                    ['name' => Str::headline($tagSlug)]
+                    ['name' => $tagSlug]
                 );
 
                 $tagIds[] = $tag->id;
