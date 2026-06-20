@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Alaouy\Youtube\Youtube as YoutubeClient;
 use App\Managers\OpenRouterManager;
+use App\Models\Bookmark;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -50,6 +51,16 @@ class BookmarkService
         }
 
         return 32;
+    }
+
+    /**
+     * Check if a URL already exists for a user.
+     */
+    public function urlExistsForUser(User $user, string $url): bool
+    {
+        return Bookmark::where('user_id', $user->id)
+            ->where('url', $url)
+            ->exists();
     }
 
     /**

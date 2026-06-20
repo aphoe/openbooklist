@@ -24,6 +24,13 @@ class CreateController extends Controller
         $user = $request->user();
         $url = $validated->string('url')->toString();
 
+        // Check for duplicate URL
+        if ($this->bookmarkService->urlExistsForUser($user, $url)) {
+            return response()->json([
+                'message' => 'A bookmark with this URL already exists.',
+            ], 409);
+        }
+
         // Fetch Metadata
         $metadata = $this->bookmarkService->fetchMetadata($url, $user);
 

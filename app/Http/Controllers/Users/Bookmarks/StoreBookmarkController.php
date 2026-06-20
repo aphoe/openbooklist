@@ -22,6 +22,12 @@ class StoreBookmarkController extends Controller
     {
         $validated = $request->safe();
         $user = $request->user();
+        $url = $validated->string('url');
+
+        // Check for duplicate URL
+        if ($this->bookmarkService->urlExistsForUser($user, $url)) {
+            return redirect()->back()->withErrors(['url' => 'A bookmark with this URL already exists.']);
+        }
 
         // Download and resize image if provided
         $imagePath = null;
@@ -37,7 +43,7 @@ class StoreBookmarkController extends Controller
 
         $bookmark = $this->bookmarkRepository->create(
             user: $user,
-            url: $validated->string('url'),
+            url: $url,
             category: $category,
             title: $validated->string('title') ?: null,
             description: $validated->string('description') ?: null,
