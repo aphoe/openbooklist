@@ -18,6 +18,8 @@ use voku\helper\HtmlDomParser;
 
 class BookmarkService
 {
+    public const string PER_PAGE_SETTING = 'bookmark_per_page';
+
     protected ?PHPScraper $scraper = null;
 
     protected ?HtmlDomParser $dom = null;
