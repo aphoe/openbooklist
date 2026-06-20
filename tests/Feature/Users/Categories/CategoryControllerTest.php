@@ -3,7 +3,9 @@
 namespace Tests\Feature\Users\Categories;
 
 use App\Models\Category;
+use App\Models\Setting;
 use App\Models\User;
+use App\Services\CategoryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -64,32 +66,71 @@ class CategoryControllerTest extends TestCase
         );
     }
 
-    public function test_per_page_parameter_respects_preset_values(): void
+    public function test_per_page_is_read_from_user_setting(): void
     {
         $user = User::factory()->create();
         Category::factory(50)->create(['user_id' => $user->id]);
+        Setting::factory()->create([
+            'user_id' => $user->id,
+            'setting' => CategoryService::PER_PAGE_SETTING,
+            'value' => '50',
+        ]);
 
         $this->withoutVite();
-        $response = $this->actingAs($user)->get(route('categories.index', ['per_page' => 50]));
+        $response = $this->actingAs($user)->get(route('categories.index'));
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Users/Categories/Index')
             ->has('categories.data', 50)
+            ->where('perPage', 50)
         );
     }
 
-    public function test_per_page_invalid_value_defaults_to_25(): void
+    public function test_per_page_defaults_to_25_when_no_setting_exists(): void
     {
         $user = User::factory()->create();
         Category::factory(50)->create(['user_id' => $user->id]);
 
         $this->withoutVite();
-        $response = $this->actingAs($user)->get(route('categories.index', ['per_page' => 999]));
+        $response = $this->actingAs($user)->get(route('categories.index'));
 
-        // Should default to 25 items
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Users/Categories/Index')
             ->has('categories.data', 25)
+            ->where('perPage', 25)
+        );
+    }
+
+    public function test_per_page_prop_is_passed_to_view(): void
+    {
+        $user = User::factory()->create();
+        Category::factory(5)->create(['user_id' => $user->id]);
+
+        $this->withoutVite();
+        $response = $this->actingAs($user)->get(route('categories.index'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Users/Categories/Index')
+            ->has('perPage')
+        );
+    }
+
+    public function test_per_page_setting_of_other_user_is_not_used(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+        Category::factory(50)->create(['user_id' => $user->id]);
+        Setting::factory()->create([
+            'user_id' => $other->id,
+            'setting' => CategoryService::PER_PAGE_SETTING,
+            'value' => '50',
+        ]);
+
+        $this->withoutVite();
+        $response = $this->actingAs($user)->get(route('categories.index'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('perPage', 25)
         );
     }
 }
