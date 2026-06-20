@@ -26,7 +26,7 @@ class StoreBookmarkRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'tags' => ['nullable', 'array'],
-            'tags.*' => ['integer', 'exists:tags,id'],
+            'tags.*' => ['string'],
             'description' => ['nullable', 'string', 'max:5000'],
             'image' => ['nullable', 'url', 'max:2048'],
         ];

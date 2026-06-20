@@ -18,6 +18,10 @@ const props = defineProps({
         type: String,
         default: 'Search tags...',
     },
+    allowCreate: {
+        type: Boolean,
+        default: true,
+    },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -34,22 +38,52 @@ const filteredOptions = computed(() => {
 });
 
 const selectedOptionsObjects = computed(() => {
-    return props.options.filter(option => props.modelValue.includes(option.id));
+    return props.modelValue.map(value => {
+        if (typeof value === 'object') return value;
+        const existing = props.options.find(opt => opt.slug === value || opt.id === value);
+        return existing || { name: value, slug: value };
+    });
+});
+
+const canCreateNewTag = computed(() => {
+    if (!props.allowCreate || !search.value.trim()) return false;
+    return !filteredOptions.value.some(opt =>
+        opt.name.toLowerCase() === search.value.toLowerCase()
+    );
 });
 
 const toggle = (option) => {
     const newValue = [...props.modelValue];
-    const index = newValue.indexOf(option.id);
+    const identifier = option.slug || option.id;
+    const index = newValue.findIndex(val =>
+        (typeof val === 'object' ? val.slug || val.id : val) === identifier
+    );
+
     if (index === -1) {
-        newValue.push(option.id);
+        newValue.push(identifier);
     } else {
         newValue.splice(index, 1);
     }
     emit('update:modelValue', newValue);
 };
 
-const remove = (optionId) => {
-    const newValue = props.modelValue.filter(id => id !== optionId);
+const createNewTag = () => {
+    if (search.value.trim()) {
+        const newTag = search.value.trim().toLowerCase().replace(/\s+/g, '-');
+        const newValue = [...props.modelValue];
+        if (!newValue.includes(newTag)) {
+            newValue.push(newTag);
+            emit('update:modelValue', newValue);
+        }
+        search.value = '';
+    }
+};
+
+const remove = (value) => {
+    const identifier = typeof value === 'object' ? (value.slug || value.id) : value;
+    const newValue = props.modelValue.filter(val =>
+        (typeof val === 'object' ? val.slug || val.id : val) !== identifier
+    );
     emit('update:modelValue', newValue);
 };
 
@@ -102,17 +136,24 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
             <div class="overflow-y-auto overflow-x-hidden p-1 flex-1">
                 <button v-for="option in filteredOptions" :key="option.id" type="button"
                     class="flex w-full items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors"
-                    :class="modelValue.includes(option.id) ? 'bg-primary/5 text-primary font-medium' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                    :class="modelValue.includes(option.slug || option.id) ? 'bg-primary/5 text-primary font-medium' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'"
                     @click.stop="toggle(option)">
                     <div class="flex items-center justify-center size-4 border rounded shrink-0 transition-colors"
-                        :class="modelValue.includes(option.id) ? 'bg-primary border-primary text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'">
-                        <span v-if="modelValue.includes(option.id)"
+                        :class="modelValue.includes(option.slug || option.id) ? 'bg-primary border-primary text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'">
+                        <span v-if="modelValue.includes(option.slug || option.id)"
                             class="material-symbols-outlined text-[12px] font-bold">check</span>
                     </div>
                     <span class="truncate">{{ option.name }}</span>
                 </button>
 
-                <div v-if="filteredOptions.length === 0" class="px-3 py-4 text-sm text-slate-400 text-center">
+                <button v-if="canCreateNewTag" type="button"
+                    class="flex w-full items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border-t border-slate-100 dark:border-slate-700 mt-1"
+                    @click.stop="createNewTag">
+                    <span class="material-symbols-outlined text-[16px]">add</span>
+                    <span>Create "<strong>{{ search }}</strong>"</span>
+                </button>
+
+                <div v-if="filteredOptions.length === 0 && !canCreateNewTag" class="px-3 py-4 text-sm text-slate-400 text-center">
                     No results found
                 </div>
             </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Users\Bookmarks;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Users\StoreBookmarkRequest;
 use App\Models\Category;
+use App\Models\Tag;
 use App\Repositories\BookmarkRepository;
 use App\Services\BookmarkService;
 
@@ -52,7 +53,23 @@ class StoreBookmarkController extends Controller
 
         // Sync tags if provided
         if ($validated->array('tags')) {
-            $this->bookmarkRepository->syncTags($bookmark, $validated->array('tags'));
+            $tagIds = [];
+            foreach ($validated->array('tags') as $tagSlug) {
+                if (empty(trim($tagSlug))) {
+                    continue;
+                }
+
+                $tag = Tag::firstOrCreate(
+                    ['slug' => $tagSlug, 'user_id' => $user->id],
+                    ['name' => $tagSlug]
+                );
+
+                $tagIds[] = $tag->id;
+            }
+
+            if (count($tagIds) > 0) {
+                $this->bookmarkRepository->syncTags($bookmark, $tagIds);
+            }
         }
 
         return redirect()->route('dashboard')->with('success', 'Bookmark saved successfully.');
