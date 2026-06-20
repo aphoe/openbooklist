@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Bookmark;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Services\BookmarkService;
 use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
@@ -18,6 +19,9 @@ class BookmarkController extends Controller
         $user = $request->user();
         $sort = $request->input('sort', 'newest');
         $categorySlug = $request->input('category');
+
+        $bookmarkService = new BookmarkService();
+        $perPage = $bookmarkService->getValidPerPage($request->input('per_page'));
 
         $query = Bookmark::where('user_id', $user->id)
             ->with(['category', 'tags']);
@@ -42,10 +46,11 @@ class BookmarkController extends Controller
             $query->latest();
         }
 
-        $bookmarks = $query->paginate(32)->withQueryString();
+        $bookmarks = $query->paginate($perPage)->withQueryString();
 
         return inertia('Users/Bookmarks/Index', [
             'bookmarks' => $bookmarks,
+            'paginationPresets' => $bookmarkService->getPaginationPresets(),
             'allCategories' => Category::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),
             'allTags' => Tag::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),
         ]);

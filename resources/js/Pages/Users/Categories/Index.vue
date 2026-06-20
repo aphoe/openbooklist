@@ -11,6 +11,10 @@ const page = usePage();
 
 const props = defineProps({
     categories: Object,
+    paginationPresets: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const showAddModal = ref(false);
@@ -19,6 +23,7 @@ const showEditModal = ref(false);
 const showDeleteModal = ref(false);
 
 const selectedCategory = ref(null);
+const perPage = ref(25);
 
 const activeDropdown = ref(null);
 const toggleDropdown = (id) => { activeDropdown.value = activeDropdown.value === id ? null : id; };
@@ -45,10 +50,27 @@ const handleDelete = (category) => {
 
 onMounted(() => {
     document.addEventListener('click', clickOutsideDropdown);
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('per_page')) {
+        perPage.value = parseInt(params.get('per_page'));
+    }
 });
 
 onUnmounted(() => {
     document.removeEventListener('click', clickOutsideDropdown);
+});
+
+watch(perPage, (newVal) => {
+    const params = new URLSearchParams(window.location.search);
+
+    params.set('per_page', newVal);
+    params.set('page', 1);
+
+    router.get(page.url.split('?')[0], Object.fromEntries(params.entries()), {
+        replace: true,
+        preserveState: true,
+        preserveScroll: true,
+    });
 });
 </script>
 
@@ -117,8 +139,18 @@ onUnmounted(() => {
                     <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mb-1 sm:mb-2 text-slate-900 dark:text-white">Categories</h2>
                     <p class="text-sm sm:text-base text-slate-500 dark:text-slate-400">Organize your bookmarks into meaningful groups for quicker access.</p>
                 </div>
-                
-                <div class="flex-shrink-0 w-full sm:w-auto">
+
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <!-- Per Page -->
+                    <div v-if="paginationPresets.length > 0" class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                        <span>Per page:</span>
+                        <select v-model="perPage" class="bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer pr-8 py-0">
+                            <option v-for="preset in paginationPresets" :key="preset" :value="preset">
+                                {{ preset }}
+                            </option>
+                        </select>
+                    </div>
+
                     <button class="bg-primary hover:bg-primary/90 w-full sm:w-auto text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all" @click="showAddModal = true">
                         <span class="material-symbols-outlined text-sm">add</span>
                         Add Category

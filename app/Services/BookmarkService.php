@@ -31,6 +31,28 @@ class BookmarkService
     }
 
     /**
+     * Get preset pagination options.
+     */
+    public function getPaginationPresets(): array
+    {
+        return [16, 32, 64, 96, 128, 256, 512];
+    }
+
+    /**
+     * Get valid per-page value, or default to 32.
+     */
+    public function getValidPerPage(?int $requested): int
+    {
+        $presets = $this->getPaginationPresets();
+
+        if ($requested && in_array($requested, $presets)) {
+            return $requested;
+        }
+
+        return 32;
+    }
+
+    /**
      * Fetch the HTML of the page using PHPScraper.
      */
     public function fetchHtml(string $url): self
