@@ -21,7 +21,8 @@ class BookmarkController extends Controller
         $categorySlug = $request->input('category');
 
         $bookmarkService = new BookmarkService();
-        $perPage = $bookmarkService->getValidPerPage($request->input('per_page'));
+        $perPageSetting = $user->settings()->where('setting', BookmarkService::PER_PAGE_SETTING)->first();
+        $perPage = $bookmarkService->getValidPerPage($perPageSetting ? (int) $perPageSetting->value : null);
 
         $query = Bookmark::where('user_id', $user->id)
             ->with(['category', 'tags']);
@@ -51,6 +52,7 @@ class BookmarkController extends Controller
         return inertia('Users/Bookmarks/Index', [
             'bookmarks' => $bookmarks,
             'paginationPresets' => $bookmarkService->getPaginationPresets(),
+            'perPage' => $perPage,
             'allCategories' => Category::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),
             'allTags' => Tag::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),
         ]);

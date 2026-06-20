@@ -4,6 +4,8 @@ namespace App\Services;
 
 class CategoryService
 {
+    public const string PER_PAGE_SETTING = 'category_per_page';
+
     /**
      * Get preset pagination options.
      */

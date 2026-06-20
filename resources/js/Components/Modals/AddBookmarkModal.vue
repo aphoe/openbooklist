@@ -73,15 +73,6 @@ const fetchMetadata = async () => {
     }
 };
 
-const toggleTag = (tagId) => {
-    const index = form.tags.indexOf(tagId);
-    if (index === -1) {
-        form.tags.push(tagId);
-    } else {
-        form.tags.splice(index, 1);
-    }
-};
-
 const submit = () => {
     form.post(route('bookmarks.store'), {
         onSuccess: () => {
@@ -168,7 +159,7 @@ watch(() => form.image, (newVal) => {
                         </div>
 
                         <!-- Tags -->
-                        <div v-if="tags.length > 0">
+                        <div>
                             <label
                                 class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tags</label>
                             <TagMultiSelect v-model="form.tags" :options="tags" />

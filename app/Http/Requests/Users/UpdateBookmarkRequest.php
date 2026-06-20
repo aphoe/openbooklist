@@ -26,7 +26,7 @@ class UpdateBookmarkRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'tags' => ['nullable', 'array'],
-            'tags.*' => ['exists:tags,id'],
+            'tags.*' => ['string'],
             'description' => ['nullable', 'string', 'max:5000'],
             'image' => ['nullable', 'string', 'max:2048'],
         ];

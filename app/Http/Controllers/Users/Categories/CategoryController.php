@@ -17,7 +17,8 @@ class CategoryController extends Controller
         $user = $request->user();
 
         $categoryService = new CategoryService();
-        $perPage = $categoryService->getValidPerPage($request->input('per_page'));
+        $perPageSetting = $user->settings()->where('setting', CategoryService::PER_PAGE_SETTING)->first();
+        $perPage = $categoryService->getValidPerPage($perPageSetting ? (int) $perPageSetting->value : null);
 
         $categories = Category::where('user_id', $user->id)
             ->withCount('bookmarks')
@@ -28,6 +29,7 @@ class CategoryController extends Controller
         return inertia('Users/Categories/Index', [
             'categories' => $categories,
             'paginationPresets' => $categoryService->getPaginationPresets(),
+            'perPage' => $perPage,
         ]);
     }
 }

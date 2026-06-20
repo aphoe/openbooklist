@@ -4,8 +4,10 @@ namespace Tests\Feature\Users\Bookmarks;
 
 use App\Models\Bookmark;
 use App\Models\Category;
+use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\User;
+use App\Services\BookmarkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -149,52 +151,71 @@ class BookmarkControllerTest extends TestCase
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Users/Bookmarks/Index')
             ->has('paginationPresets')
-            ->where('paginationPresets.0', 32)
+            ->where('paginationPresets.0', 16)
         );
     }
 
-    public function test_per_page_parameter_respects_preset_values(): void
+    public function test_per_page_is_read_from_user_setting(): void
     {
         $user = User::factory()->create();
         Bookmark::factory(100)->create(['user_id' => $user->id]);
+        Setting::factory()->create([
+            'user_id' => $user->id,
+            'setting' => BookmarkService::PER_PAGE_SETTING,
+            'value' => '64',
+        ]);
 
-        // Test with valid preset value
-        $response = $this->actingAs($user)->get(route('dashboard', ['per_page' => 64]));
+        $response = $this->actingAs($user)->get(route('dashboard'));
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Users/Bookmarks/Index')
             ->has('bookmarks.data', 64)
+            ->where('perPage', 64)
         );
     }
 
-    public function test_per_page_invalid_value_defaults_to_32(): void
+    public function test_per_page_defaults_to_32_when_no_setting_exists(): void
     {
         $user = User::factory()->create();
         Bookmark::factory(50)->create(['user_id' => $user->id]);
 
-        // Test with invalid per_page value
-        $response = $this->actingAs($user)->get(route('dashboard', ['per_page' => 999]));
+        $response = $this->actingAs($user)->get(route('dashboard'));
 
-        // Should default to 32 items
         $response->assertInertia(fn (Assert $page) => $page
             ->component('Users/Bookmarks/Index')
             ->has('bookmarks.data', 32)
+            ->where('perPage', 32)
         );
     }
 
-    public function test_per_page_is_preserved_in_query_string(): void
+    public function test_per_page_prop_is_passed_to_view(): void
     {
         $user = User::factory()->create();
-        Bookmark::factory(70)->create(['user_id' => $user->id]);
+        Bookmark::factory(5)->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user)->get(route('dashboard', [
-            'per_page' => 64,
-            'sort' => 'oldest',
-        ]));
+        $response = $this->actingAs($user)->get(route('dashboard'));
 
-        // Check that both parameters are in the paginated links
         $response->assertInertia(fn (Assert $page) => $page
-            ->has('bookmarks.data', 64)
+            ->component('Users/Bookmarks/Index')
+            ->has('perPage')
+        );
+    }
+
+    public function test_per_page_setting_of_other_user_is_not_used(): void
+    {
+        $user = User::factory()->create();
+        $other = User::factory()->create();
+        Bookmark::factory(50)->create(['user_id' => $user->id]);
+        Setting::factory()->create([
+            'user_id' => $other->id,
+            'setting' => BookmarkService::PER_PAGE_SETTING,
+            'value' => '64',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('perPage', 32)
         );
     }
 }
