@@ -15,6 +15,10 @@ const props = defineProps({
         type: Array,
         default: () => [],
     },
+    perPage: {
+        type: Number,
+        default: 25,
+    },
 });
 
 const showAddModal = ref(false);
@@ -23,7 +27,7 @@ const showEditModal = ref(false);
 const showDeleteModal = ref(false);
 
 const selectedCategory = ref(null);
-const perPage = ref(25);
+const perPage = ref(props.perPage);
 
 const activeDropdown = ref(null);
 const toggleDropdown = (id) => { activeDropdown.value = activeDropdown.value === id ? null : id; };
@@ -50,10 +54,6 @@ const handleDelete = (category) => {
 
 onMounted(() => {
     document.addEventListener('click', clickOutsideDropdown);
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('per_page')) {
-        perPage.value = parseInt(params.get('per_page'));
-    }
 });
 
 onUnmounted(() => {
@@ -61,14 +61,7 @@ onUnmounted(() => {
 });
 
 watch(perPage, (newVal) => {
-    const params = new URLSearchParams(window.location.search);
-
-    params.set('per_page', newVal);
-    params.set('page', 1);
-
-    router.get(page.url.split('?')[0], Object.fromEntries(params.entries()), {
-        replace: true,
-        preserveState: true,
+    router.post(route('categories.per-page'), { per_page: newVal }, {
         preserveScroll: true,
     });
 });

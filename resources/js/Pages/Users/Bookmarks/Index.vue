@@ -11,7 +11,7 @@ import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 
 const page = usePage();
 
-defineProps({
+const props = defineProps({
     bookmarks: Object,
     allCategories: {
         type: Array,
@@ -25,13 +25,17 @@ defineProps({
         type: Array,
         default: () => [],
     },
+    perPage: {
+        type: Number,
+        default: 32,
+    },
 });
 
 const showAddModal = ref(false);
 const viewMode = ref('grid');
 
 const sortMode = ref('newest');
-const perPage = ref(32);
+const perPage = ref(props.perPage);
 
 const activeDropdown = ref(null);
 const toggleDropdown = (id) => { activeDropdown.value = activeDropdown.value === id ? null : id; };
@@ -91,9 +95,6 @@ onMounted(() => {
     if (params.has('sort')) {
         sortMode.value = params.get('sort');
     }
-    if (params.has('per_page')) {
-        perPage.value = parseInt(params.get('per_page'));
-    }
 });
 
 onUnmounted(() => {
@@ -113,14 +114,7 @@ watch(sortMode, (newVal) => {
 });
 
 watch(perPage, (newVal) => {
-    const params = new URLSearchParams(window.location.search);
-
-    params.set('per_page', newVal);
-    params.set('page', 1);
-
-    router.get(page.url.split('?')[0], Object.fromEntries(params.entries()), {
-        replace: true,
-        preserveState: true,
+    router.post(route('bookmarks.per-page'), { per_page: newVal }, {
         preserveScroll: true,
     });
 });

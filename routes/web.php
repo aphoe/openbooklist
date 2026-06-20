@@ -23,10 +23,12 @@ use App\Http\Controllers\Users\Bookmarks\SetBookmarkImageController;
 use App\Http\Controllers\Users\Bookmarks\StoreBookmarkController;
 use App\Http\Controllers\Users\Bookmarks\ToggleFavoriteController;
 use App\Http\Controllers\Users\Bookmarks\UpdateBookmarkController;
+use App\Http\Controllers\Users\Bookmarks\UpdateBookmarkPerPageController;
 use App\Http\Controllers\Users\Categories\CategoryController;
 use App\Http\Controllers\Users\Categories\DeleteCategoryController;
 use App\Http\Controllers\Users\Categories\StoreCategoryController;
 use App\Http\Controllers\Users\Categories\UpdateCategoryController;
+use App\Http\Controllers\Users\Categories\UpdateCategoryPerPageController;
 use App\Http\Controllers\Users\RecentlySavedController;
 use App\Http\Controllers\Users\SearchController;
 use App\Http\Controllers\Users\Settings\DestroyAccessTokenController;
@@ -82,11 +84,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/bookmarks/{bookmark}/set-image', SetBookmarkImageController::class)->name('bookmarks.set-image');
     Route::post('/bookmarks/{bookmark}/refetch-metadata', RefetchBookmarkMetadataController::class)->name('bookmarks.refetch-metadata');
     Route::post('/bookmarks/fetch-metadata', FetchBookmarkMetadataController::class)->name('bookmarks.fetch-metadata');
+    Route::post('/bookmarks/per-page', UpdateBookmarkPerPageController::class)->name('bookmarks.per-page');
 
     Route::get('/categories', CategoryController::class)->name('categories.index');
     Route::post('/categories', StoreCategoryController::class)->name('categories.store');
     Route::put('/categories/{category}', UpdateCategoryController::class)->name('categories.update');
     Route::delete('/categories/{category}', DeleteCategoryController::class)->name('categories.destroy');
+    Route::post('/categories/per-page', UpdateCategoryPerPageController::class)->name('categories.per-page');
 
     Route::get('/tags', TagController::class)->name('tags.index');
     Route::post('/tags', StoreTagController::class)->name('tags.store');
