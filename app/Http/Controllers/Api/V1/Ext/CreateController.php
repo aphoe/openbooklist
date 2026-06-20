@@ -9,7 +9,6 @@ use App\Models\Tag;
 use App\Repositories\BookmarkRepository;
 use App\Services\BookmarkService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Str;
 
 class CreateController extends Controller
 {
@@ -26,6 +25,13 @@ class CreateController extends Controller
         $validated = $request->safe();
         $user = $request->user();
         $url = $validated->string('url')->toString();
+
+        // Check for duplicate URL
+        if ($this->bookmarkService->urlExistsForUser($user, $url)) {
+            return response()->json([
+                'message' => 'A bookmark with this URL already exists.',
+            ], 409);
+        }
 
         // Fetch Metadata
         $metadata = $this->bookmarkService->fetchMetadata($url, $user);
@@ -62,7 +68,7 @@ class CreateController extends Controller
 
                 $tag = Tag::firstOrCreate(
                     ['slug' => $tagSlug, 'user_id' => $user->id],
-                    ['name' => Str::headline($tagSlug)]
+                    ['name' => $tagSlug]
                 );
 
                 $tagIds[] = $tag->id;

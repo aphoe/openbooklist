@@ -21,12 +21,17 @@ defineProps({
         type: Array,
         default: () => [],
     },
+    paginationPresets: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const showAddModal = ref(false);
 const viewMode = ref('grid');
 
 const sortMode = ref('newest');
+const perPage = ref(32);
 
 const activeDropdown = ref(null);
 const toggleDropdown = (id) => { activeDropdown.value = activeDropdown.value === id ? null : id; };
@@ -86,6 +91,9 @@ onMounted(() => {
     if (params.has('sort')) {
         sortMode.value = params.get('sort');
     }
+    if (params.has('per_page')) {
+        perPage.value = parseInt(params.get('per_page'));
+    }
 });
 
 onUnmounted(() => {
@@ -96,6 +104,19 @@ watch(sortMode, (newVal) => {
     const params = new URLSearchParams(window.location.search);
 
     params.set('sort', newVal);
+
+    router.get(page.url.split('?')[0], Object.fromEntries(params.entries()), {
+        replace: true,
+        preserveState: true,
+        preserveScroll: true,
+    });
+});
+
+watch(perPage, (newVal) => {
+    const params = new URLSearchParams(window.location.search);
+
+    params.set('per_page', newVal);
+    params.set('page', 1);
 
     router.get(page.url.split('?')[0], Object.fromEntries(params.entries()), {
         replace: true,
@@ -184,6 +205,16 @@ watch(sortMode, (newVal) => {
                             <option value="newest">Date Added (Newest)</option>
                             <option value="oldest">Date Added (Oldest)</option>
                             <option value="alphabetical">Alphabetical</option>
+                        </select>
+                    </div>
+
+                    <!-- Per Page -->
+                    <div v-if="paginationPresets.length > 0" class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                        <span>Per page:</span>
+                        <select v-model="perPage" class="bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer pr-8 py-0">
+                            <option v-for="preset in paginationPresets" :key="preset" :value="preset">
+                                {{ preset }}
+                            </option>
                         </select>
                     </div>
 

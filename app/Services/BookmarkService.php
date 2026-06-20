@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Alaouy\Youtube\Youtube as YoutubeClient;
 use App\Managers\OpenRouterManager;
+use App\Models\Bookmark;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -28,6 +29,38 @@ class BookmarkService
     public function __construct()
     {
         $this->openRouterManager = new OpenRouterManager;
+    }
+
+    /**
+     * Get preset pagination options.
+     */
+    public function getPaginationPresets(): array
+    {
+        return [16, 32, 64, 96, 128, 256, 512];
+    }
+
+    /**
+     * Get valid per-page value, or default to 32.
+     */
+    public function getValidPerPage(?int $requested): int
+    {
+        $presets = $this->getPaginationPresets();
+
+        if ($requested && in_array($requested, $presets)) {
+            return $requested;
+        }
+
+        return 32;
+    }
+
+    /**
+     * Check if a URL already exists for a user.
+     */
+    public function urlExistsForUser(User $user, string $url): bool
+    {
+        return Bookmark::where('user_id', $user->id)
+            ->where('url', $url)
+            ->exists();
     }
 
     /**

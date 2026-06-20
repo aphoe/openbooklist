@@ -57,4 +57,59 @@ class StoreBookmarkControllerTest extends TestCase
 
         $response->assertSessionHasErrors('url');
     }
+
+    public function test_cannot_store_duplicate_url_for_same_user(): void
+    {
+        $user = User::factory()->create();
+        $url = 'https://laravel.com';
+
+        // Create first bookmark
+        \App\Models\Bookmark::factory()->create([
+            'user_id' => $user->id,
+            'url' => $url,
+        ]);
+
+        $this->mock(BookmarkService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('downloadAndResizeImage')->andReturn('path/to/image.jpg');
+        });
+
+        // Try to create duplicate
+        $response = $this->actingAs($user)->post(route('bookmarks.store'), [
+            'url' => $url,
+            'title' => 'Duplicate Title',
+        ]);
+
+        $response->assertSessionHasErrors('url');
+        $this->assertDatabaseCount('bookmarks', 1);
+    }
+
+    public function test_different_users_can_save_same_url(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $url = 'https://laravel.com';
+
+        // User 1 creates a bookmark
+        \App\Models\Bookmark::factory()->create([
+            'user_id' => $user1->id,
+            'url' => $url,
+        ]);
+
+        $this->mock(BookmarkService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('downloadAndResizeImage')->andReturn('path/to/image.jpg');
+        });
+
+        // User 2 creates the same URL - should succeed
+        $response = $this->actingAs($user2)->post(route('bookmarks.store'), [
+            'url' => $url,
+            'title' => 'Same URL Different User',
+        ]);
+
+        $response->assertRedirect(route('dashboard'));
+        $this->assertDatabaseCount('bookmarks', 2);
+        $this->assertDatabaseHas('bookmarks', [
+            'user_id' => $user2->id,
+            'url' => $url,
+        ]);
+    }
 }

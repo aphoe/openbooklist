@@ -3,6 +3,7 @@
 namespace Tests\Feature\Services;
 
 use Alaouy\Youtube\Youtube as YoutubeClient;
+use App\Models\Bookmark;
 use App\Models\User;
 use App\Services\BookmarkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -195,5 +196,79 @@ class BookmarkServiceTest extends TestCase
         $this->assertEquals('gif', $method->invoke($service, null, 'http://a.com/i.gif'));
         $this->assertEquals('webp', $method->invoke($service, null, 'http://a.com/img.WEBp'));
         $this->assertEquals('jpg', $method->invoke($service, null, 'http://a.com/img')); // default fallback
+    }
+
+    public function test_get_pagination_presets(): void
+    {
+        $service = new BookmarkService;
+        $presets = $service->getPaginationPresets();
+
+        $this->assertIsArray($presets);
+        $this->assertContains(16, $presets);
+        $this->assertContains(32, $presets);
+        $this->assertContains(64, $presets);
+        $this->assertContains(96, $presets);
+        $this->assertContains(128, $presets);
+        $this->assertContains(256, $presets);
+        $this->assertContains(512, $presets);
+    }
+
+    public function test_get_valid_per_page_with_valid_preset(): void
+    {
+        $service = new BookmarkService;
+
+        $this->assertEquals(32, $service->getValidPerPage(32));
+        $this->assertEquals(64, $service->getValidPerPage(64));
+        $this->assertEquals(128, $service->getValidPerPage(128));
+    }
+
+    public function test_get_valid_per_page_defaults_to_32_for_invalid_value(): void
+    {
+        $service = new BookmarkService;
+
+        $this->assertEquals(32, $service->getValidPerPage(null));
+        $this->assertEquals(32, $service->getValidPerPage(50)); // not in presets
+        $this->assertEquals(32, $service->getValidPerPage(999)); // not in presets
+    }
+
+    public function test_url_exists_for_user(): void
+    {
+        $user = User::factory()->create();
+        $url = 'https://example.com';
+
+        $service = new BookmarkService;
+
+        // Initially should not exist
+        $this->assertFalse($service->urlExistsForUser($user, $url));
+
+        // Create bookmark
+        Bookmark::factory()->create([
+            'user_id' => $user->id,
+            'url' => $url,
+        ]);
+
+        // Now should exist
+        $this->assertTrue($service->urlExistsForUser($user, $url));
+    }
+
+    public function test_url_exists_for_user_is_user_scoped(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $url = 'https://example.com';
+
+        $service = new BookmarkService;
+
+        // Create bookmark for user1
+        Bookmark::factory()->create([
+            'user_id' => $user1->id,
+            'url' => $url,
+        ]);
+
+        // Should exist for user1
+        $this->assertTrue($service->urlExistsForUser($user1, $url));
+
+        // Should not exist for user2
+        $this->assertFalse($service->urlExistsForUser($user2, $url));
     }
 }

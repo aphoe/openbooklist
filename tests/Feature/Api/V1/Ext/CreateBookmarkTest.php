@@ -115,4 +115,61 @@ class CreateBookmarkTest extends TestCase
         $bookmarkId = $response->json('data.id');
         $this->assertDatabaseCount('bookmark_tag', 2);
     }
+
+    public function test_cannot_create_duplicate_url_for_same_user(): void
+    {
+        $user = User::factory()->create();
+
+        // Create first bookmark
+        \App\Models\Bookmark::factory()->create([
+            'user_id' => $user->id,
+            'url' => 'https://example.com',
+        ]);
+
+        Sanctum::actingAs($user, ['bookmarks:write']);
+        $response = $this->postJson('/api/v1/ext/bookmarks', [
+            'url' => 'https://example.com',
+        ]);
+
+        $response->assertConflict();
+        $response->assertJson([
+            'message' => 'A bookmark with this URL already exists.',
+        ]);
+        $this->assertDatabaseCount('bookmarks', 1);
+    }
+
+    public function test_different_users_can_create_bookmarks_with_same_url(): void
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+
+        // User 1 creates a bookmark
+        \App\Models\Bookmark::factory()->create([
+            'user_id' => $user1->id,
+            'url' => 'https://example.com',
+        ]);
+
+        // User 2 tries to create the same URL
+        Sanctum::actingAs($user2, ['bookmarks:write']);
+
+        // We need to mock the service for user 2's request
+        $this->app->make('Illuminate\Container\Container')
+            ->bind(BookmarkService::class, function () {
+                $mock = \Mockery::mock(BookmarkService::class);
+                $mock->shouldReceive('fetchMetadata')->andReturn([
+                    'title' => 'Example',
+                    'description' => 'Test',
+                    'image' => null,
+                ]);
+                return $mock;
+            });
+
+        $response = $this->postJson('/api/v1/ext/bookmarks', [
+            'url' => 'https://example.com',
+        ]);
+
+        // Should succeed for different user
+        $response->assertCreated();
+        $this->assertDatabaseCount('bookmarks', 2);
+    }
 }

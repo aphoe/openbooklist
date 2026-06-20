@@ -48,4 +48,48 @@ class CategoryControllerTest extends TestCase
 
         $response->assertRedirect(route('login'));
     }
+
+    public function test_pagination_presets_are_passed_to_view(): void
+    {
+        $user = User::factory()->create();
+        Category::factory(5)->create(['user_id' => $user->id]);
+
+        $this->withoutVite();
+        $response = $this->actingAs($user)->get(route('categories.index'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Users/Categories/Index')
+            ->has('paginationPresets')
+            ->where('paginationPresets.0', 10)
+        );
+    }
+
+    public function test_per_page_parameter_respects_preset_values(): void
+    {
+        $user = User::factory()->create();
+        Category::factory(50)->create(['user_id' => $user->id]);
+
+        $this->withoutVite();
+        $response = $this->actingAs($user)->get(route('categories.index', ['per_page' => 50]));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Users/Categories/Index')
+            ->has('categories.data', 50)
+        );
+    }
+
+    public function test_per_page_invalid_value_defaults_to_25(): void
+    {
+        $user = User::factory()->create();
+        Category::factory(50)->create(['user_id' => $user->id]);
+
+        $this->withoutVite();
+        $response = $this->actingAs($user)->get(route('categories.index', ['per_page' => 999]));
+
+        // Should default to 25 items
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Users/Categories/Index')
+            ->has('categories.data', 25)
+        );
+    }
 }

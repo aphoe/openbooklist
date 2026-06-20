@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Users\Categories;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -15,14 +16,18 @@ class CategoryController extends Controller
     {
         $user = $request->user();
 
+        $categoryService = new CategoryService();
+        $perPage = $categoryService->getValidPerPage($request->input('per_page'));
+
         $categories = Category::where('user_id', $user->id)
             ->withCount('bookmarks')
             ->orderBy('name')
-            ->paginate(32)
+            ->paginate($perPage)
             ->withQueryString();
 
         return inertia('Users/Categories/Index', [
             'categories' => $categories,
+            'paginationPresets' => $categoryService->getPaginationPresets(),
         ]);
     }
 }
