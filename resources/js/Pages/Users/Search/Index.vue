@@ -1,10 +1,16 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Head, Link, usePage, router } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
+import BookmarkCard from '@/Components/Bookmarks/BookmarkCard.vue';
+import TagCloudItem from '@/Components/Tags/TagCloudItem.vue';
 import InfoBookmarkModal from '@/Components/Modals/InfoBookmarkModal.vue';
+import InfoCategoryModal from '@/Components/Modals/InfoCategoryModal.vue';
+import InfoTagModal from '@/Components/Modals/InfoTagModal.vue';
 import EditBookmarkModal from '@/Components/Modals/EditBookmarkModal.vue';
+import EditTagModal from '@/Components/Modals/EditTagModal.vue';
 import ConfirmDeleteModal from '@/Components/Modals/ConfirmDeleteModal.vue';
+import ConfirmDeleteTagModal from '@/Components/Modals/ConfirmDeleteTagModal.vue';
 
 const page = usePage();
 
@@ -24,28 +30,89 @@ const currentTab = ref(props.tab);
 const allCategories = computed(() => page.props.categories || []);
 const allTags = computed(() => page.props.tags || []);
 
-const selectedBookmark = ref(null);
-const showInfoModal = ref(false);
-const showEditModal = ref(false);
-const showDeleteModal = ref(false);
+const activeDropdown = ref(null);
+const toggleDropdown = (id) => { activeDropdown.value = activeDropdown.value === id ? null : id; };
+const closeDropdown = () => { activeDropdown.value = null; };
 
-const handleInfo = (bookmark) => {
-    selectedBookmark.value = bookmark;
-    showInfoModal.value = true;
+const clickOutsideDropdown = (e) => {
+    if (activeDropdown.value && !e.target.closest('.list-dropdown-container')) {
+        closeDropdown();
+    }
 };
-const handleEdit = (bookmark) => {
+
+const selectedBookmark = ref(null);
+const selectedCategory = ref(null);
+const selectedTag = ref(null);
+const showBookmarkInfoModal = ref(false);
+const showBookmarkEditModal = ref(false);
+const showBookmarkDeleteModal = ref(false);
+const showCategoryInfoModal = ref(false);
+const showTagInfoModal = ref(false);
+const showTagEditModal = ref(false);
+const showTagDeleteModal = ref(false);
+
+const handleBookmarkInfo = (bookmark) => {
     selectedBookmark.value = bookmark;
-    showEditModal.value = true;
+    showBookmarkInfoModal.value = true;
 };
-const handleDelete = (bookmark) => {
+const handleBookmarkEdit = (bookmark) => {
     selectedBookmark.value = bookmark;
-    showDeleteModal.value = true;
+    showBookmarkEditModal.value = true;
+};
+const handleBookmarkDelete = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showBookmarkDeleteModal.value = true;
+};
+const handleBookmarkFavorite = (bookmark) => {
+    router.post(route('bookmarks.favorite', bookmark.id), {}, { preserveScroll: true, preserveState: true });
+};
+const handleBookmarkRefetch = (bookmark) => {
+    router.post(route('bookmarks.refetch-metadata', bookmark.id), {}, { preserveScroll: true });
+};
+const handleBookmarkSetImage = (bookmark) => {
+    selectedBookmark.value = bookmark;
+    showBookmarkEditModal.value = true;
+};
+
+const handleCategoryInfo = (category) => {
+    selectedCategory.value = category;
+    showCategoryInfoModal.value = true;
+};
+const handleCategoryEdit = (category) => {
+    selectedCategory.value = category;
+    // Note: Search doesn't have edit modal for categories, would need to navigate
+    // For now, this would require a modal component
+};
+const handleCategoryDelete = (category) => {
+    selectedCategory.value = category;
+    // Note: Search doesn't have delete modal for categories
+};
+
+const handleTagInfo = (tag) => {
+    selectedTag.value = tag;
+    showTagInfoModal.value = true;
+};
+const handleTagEdit = (tag) => {
+    selectedTag.value = tag;
+    showTagEditModal.value = true;
+};
+const handleTagDelete = (tag) => {
+    selectedTag.value = tag;
+    showTagDeleteModal.value = true;
 };
 
 const switchTab = (tabValue) => {
     currentTab.value = tabValue;
     router.get(route('search'), { q: props.query, tab: tabValue }, { preserveState: true, replace: true });
 };
+
+onMounted(() => {
+    document.addEventListener('click', clickOutsideDropdown);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', clickOutsideDropdown);
+});
 
 </script>
 
@@ -113,7 +180,7 @@ const switchTab = (tabValue) => {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Show top 2 bookmarks as hits -->
                             <div v-for="bookmark in bookmarks.slice(0, 2)" :key="bookmark.id"
-                                @click="handleInfo(bookmark)"
+                                @click="handleBookmarkInfo(bookmark)"
                                 class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex gap-4 hover:border-primary/50 transition-colors cursor-pointer group block">
                                 <div
                                     class="size-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0 overflow-hidden">
@@ -146,11 +213,24 @@ const switchTab = (tabValue) => {
                                 class="text-xs text-primary font-bold hover:underline">View all
                                 {{ bookmarks.length }}</button>
                         </div>
-                        <div
+                        <div v-if="currentTab === 'bookmarks'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            <BookmarkCard
+                                v-for="bookmark in bookmarks"
+                                :key="bookmark.id"
+                                :bookmark="bookmark"
+                                @info="handleBookmarkInfo"
+                                @edit="handleBookmarkEdit"
+                                @delete="handleBookmarkDelete"
+                                @favorite="handleBookmarkFavorite"
+                                @refetch="handleBookmarkRefetch"
+                                @set-image="handleBookmarkSetImage"
+                            />
+                        </div>
+                        <div v-else
                             class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
-                            <!-- Loop full list if tab is bookmarks, else limit to 3 -->
-                            <div v-for="bookmark in (currentTab === 'bookmarks' ? bookmarks : bookmarks.slice(0, 3))"
-                                :key="bookmark.id" @click="handleInfo(bookmark)"
+                            <!-- Loop limited to 3 for all tab -->
+                            <div v-for="bookmark in bookmarks.slice(0, 3)"
+                                :key="bookmark.id" @click="handleBookmarkInfo(bookmark)"
                                 class="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
                                 <div class="flex items-center gap-4 min-w-0">
                                     <div
@@ -167,61 +247,104 @@ const switchTab = (tabValue) => {
                                 <span
                                     class="material-symbols-outlined text-slate-300 group-hover:text-primary transition-colors">arrow_forward</span>
                             </div>
-                            <div v-if="currentTab === 'all' && bookmarks.length > 3" @click="switchTab('bookmarks')"
+                            <div v-if="bookmarks.length > 3" @click="switchTab('bookmarks')"
                                 class="p-4 flex items-center justify-center text-primary text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                                 View all {{ bookmarks.length }} bookmark results
                             </div>
                         </div>
                     </section>
 
-                    <!-- Categories and Tags Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8"
-                        v-if="['all', 'categories', 'tags'].includes(currentTab)">
-                        <!-- Categories Section -->
-                        <section v-if="['all', 'categories'].includes(currentTab) && categories.length > 0">
-                            <h3
-                                class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-widest mb-4">
-                                Categories</h3>
-                            <div class="flex flex-col gap-2">
-                                <Link :href="route('dashboard', { category: category.slug })"
-                                    v-for="category in categories" :key="category.id"
-                                    class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-primary transition-all group block">
-                                    <div class="flex items-center gap-3">
-                                        <span class="material-symbols-outlined text-primary">folder_open</span>
-                                        <span class="text-slate-900 dark:text-slate-100 font-medium">{{ category.name
-                                            }}</span>
-                                    </div>
-                                    <span
-                                        class="text-xs text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full group-hover:bg-primary/10 group-hover:text-primary transition-colors">{{
-                                            category.bookmarks_count }} items</span>
-                                </Link>
-                            </div>
-                        </section>
+                    <!-- Categories Section -->
+                    <section v-if="['all', 'categories'].includes(currentTab) && categories.length > 0">
+                        <h3 class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-widest mb-4">
+                            Categories</h3>
+                        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-visible">
+                            <table class="w-full text-left border-collapse min-w-full">
+                                <thead>
+                                    <tr class="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Name</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider hidden sm:table-cell">Slug</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Bookmarks</th>
+                                        <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <tr v-for="category in categories" :key="category.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center gap-3">
+                                                <div class="size-8 rounded bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                                                    <span class="material-symbols-outlined text-base">folder</span>
+                                                </div>
+                                                <div class="flex flex-col overflow-hidden">
+                                                    <span class="font-semibold text-sm truncate text-slate-900 dark:text-white">{{ category.name }}</span>
+                                                    <span class="text-xs font-mono text-slate-500 dark:text-slate-400 truncate sm:hidden">{{ category.slug }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                                            <code class="text-xs font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-slate-600 dark:text-slate-400">{{ category.slug }}</code>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-slate-600 dark:text-slate-400">
+                                            <span class="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full text-xs border border-slate-200 dark:border-slate-700">{{ category.bookmarks_count || 0 }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right align-middle">
+                                            <div class="relative list-dropdown-container inline-block text-left">
+                                                <button @click.stop="toggleDropdown(category.id)" class="text-slate-400 hover:text-primary transition-colors p-1 rounded-full outline-none">
+                                                    <span class="material-symbols-outlined text-[20px] block">more_vert</span>
+                                                </button>
 
-                        <!-- Tags Section -->
-                        <section v-if="['all', 'tags'].includes(currentTab) && tags.length > 0">
-                            <h3
-                                class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-widest mb-4">
-                                Tags</h3>
-                            <div class="flex flex-wrap gap-2">
-                                <Link :href="route('dashboard', { tag: tag.slug })" v-for="tag in tags" :key="tag.id"
-                                    class="px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium border border-transparent hover:border-slate-300 transition-colors group">
-                                    #{{ tag.name }} <span
-                                        class="bg-slate-400 dark:bg-slate-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1 group-hover:bg-slate-500 transition-colors">{{
-                                            tag.bookmarks_count }}</span>
-                                </Link>
-                            </div>
-                        </section>
-                    </div>
+                                                <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
+                                                    <div v-if="activeDropdown === category.id" class="absolute right-0 top-full mt-1 w-36 bg-white dark:bg-slate-800 rounded-md shadow-lg border border-slate-200 dark:border-slate-700 z-[100] py-1 origin-top-right">
+                                                        <button @click="(closeDropdown(), handleCategoryInfo(category))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                            <span class="material-symbols-outlined text-[16px]">info</span>
+                                                            Info
+                                                        </button>
+                                                        <button @click="(closeDropdown(), handleCategoryEdit(category))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                                                            Edit
+                                                        </button>
+                                                        <button @click="(closeDropdown(), handleCategoryDelete(category))" class="flex items-center gap-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors w-full text-left font-medium">
+                                                            <span class="material-symbols-outlined text-[16px]">delete</span>
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </transition>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Tags Section -->
+                    <section v-if="['all', 'tags'].includes(currentTab) && tags.length > 0">
+                        <h3 class="text-slate-500 dark:text-slate-400 text-sm font-bold uppercase tracking-widest mb-4">
+                            Tags</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <TagCloudItem
+                                v-for="tag in tags"
+                                :key="tag.id"
+                                :tag="tag"
+                                @info="handleTagInfo"
+                                @edit="handleTagEdit"
+                                @delete="handleTagDelete"
+                            />
+                        </div>
+                    </section>
 
                 </div>
             </div>
         </div>
 
-        <InfoBookmarkModal :show="showInfoModal" :bookmark="selectedBookmark" @close="showInfoModal = false" />
-        <EditBookmarkModal :show="showEditModal" :bookmark="selectedBookmark" :categories="allCategories"
-            :tags="allTags" @close="showEditModal = false" />
-        <ConfirmDeleteModal :show="showDeleteModal" :bookmark="selectedBookmark" @close="showDeleteModal = false" />
+        <InfoBookmarkModal :show="showBookmarkInfoModal" :bookmark="selectedBookmark" @close="showBookmarkInfoModal = false" />
+        <EditBookmarkModal :show="showBookmarkEditModal" :bookmark="selectedBookmark" :categories="allCategories"
+            :tags="allTags" @close="showBookmarkEditModal = false" />
+        <ConfirmDeleteModal :show="showBookmarkDeleteModal" :bookmark="selectedBookmark" @close="showBookmarkDeleteModal = false" />
+        <InfoCategoryModal :show="showCategoryInfoModal" :category="selectedCategory" @close="showCategoryInfoModal = false" />
+        <InfoTagModal :show="showTagInfoModal" :tag="selectedTag" @close="showTagInfoModal = false" />
+        <EditTagModal :show="showTagEditModal" :tag="selectedTag" @close="showTagEditModal = false" />
+        <ConfirmDeleteTagModal :show="showTagDeleteModal" :tag="selectedTag" @close="showTagDeleteModal = false" />
 
     </DashboardLayout>
 </template>

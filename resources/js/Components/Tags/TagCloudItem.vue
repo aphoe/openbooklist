@@ -63,7 +63,7 @@ const sizeClasses = computed(() => {
         </button>
         <!-- Hover Actions -->
         <div
-            class="absolute -top-3 -right-3 hidden group-hover:flex gap-1 bg-white dark:bg-slate-800 p-1 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 z-10 animate-fade-in shadow-xl">
+            class="absolute bottom-full left-0 -mb-3 hidden group-hover:flex gap-1 bg-white dark:bg-slate-800 p-1 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 z-10 animate-fade-in shadow-xl">
             <button @click.stop="$emit('info', tag)"
                 class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-primary transition-colors"
                 title="Info">
