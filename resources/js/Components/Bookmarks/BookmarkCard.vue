@@ -1,11 +1,26 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 
-defineProps({
+const props = defineProps({
     bookmark: {
         type: Object,
         required: true
     },
+});
+
+const displayUrl = computed(() => {
+    const url = props.bookmark.url || '';
+    const domain = props.bookmark.domain;
+
+    if (!domain) return url;
+
+    const domainIndex = url.indexOf(domain);
+    if (domainIndex === -1) return domain;
+
+    const afterDomain = url.slice(domainIndex + domain.length);
+    if (!afterDomain) return domain;
+
+    return domain + (afterDomain.length <= 10 ? afterDomain : afterDomain.slice(0, 10) + '…');
 });
 
 const emit = defineEmits(['edit', 'delete', 'info', 'favorite', 'refetch', 'set-image']);
@@ -112,8 +127,8 @@ onUnmounted(() => document.removeEventListener('click', clickOutside));
                 </a>
             </div>
             <a :href="bookmark.url" target="_blank"
-                class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline truncate block">
-                {{ bookmark.domain || bookmark.url }}
+                class="text-slate-500 dark:text-slate-400 text-xs font-medium mb-3 hover:underline block">
+                {{ displayUrl }}
             </a>
             <div class="mt-auto flex flex-wrap gap-2 pt-2">
                 <span v-for="tag in bookmark.tags.slice(0, 4)" :key="tag.id"
