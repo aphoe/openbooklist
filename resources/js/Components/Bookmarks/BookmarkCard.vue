@@ -10,17 +10,16 @@ const props = defineProps({
 
 const displayUrl = computed(() => {
     const url = props.bookmark.url || '';
-    const domain = props.bookmark.domain;
-
-    if (!domain) return url;
-
-    const domainIndex = url.indexOf(domain);
-    if (domainIndex === -1) return domain;
-
-    const afterDomain = url.slice(domainIndex + domain.length);
-    if (!afterDomain) return domain;
-
-    return domain + (afterDomain.length <= 10 ? afterDomain : afterDomain.slice(0, 10) + '…');
+    try {
+        const parsed = new URL(url);
+        const host = parsed.host.replace(/^www\./, '');
+        const path = parsed.pathname === '/' ? '' : parsed.pathname;
+        const full = host + path + parsed.search;
+        return full.length <= 36 ? full : full.slice(0, 35) + '…';
+    } catch {
+        const fallback = props.bookmark.domain || url;
+        return fallback.length <= 36 ? fallback : fallback.slice(0, 35) + '…';
+    }
 });
 
 const emit = defineEmits(['edit', 'delete', 'info', 'favorite', 'refetch', 'set-image']);
