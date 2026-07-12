@@ -54,7 +54,7 @@ class BookmarkController extends Controller
             'paginationPresets' => $bookmarkService->getPaginationPresets(),
             'perPage' => $perPage,
             'allCategories' => Category::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),
-            'allTags' => Tag::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']),
+            'allTags' => Tag::where('user_id', $user->id)->orderBy('name')->get(['id', 'name', 'slug']),
         ]);
     }
 }
