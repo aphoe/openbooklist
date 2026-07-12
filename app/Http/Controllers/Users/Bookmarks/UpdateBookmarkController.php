@@ -7,6 +7,7 @@ use App\Http\Requests\Users\UpdateBookmarkRequest;
 use App\Models\Bookmark;
 use App\Models\Category;
 use App\Models\Tag;
+use Illuminate\Support\Str;
 use App\Repositories\BookmarkRepository;
 use App\Services\BookmarkService;
 
@@ -47,26 +48,29 @@ class UpdateBookmarkController extends Controller
             image: $imagePath,
         );
 
-        // Sync tags if provided
-        if ($validated->array('tags')) {
-            $tagIds = [];
-            foreach ($validated->array('tags') as $tagSlug) {
-                if (empty(trim($tagSlug))) {
-                    continue;
-                }
-
-                $tag = Tag::firstOrCreate(
-                    ['slug' => $tagSlug, 'user_id' => $user->id],
-                    ['name' => $tagSlug]
-                );
-
-                $tagIds[] = $tag->id;
+        // Sync tags (always, so removing all tags is possible)
+        $tagIds = [];
+        foreach ($validated->array('tags') ?? [] as $tagValue) {
+            if (empty(trim($tagValue))) {
+                continue;
             }
 
-            if (count($tagIds) > 0) {
-                $this->bookmarkRepository->syncTags($bookmark, $tagIds);
+            $tag = Tag::where('user_id', $user->id)
+                ->where(fn ($q) => $q->where('slug', $tagValue)->orWhere('name', $tagValue))
+                ->first();
+
+            if (! $tag) {
+                $tag = Tag::create([
+                    'name' => $tagValue,
+                    'slug' => Str::slug($tagValue) ?: $tagValue,
+                    'user_id' => $user->id,
+                ]);
             }
+
+            $tagIds[] = $tag->id;
         }
+
+        $this->bookmarkRepository->syncTags($bookmark, $tagIds);
 
         return redirect()->back()->with('success', 'Bookmark updated successfully.');
     }

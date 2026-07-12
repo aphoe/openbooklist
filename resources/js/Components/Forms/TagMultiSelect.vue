@@ -40,7 +40,7 @@ const filteredOptions = computed(() => {
 const selectedOptionsObjects = computed(() => {
     return props.modelValue.map(value => {
         if (typeof value === 'object') return value;
-        const existing = props.options.find(opt => opt.slug === value || opt.id === value);
+        const existing = props.options.find(opt => opt.slug === value || String(opt.id) === String(value));
         return existing || { name: value, slug: value };
     });
 });
@@ -54,9 +54,9 @@ const canCreateNewTag = computed(() => {
 
 const toggle = (option) => {
     const newValue = [...props.modelValue];
-    const identifier = option.slug || option.id;
+    const identifier = option.slug || option.name;
     const index = newValue.findIndex(val =>
-        (typeof val === 'object' ? val.slug || val.id : val) === identifier
+        String(typeof val === 'object' ? val.slug || val.id : val) === String(identifier)
     );
 
     if (index === -1) {
@@ -69,9 +69,13 @@ const toggle = (option) => {
 
 const createNewTag = () => {
     if (search.value.trim()) {
-        const newTag = search.value.trim().toLowerCase().replace(/\s+/g, '-');
+        const newTag = search.value.trim();
         const newValue = [...props.modelValue];
-        if (!newValue.includes(newTag)) {
+        const alreadySelected = newValue.some(v => {
+            const name = typeof v === 'object' ? v.name : String(v);
+            return name.toLowerCase() === newTag.toLowerCase();
+        });
+        if (!alreadySelected) {
             newValue.push(newTag);
             emit('update:modelValue', newValue);
         }
@@ -106,7 +110,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
                 <span v-for="tag in selectedOptionsObjects" :key="tag.id"
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary/10 text-primary text-sm font-medium border border-primary/20">
                     {{ tag.name }}
-                    <button type="button" @click.stop="remove(tag.id)"
+                    <button type="button" @click.stop="remove(tag.slug ?? tag.name)"
                         class="hover:text-primary/70 transition-colors focus:outline-none">
                         <span class="material-symbols-outlined text-[14px]">close</span>
                     </button>
@@ -136,11 +140,11 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside));
             <div class="overflow-y-auto overflow-x-hidden p-1 flex-1">
                 <button v-for="option in filteredOptions" :key="option.id" type="button"
                     class="flex w-full items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors"
-                    :class="modelValue.includes(option.slug || option.id) ? 'bg-primary/5 text-primary font-medium' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'"
+                    :class="modelValue.includes(option.slug || option.name) ? 'bg-primary/5 text-primary font-medium' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'"
                     @click.stop="toggle(option)">
                     <div class="flex items-center justify-center size-4 border rounded shrink-0 transition-colors"
-                        :class="modelValue.includes(option.slug || option.id) ? 'bg-primary border-primary text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'">
-                        <span v-if="modelValue.includes(option.slug || option.id)"
+                        :class="modelValue.includes(option.slug || option.name) ? 'bg-primary border-primary text-white' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800'">
+                        <span v-if="modelValue.includes(option.slug || option.name)"
                             class="material-symbols-outlined text-[12px] font-bold">check</span>
                     </div>
                     <span class="truncate">{{ option.name }}</span>
