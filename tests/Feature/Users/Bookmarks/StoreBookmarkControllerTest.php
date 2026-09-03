@@ -47,6 +47,37 @@ class StoreBookmarkControllerTest extends TestCase
         ]);
     }
 
+    public function test_github_prefix_is_stripped_from_title_on_store(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('bookmarks.store'), [
+            'url' => 'https://github.com/laravel/framework',
+            'title' => 'GitHub - laravel/framework: The PHP Framework for Web Artisans',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseHas('bookmarks', [
+            'user_id' => $user->id,
+            'url' => 'https://github.com/laravel/framework',
+            'title' => 'laravel/framework: The PHP Framework for Web Artisans',
+        ]);
+    }
+
+    public function test_github_prefix_is_left_intact_for_non_github_urls_on_store(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->post(route('bookmarks.store'), [
+            'url' => 'https://example.com/article',
+            'title' => 'GitHub - a literal title on another site',
+        ])->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseHas('bookmarks', [
+            'user_id' => $user->id,
+            'title' => 'GitHub - a literal title on another site',
+        ]);
+    }
+
     public function test_url_is_required_to_store_bookmark(): void
     {
         $user = User::factory()->create();
