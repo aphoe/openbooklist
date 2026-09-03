@@ -193,6 +193,10 @@ watch(perPage, (newVal) => {
                                                 <span class="material-symbols-outlined text-[16px]">info</span>
                                                 Info
                                             </button>
+                                            <Link :href="route('dashboard', { category: category.slug })" @click="closeDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
+                                                <span class="material-symbols-outlined text-[16px]">bookmarks</span>
+                                                View bookmarks
+                                            </Link>
                                             <button @click="(closeDropdown(), handleEdit(category))" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left">
                                                 <span class="material-symbols-outlined text-[16px]">edit</span>
                                                 Edit

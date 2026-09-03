@@ -1,4 +1,5 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -69,6 +70,11 @@ const sizeClasses = computed(() => {
                 title="Info">
                 <span class="material-symbols-outlined text-sm">info</span>
             </button>
+            <Link :href="route('dashboard', { tag: tag.slug })" @click.stop
+                class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-primary transition-colors"
+                title="View bookmarks with this tag">
+                <span class="material-symbols-outlined text-sm">bookmarks</span>
+            </Link>
             <button @click.stop="$emit('edit', tag)"
                 class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-primary transition-colors"
                 title="Edit">

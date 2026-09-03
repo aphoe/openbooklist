@@ -141,6 +141,39 @@ class BookmarkControllerTest extends TestCase
         );
     }
 
+    public function test_bookmarks_can_be_filtered_by_tag_slug(): void
+    {
+        $user = User::factory()->create();
+
+        $laravelTag = Tag::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Laravel',
+            'slug' => 'laravel',
+        ]);
+
+        $vueTag = Tag::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Vue',
+            'slug' => 'vue',
+        ]);
+
+        $tagged = Bookmark::factory(2)->create(['user_id' => $user->id]);
+        $tagged->each(fn (Bookmark $bookmark) => $bookmark->tags()->attach($laravelTag->id));
+
+        Bookmark::factory()->create(['user_id' => $user->id])->tags()->attach($vueTag->id);
+        Bookmark::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->get(route('dashboard', ['tag' => 'laravel']));
+
+        $response->assertStatus(200);
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Users/Bookmarks/Index')
+            ->has('bookmarks.data', 2)
+            ->where('activeFilter.type', 'tag')
+            ->where('activeFilter.label', 'Laravel')
+        );
+    }
+
     public function test_pagination_presets_are_passed_to_view(): void
     {
         $user = User::factory()->create();

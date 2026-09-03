@@ -13,6 +13,10 @@ const page = usePage();
 
 const props = defineProps({
     bookmarks: Object,
+    activeFilter: {
+        type: Object,
+        default: null,
+    },
     allCategories: {
         type: Array,
         default: () => [],
@@ -131,7 +135,18 @@ watch(perPage, (newVal) => {
     <DashboardLayout>
         <Head title="Bookmarks" />
 
-        <div v-if="!bookmarks?.data?.length" class="flex flex-col items-center justify-center p-8 h-[calc(100vh-130px)] w-full">
+        <div v-if="!bookmarks?.data?.length && activeFilter" class="flex flex-col items-center justify-center p-8 h-[calc(100vh-130px)] w-full text-center">
+            <span class="material-symbols-outlined text-[48px] text-slate-300 dark:text-slate-600 mb-3">filter_list_off</span>
+            <p class="text-slate-600 dark:text-slate-300 text-lg font-medium">
+                No bookmarks {{ activeFilter.type === 'tag' ? 'tagged' : 'in' }} "{{ activeFilter.label }}"
+            </p>
+            <Link :href="route('dashboard')" class="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline">
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                View all bookmarks
+            </Link>
+        </div>
+
+        <div v-else-if="!bookmarks?.data?.length" class="flex flex-col items-center justify-center p-8 h-[calc(100vh-130px)] w-full">
             <div class="max-w-xl w-full flex flex-col items-center text-center">
                 <!-- Feature Graphic -->
                 <div class="relative w-full h-40 md:h-48 mb-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-center overflow-hidden">
@@ -196,6 +211,11 @@ watch(perPage, (newVal) => {
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-white">All Bookmarks</h2>
+                    <Link v-if="activeFilter" :href="route('dashboard')"
+                        class="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-primary/10 py-1 pl-3 pr-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">
+                        <span>{{ activeFilter.type === 'tag' ? 'Tag' : 'Category' }}: {{ activeFilter.label }}</span>
+                        <span class="material-symbols-outlined text-[16px]">close</span>
+                    </Link>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 sm:gap-4 w-full sm:w-auto">
