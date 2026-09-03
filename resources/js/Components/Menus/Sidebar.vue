@@ -2,6 +2,15 @@
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
+defineProps({
+    open: {
+        type: Boolean,
+        default: false,
+    },
+});
+
+defineEmits(['close']);
+
 const page = usePage();
 const authUser = computed(() => page.props.auth?.user);
 const categories = computed(() => page.props.categories || []);
@@ -14,12 +23,26 @@ const logout = () => {
 </script>
 
 <template>
+    <!-- Mobile backdrop -->
+    <transition enter-active-class="transition-opacity ease-out duration-200" enter-from-class="opacity-0"
+        enter-to-class="opacity-100" leave-active-class="transition-opacity ease-in duration-150"
+        leave-from-class="opacity-100" leave-to-class="opacity-0">
+        <div v-if="open" class="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden" @click="$emit('close')">
+        </div>
+    </transition>
+
+    <!-- Sidebar (static on desktop, slide-in drawer on mobile) -->
     <div
-        class="hidden w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark md:flex sticky top-0 h-full flex-shrink-0">
+        class="fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-background-dark transition-transform duration-300 ease-out md:sticky md:top-0 md:z-auto md:h-full md:flex-shrink-0 md:translate-x-0 md:transition-none"
+        :class="open ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full'">
         <!-- Brand/Logo Area -->
         <div class="flex h-16 items-center gap-3 px-6 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
             <img :src="'/assets/images/logo-obl.png'" alt="Logo" class="h-8 w-auto flex-shrink-0" />
             <h1 class="text-slate-900 dark:text-white text-lg font-bold tracking-tight truncate">OpenBooklist</h1>
+            <button type="button" @click="$emit('close')" aria-label="Close menu"
+                class="ml-auto -mr-2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 md:hidden">
+                <span class="material-symbols-outlined block">close</span>
+            </button>
         </div>
 
         <!-- Links Area -->

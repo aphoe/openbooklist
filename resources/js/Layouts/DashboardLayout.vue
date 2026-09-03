@@ -1,11 +1,20 @@
 <script setup>
 import { Link, usePage, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 import Sidebar from '@/Components/Menus/Sidebar.vue';
 import ResponseToast from '@/Components/Alerts/ResponseToast.vue';
 
 const page = usePage();
 const authUser = page.props.auth?.user;
+
+const sidebarOpen = ref(false);
+watch(() => page.url, () => { sidebarOpen.value = false; });
+
+const onKeydown = (e) => {
+    if (e.key === 'Escape') sidebarOpen.value = false;
+};
+onMounted(() => document.addEventListener('keydown', onKeydown));
+onUnmounted(() => document.removeEventListener('keydown', onKeydown));
 
 const globalSearchQuery = ref(new URLSearchParams(window.location.search).get('q') || '');
 
@@ -20,14 +29,19 @@ const handleGlobalSearch = () => {
     <div
         class="relative flex h-screen w-full flex-row overflow-hidden font-display text-slate-900 dark:text-slate-100 bg-background-light dark:bg-background-dark">
         <!-- Sidebar -->
-        <Sidebar class="h-full" />
+        <Sidebar :open="sidebarOpen" @close="sidebarOpen = false" />
 
         <!-- Main Content -->
         <main class="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark overflow-x-hidden">
             <!-- Top Header Bar -->
             <header
                 class="sticky top-0 z-20 bg-white/80 dark:bg-[#151c2a]/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-4">
-                <div class="flex flex-col sm:flex-row gap-4 justify-between items-center max-w-[1400px] mx-auto w-full">
+                <div class="flex flex-row gap-3 sm:gap-4 justify-between items-center max-w-[1400px] mx-auto w-full">
+                    <!-- Mobile menu toggle -->
+                    <button type="button" @click="sidebarOpen = true" aria-label="Open menu"
+                        class="md:hidden shrink-0 -ml-1 p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <span class="material-symbols-outlined block">menu</span>
+                    </button>
                     <!-- Search -->
                     <div class="w-full sm:max-w-md relative group">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
