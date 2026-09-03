@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import AddBookmarkModal from '@/Components/Modals/AddBookmarkModal.vue';
 import ConfirmDeleteModal from '@/Components/Modals/ConfirmDeleteModal.vue';
 import EditBookmarkModal from '@/Components/Modals/EditBookmarkModal.vue';
@@ -36,6 +36,13 @@ const viewMode = ref('grid');
 
 const sortMode = ref('newest');
 const perPage = ref(props.perPage);
+
+// Pagination (handles both LengthAwarePaginator and API-resource `meta` shapes)
+const paginationLinks = computed(() => (props.bookmarks?.meta ? props.bookmarks.meta.links : props.bookmarks?.links) || []);
+const currentPage = computed(() => props.bookmarks?.meta ? props.bookmarks.meta.current_page : props.bookmarks?.current_page);
+const lastPage = computed(() => props.bookmarks?.meta ? props.bookmarks.meta.last_page : props.bookmarks?.last_page);
+const prevPageUrl = computed(() => paginationLinks.value[0]?.url || null);
+const nextPageUrl = computed(() => paginationLinks.value[paginationLinks.value.length - 1]?.url || null);
 
 const activeDropdown = ref(null);
 const toggleDropdown = (id) => { activeDropdown.value = activeDropdown.value === id ? null : id; };
@@ -131,7 +138,7 @@ watch(perPage, (newVal) => {
                     <!-- Abstract Graphic Representation -->
                     <div class="relative w-full h-full flex items-center justify-center">
                         <!-- Link Icon Side -->
-                        <div class="absolute left-10 md:left-20 flex flex-col items-center gap-3">
+                        <div class="absolute left-10 md:left-20 hidden sm:flex flex-col items-center gap-3">
                             <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center shadow-lg border border-primary/20">
                                 <span class="material-symbols-outlined text-primary text-[32px]">link</span>
                             </div>
@@ -149,7 +156,7 @@ watch(perPage, (newVal) => {
                             <div class="w-2 h-2 rounded-full bg-primary/40"></div>
                         </div>
                         <!-- Bullet Points Side -->
-                        <div class="absolute right-10 md:right-20 flex flex-col gap-3">
+                        <div class="absolute right-10 md:right-20 hidden sm:flex flex-col gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-2 h-2 rounded-full bg-primary"></div>
                                 <div class="w-24 h-3 bg-slate-200 dark:bg-slate-800 rounded-full"></div>
@@ -170,8 +177,8 @@ watch(perPage, (newVal) => {
                 </div>
                 <!-- Content -->
                 <div class="space-y-4">
-                    <h3 class="text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Save and Organize</h3>
-                    <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed max-w-md mx-auto">
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Save and Organize</h3>
+                    <p class="text-slate-600 dark:text-slate-400 text-base sm:text-lg leading-relaxed max-w-md mx-auto">
                         Save articles, news, research papers, and blog posts. Ready to try?
                     </p>
                     <div class="pt-6">
@@ -193,9 +200,9 @@ watch(perPage, (newVal) => {
 
                 <div class="flex flex-wrap items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <!-- Sort -->
-                    <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    <div class="flex flex-1 sm:flex-none items-center gap-2 text-sm text-slate-500 dark:text-slate-400 h-10 sm:h-auto px-3 sm:px-0 rounded-lg sm:rounded-none border border-slate-300 dark:border-slate-700 sm:border-0">
                         <span class="hidden sm:inline">Sort by:</span>
-                        <select v-model="sortMode" class="bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer pr-8 py-0">
+                        <select v-model="sortMode" class="flex-1 sm:flex-none w-full sm:w-auto min-w-0 bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 text-base sm:text-sm focus:ring-0 cursor-pointer pr-8 py-0">
                             <option value="newest">Date Added (Newest)</option>
                             <option value="oldest">Date Added (Oldest)</option>
                             <option value="alphabetical">Alphabetical</option>
@@ -203,9 +210,9 @@ watch(perPage, (newVal) => {
                     </div>
 
                     <!-- Per Page -->
-                    <div v-if="paginationPresets.length > 0" class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    <div v-if="paginationPresets.length > 0" class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 h-10 sm:h-auto px-3 sm:px-0 rounded-lg sm:rounded-none border border-slate-300 dark:border-slate-700 sm:border-0">
                         <span class="hidden sm:inline">Per page:</span>
-                        <select v-model="perPage" class="bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer pr-8 py-0">
+                        <select v-model="perPage" class="min-w-0 bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 text-base sm:text-sm focus:ring-0 cursor-pointer pr-8 py-0">
                             <option v-for="preset in paginationPresets" :key="preset" :value="preset">
                                 {{ preset }}
                             </option>
@@ -213,15 +220,15 @@ watch(perPage, (newVal) => {
                     </div>
 
                     <!-- View Toggle -->
-                    <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 h-10 sm:h-auto">
                         <button
                             @click="viewMode = 'grid'"
-                            :class="['p-1.5 rounded-md transition-all', viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
+                            :class="['p-2 sm:p-1.5 rounded-md transition-all', viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
                             <span class="material-symbols-outlined text-[20px] block">grid_view</span>
                         </button>
                         <button
                             @click="viewMode = 'list'"
-                            :class="['p-1.5 rounded-md transition-all', viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
+                            :class="['p-2 sm:p-1.5 rounded-md transition-all', viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
                             <span class="material-symbols-outlined text-[20px] block">view_list</span>
                         </button>
                     </div>
@@ -233,7 +240,7 @@ watch(perPage, (newVal) => {
                         <span :class="['material-symbols-outlined text-[20px] block', isRefreshLoading && 'animate-spin']">refresh</span>
                     </button>
 
-                    <button class="bg-primary hover:bg-blue-600 text-white font-semibold w-full sm:w-auto sm:flex-none h-10 px-4 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2" @click="showAddModal = true">
+                    <button class="bg-primary hover:bg-blue-600 text-white font-semibold flex-1 sm:flex-none h-10 px-4 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2" @click="showAddModal = true">
                         <span class="material-symbols-outlined text-lg">add</span>
                         <span class="truncate">Add Bookmark</span>
                     </button>
@@ -241,7 +248,7 @@ watch(perPage, (newVal) => {
             </div>
 
             <!-- Grid View -->
-            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div v-if="viewMode === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Card loop -->
                 <BookmarkCard
                     v-for="bookmark in bookmarks.data"
@@ -265,7 +272,7 @@ watch(perPage, (newVal) => {
                                 <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-3/5">Title</th>
                                 <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[15%] hidden sm:table-cell">Domain</th>
                                 <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[10%] hidden md:table-cell">Category</th>
-                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[15%] text-right">Date Added</th>
+                                <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-[15%] text-right hidden sm:table-cell">Date Added</th>
                                 <th class="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-10"></th>
                             </tr>
                         </thead>
@@ -298,12 +305,12 @@ watch(perPage, (newVal) => {
                                         <span v-else class="text-xs text-slate-400 italic">Uncategorized</span>
                                     </div>
                                 </td>
-                                <td class="py-4 px-4 text-right text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                                <td class="py-4 px-4 text-right text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap hidden sm:table-cell">
                                     {{ new Date(bookmark.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) }}
                                 </td>
                                 <td class="py-4 px-0 text-right align-middle">
                                     <div class="relative list-dropdown-container inline-block text-left">
-                                        <button @click.stop="toggleDropdown(bookmark.id)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-opacity p-1 rounded-full outline-none">
+                                        <button @click.stop="toggleDropdown(bookmark.id)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-opacity p-2 sm:p-1 rounded-full outline-none">
                                             <span class="material-symbols-outlined text-[20px] block">more_vert</span>
                                         </button>
 
@@ -348,8 +355,35 @@ watch(perPage, (newVal) => {
             </div>
 
             <!-- Pagination -->
-            <div class="mt-8 flex items-center justify-center" v-if="(bookmarks.meta ? bookmarks.meta.last_page : bookmarks.last_page) > 1">
-                <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+            <div class="mt-8" v-if="lastPage > 1">
+                <!-- Mobile: condensed prev / next -->
+                <div class="flex items-center justify-between gap-3 sm:hidden">
+                    <Link v-if="prevPageUrl" :href="prevPageUrl"
+                        class="inline-flex items-center gap-1 h-10 rounded-lg border border-slate-300 dark:border-slate-700 pl-2 pr-3 text-sm font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        Prev
+                    </Link>
+                    <span v-else
+                        class="inline-flex items-center gap-1 h-10 rounded-lg border border-slate-200 dark:border-slate-800 pl-2 pr-3 text-sm font-semibold text-slate-300 dark:text-slate-600">
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                        Prev
+                    </span>
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Page {{ currentPage }} of {{ lastPage }}</span>
+                    <Link v-if="nextPageUrl" :href="nextPageUrl"
+                        class="inline-flex items-center gap-1 h-10 rounded-lg border border-slate-300 dark:border-slate-700 pl-3 pr-2 text-sm font-semibold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        Next
+                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                    </Link>
+                    <span v-else
+                        class="inline-flex items-center gap-1 h-10 rounded-lg border border-slate-200 dark:border-slate-800 pl-3 pr-2 text-sm font-semibold text-slate-300 dark:text-slate-600">
+                        Next
+                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                    </span>
+                </div>
+
+                <!-- Desktop: full numbered pagination -->
+                <div class="hidden sm:flex justify-center overflow-x-auto">
+                  <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
                     <template v-for="(link, index) in (bookmarks.meta ? bookmarks.meta.links : bookmarks.links)" :key="index">
                         <!-- If it's a link -->
                         <Link v-if="link.url" :href="link.url"
@@ -375,7 +409,8 @@ watch(perPage, (newVal) => {
                             <span v-else v-html="link.label"></span>
                         </span>
                     </template>
-                </nav>
+                  </nav>
+                </div>
             </div>
         </div>
 
