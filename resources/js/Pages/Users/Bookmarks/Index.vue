@@ -191,10 +191,10 @@ watch(perPage, (newVal) => {
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-white">All Bookmarks</h2>
                 </div>
 
-                <div class="flex items-center gap-4 w-full sm:w-auto">
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4 w-full sm:w-auto">
                     <!-- Sort -->
                     <div class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                        <span>Sort by:</span>
+                        <span class="hidden sm:inline">Sort by:</span>
                         <select v-model="sortMode" class="bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer pr-8 py-0">
                             <option value="newest">Date Added (Newest)</option>
                             <option value="oldest">Date Added (Oldest)</option>
@@ -204,7 +204,7 @@ watch(perPage, (newVal) => {
 
                     <!-- Per Page -->
                     <div v-if="paginationPresets.length > 0" class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-                        <span>Per page:</span>
+                        <span class="hidden sm:inline">Per page:</span>
                         <select v-model="perPage" class="bg-transparent border-none font-medium text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer pr-8 py-0">
                             <option v-for="preset in paginationPresets" :key="preset" :value="preset">
                                 {{ preset }}
@@ -213,7 +213,7 @@ watch(perPage, (newVal) => {
                     </div>
 
                     <!-- View Toggle -->
-                    <div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 hidden sm:flex">
+                    <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                         <button
                             @click="viewMode = 'grid'"
                             :class="['p-1.5 rounded-md transition-all', viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200']">
@@ -227,13 +227,13 @@ watch(perPage, (newVal) => {
                     </div>
 
                     <button
-                        class="h-10 rounded-lg border border-slate-300 px-3 text-slate-700 transition-all hover:bg-slate-100 hover:border-slate-400 hover:shadow-sm dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="shrink-0 h-10 rounded-lg border border-slate-300 px-3 text-slate-700 transition-all hover:bg-slate-100 hover:border-slate-400 hover:shadow-sm dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:border-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         @click="refreshBookmarks"
                         :disabled="isRefreshLoading">
                         <span :class="['material-symbols-outlined text-[20px] block', isRefreshLoading && 'animate-spin']">refresh</span>
                     </button>
 
-                    <button class="bg-primary hover:bg-blue-600 text-white font-semibold flex-1 sm:flex-none h-10 px-4 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2" @click="showAddModal = true">
+                    <button class="bg-primary hover:bg-blue-600 text-white font-semibold w-full sm:w-auto sm:flex-none h-10 px-4 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2" @click="showAddModal = true">
                         <span class="material-symbols-outlined text-lg">add</span>
                         <span class="truncate">Add Bookmark</span>
                     </button>

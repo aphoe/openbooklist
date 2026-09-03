@@ -18,12 +18,17 @@ class SearchController extends Controller
         $user = $request->user();
         $query = $request->query('q', '');
 
+        $allCategories = Category::where('user_id', $user->id)->orderBy('name')->get(['id', 'name']);
+        $allTags = Tag::where('user_id', $user->id)->orderBy('name')->get(['id', 'name', 'slug']);
+
         if (empty(trim($query))) {
             return inertia('Users/Search/Index', [
                 'query' => $query,
                 'bookmarks' => [],
                 'categories' => [],
                 'tags' => [],
+                'allCategories' => $allCategories,
+                'allTags' => $allTags,
                 'tab' => $request->query('tab', 'all'),
             ]);
         }
@@ -67,6 +72,8 @@ class SearchController extends Controller
             'bookmarks' => $bookmarks,
             'categories' => $categories,
             'tags' => $tags,
+            'allCategories' => $allCategories,
+            'allTags' => $allTags,
             'tab' => $request->query('tab', 'all'),
         ]);
     }
