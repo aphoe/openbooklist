@@ -289,10 +289,34 @@ class BookmarkService
         $this->fetchHtml($url);
 
         return [
-            'title' => $this->getTitle(),
+            'title' => $this->cleanTitle($this->getTitle(), $url),
             'description' => $this->getDescription(),
             'image' => $this->getImage(),
         ];
+    }
+
+    /**
+     * Apply host-specific clean-ups to a fetched page title.
+     *
+     * GitHub renders repository titles as "GitHub - owner/repo: description";
+     * the "GitHub - " prefix is noise, so strip it for github.com URLs.
+     */
+    protected function cleanTitle(?string $title, string $url): ?string
+    {
+        if (! is_string($title)) {
+            return $title;
+        }
+
+        $title = trim($title);
+
+        $host = parse_url($url, PHP_URL_HOST);
+        $host = is_string($host) ? preg_replace('/^www\./', '', strtolower($host)) : '';
+
+        if ($host === 'github.com' && str_starts_with($title, 'GitHub - ')) {
+            $title = ltrim(substr($title, strlen('GitHub - ')));
+        }
+
+        return $title;
     }
 
     /**

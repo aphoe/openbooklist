@@ -184,6 +184,37 @@ class BookmarkServiceTest extends TestCase
         $this->assertEquals('http://external.com/i.jpg', $method->invoke($service, 'http://external.com/i.jpg'));
     }
 
+    public function test_clean_title_strips_github_prefix_for_github_urls(): void
+    {
+        $service = new BookmarkService;
+
+        $reflection = new ReflectionClass($service);
+        $method = $reflection->getMethod('cleanTitle');
+
+        // Stripped for github.com (and www.github.com)
+        $this->assertSame(
+            'laravel/framework: The PHP Framework',
+            $method->invoke($service, 'GitHub - laravel/framework: The PHP Framework', 'https://github.com/laravel/framework')
+        );
+        $this->assertSame(
+            'vuejs/core',
+            $method->invoke($service, 'GitHub - vuejs/core', 'https://www.github.com/vuejs/core')
+        );
+
+        // Untouched for other hosts
+        $this->assertSame(
+            'GitHub - something on another site',
+            $method->invoke($service, 'GitHub - something on another site', 'https://example.com/page')
+        );
+
+        // Untouched when there is no prefix; null passes through
+        $this->assertSame(
+            'laravel/framework',
+            $method->invoke($service, 'laravel/framework', 'https://github.com/laravel/framework')
+        );
+        $this->assertNull($method->invoke($service, null, 'https://github.com/laravel/framework'));
+    }
+
     public function test_guess_extension(): void
     {
         $service = new BookmarkService;
