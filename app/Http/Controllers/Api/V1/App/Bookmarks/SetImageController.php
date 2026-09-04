@@ -33,6 +33,14 @@ class SetImageController extends Controller
                     'message' => 'Failed to capture website screenshot for this bookmark.',
                 ], 400);
             }
+        } elseif ($imageSource === 'upload') {
+            $imagePath = $this->bookmarkService->storeUploadedImage($request->file('image_file'));
+
+            if ($imagePath === null) {
+                return response()->json([
+                    'message' => 'Failed to process the uploaded image.',
+                ], 400);
+            }
         } else {
             $imageUrl = $request->safe()->string('image_url')->toString();
             $imagePath = $this->bookmarkService->downloadAndResizeImage($imageUrl);

@@ -6,6 +6,7 @@ use Alaouy\Youtube\Youtube as YoutubeClient;
 use App\Managers\OpenRouterManager;
 use App\Models\Bookmark;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -203,6 +204,31 @@ class BookmarkService
 
             $manager = new ImageManager(new Driver);
             $image = $manager->read($imageData);
+            $image->scaleDown(512, 512);
+
+            $encodedImage = $image->encodeByExtension($extension);
+
+            Storage::disk('public')->put($filename, (string) $encodedImage);
+
+            return $filename;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+    }
+
+    /**
+     * Resize an uploaded image to a maximum of 512x512px and store it.
+     */
+    public function storeUploadedImage(UploadedFile $file): ?string
+    {
+        try {
+            $extension = $this->guessExtension($file->getMimeType(), $file->getClientOriginalName() ?? '');
+            $filename = 'bookmarks/'.Str::uuid().'.'.$extension;
+
+            $manager = new ImageManager(new Driver);
+            $image = $manager->read($file->getRealPath());
             $image->scaleDown(512, 512);
 
             $encodedImage = $image->encodeByExtension($extension);

@@ -40,6 +40,24 @@ class BookmarkServiceTest extends TestCase
         Storage::disk('public')->assertExists($filename);
     }
 
+    public function test_it_stores_and_resizes_uploaded_image(): void
+    {
+        Storage::fake('public');
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('cover.jpg', 900, 700);
+
+        $service = new BookmarkService;
+        $filename = $service->storeUploadedImage($file);
+
+        $this->assertNotNull($filename);
+        $this->assertStringStartsWith('bookmarks/', $filename);
+        Storage::disk('public')->assertExists($filename);
+
+        [$width, $height] = getimagesizefromstring(Storage::disk('public')->get($filename));
+        $this->assertLessThanOrEqual(512, $width);
+        $this->assertLessThanOrEqual(512, $height);
+    }
+
     public function test_it_fetches_youtube_metadata_using_authenticated_user_language(): void
     {
         config()->set('project.youtube_api_key', 'youtube-api-key');
