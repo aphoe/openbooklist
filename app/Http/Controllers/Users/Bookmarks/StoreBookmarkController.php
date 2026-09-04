@@ -46,7 +46,7 @@ class StoreBookmarkController extends Controller
             user: $user,
             url: $url,
             category: $category,
-            title: BookmarkService::cleanTitle($validated->string('title') ?: null, $url),
+            title: $this->bookmarkService->cleanTitle($validated->string('title') ?: null, $url),
             description: $validated->string('description') ?: null,
             image: $imagePath,
         );

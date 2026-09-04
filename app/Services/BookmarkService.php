@@ -289,7 +289,7 @@ class BookmarkService
         $this->fetchHtml($url);
 
         return [
-            'title' => self::cleanTitle($this->getTitle(), $url),
+            'title' => $this->cleanTitle($this->getTitle(), $url),
             'description' => $this->getDescription(),
             'image' => $this->getImage(),
         ];
@@ -302,7 +302,7 @@ class BookmarkService
      * the "GitHub - " prefix is noise, so strip it for github.com URLs.
      * Shared by metadata fetching and the store/update endpoints.
      */
-    public static function cleanTitle(?string $title, string $url): ?string
+    public function cleanTitle(?string $title, string $url): ?string
     {
         if (! is_string($title)) {
             return $title;

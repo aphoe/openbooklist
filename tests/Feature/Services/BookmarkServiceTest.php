@@ -186,28 +186,30 @@ class BookmarkServiceTest extends TestCase
 
     public function test_clean_title_strips_github_prefix_for_github_urls(): void
     {
+        $service = new BookmarkService;
+
         // Stripped for github.com (and www.github.com)
         $this->assertSame(
             'laravel/framework: The PHP Framework',
-            BookmarkService::cleanTitle('GitHub - laravel/framework: The PHP Framework', 'https://github.com/laravel/framework')
+            $service->cleanTitle('GitHub - laravel/framework: The PHP Framework', 'https://github.com/laravel/framework')
         );
         $this->assertSame(
             'vuejs/core',
-            BookmarkService::cleanTitle('GitHub - vuejs/core', 'https://www.github.com/vuejs/core')
+            $service->cleanTitle('GitHub - vuejs/core', 'https://www.github.com/vuejs/core')
         );
 
         // Untouched for other hosts
         $this->assertSame(
             'GitHub - something on another site',
-            BookmarkService::cleanTitle('GitHub - something on another site', 'https://example.com/page')
+            $service->cleanTitle('GitHub - something on another site', 'https://example.com/page')
         );
 
         // Untouched when there is no prefix; null passes through
         $this->assertSame(
             'laravel/framework',
-            BookmarkService::cleanTitle('laravel/framework', 'https://github.com/laravel/framework')
+            $service->cleanTitle('laravel/framework', 'https://github.com/laravel/framework')
         );
-        $this->assertNull(BookmarkService::cleanTitle(null, 'https://github.com/laravel/framework'));
+        $this->assertNull($service->cleanTitle(null, 'https://github.com/laravel/framework'));
     }
 
     public function test_guess_extension(): void
