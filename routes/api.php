@@ -1,18 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\V1\App\Auth\LoginController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\CategoriesController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\CreateController as BookmarksCreateController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\DestroyController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\IndexController as BookmarksIndexController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\RefetchMetadataController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\SetImageController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\ShowController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\TagsController;
-use App\Http\Controllers\Api\V1\App\Bookmarks\UpdateController;
-use App\Http\Controllers\Api\V1\Ext\CreateController;
-use App\Http\Controllers\Api\V1\Ext\FetchCategoriesController;
-use App\Http\Controllers\Api\V1\Ext\FetchTagsController;
 use App\Http\Middleware\CheckReadAbility;
 use App\Http\Middleware\CheckWriteAbility;
 use Illuminate\Http\Request;
@@ -24,29 +11,29 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->prefix('v1/app')->group(function () {
     Route::prefix('auth')->group(function () {
-        Route::post('/login', LoginController::class);
+        Route::post('/login', \App\Http\Controllers\Api\V1\App\Auth\LoginController::class);
     });
 
     Route::prefix('bookmarks')->group(function () {
-        Route::get('/', BookmarksIndexController::class);
-        Route::post('/', BookmarksCreateController::class);
-        Route::get('/categories', CategoriesController::class);
-        Route::get('/tags', TagsController::class);
-        Route::get('/{bookmark}', ShowController::class);
-        Route::put('/{bookmark}', UpdateController::class);
-        Route::delete('/{bookmark}', DestroyController::class);
-        Route::post('/{bookmark}/refetch-metadata', RefetchMetadataController::class);
-        Route::post('/{bookmark}/set-image', SetImageController::class);
+        Route::get('/', \App\Http\Controllers\Api\V1\App\Bookmarks\IndexController::class);
+        Route::post('/', \App\Http\Controllers\Api\V1\App\Bookmarks\CreateController::class);
+        Route::get('/categories', \App\Http\Controllers\Api\V1\App\Bookmarks\CategoriesController::class);
+        Route::get('/tags', \App\Http\Controllers\Api\V1\App\Bookmarks\TagsController::class);
+        Route::get('/{bookmark}', \App\Http\Controllers\Api\V1\App\Bookmarks\ShowController::class);
+        Route::put('/{bookmark}', \App\Http\Controllers\Api\V1\App\Bookmarks\UpdateController::class);
+        Route::delete('/{bookmark}', \App\Http\Controllers\Api\V1\App\Bookmarks\DestroyController::class);
+        Route::post('/{bookmark}/refetch-metadata', \App\Http\Controllers\Api\V1\App\Bookmarks\RefetchMetadataController::class);
+        Route::post('/{bookmark}/set-image', \App\Http\Controllers\Api\V1\App\Bookmarks\SetImageController::class);
     });
 });
 
 Route::middleware('auth:sanctum')->prefix('v1/ext')->group(function () {
     Route::middleware(CheckReadAbility::class)->group(function () {
-        Route::get('/categories', FetchCategoriesController::class);
-        Route::get('/tags', FetchTagsController::class);
+        Route::get('/categories', \App\Http\Controllers\Api\V1\Ext\FetchCategoriesController::class);
+        Route::get('/tags', \App\Http\Controllers\Api\V1\Ext\FetchTagsController::class);
     });
 
     Route::middleware(CheckWriteAbility::class)->group(function () {
-        Route::post('/bookmarks', CreateController::class);
+        Route::post('/bookmarks', \App\Http\Controllers\Api\V1\Ext\CreateController::class);
     });
 });

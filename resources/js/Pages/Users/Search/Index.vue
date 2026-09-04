@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { Head, Link, usePage, router } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
 import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 import BookmarkCard from '@/Components/Bookmarks/BookmarkCard.vue';
 import TagCloudItem from '@/Components/Tags/TagCloudItem.vue';
@@ -12,13 +12,19 @@ import EditTagModal from '@/Components/Modals/EditTagModal.vue';
 import ConfirmDeleteModal from '@/Components/Modals/ConfirmDeleteModal.vue';
 import ConfirmDeleteTagModal from '@/Components/Modals/ConfirmDeleteTagModal.vue';
 
-const page = usePage();
-
 const props = defineProps({
     query: String,
     bookmarks: Array,
     categories: Array,
     tags: Array,
+    allCategories: {
+        type: Array,
+        default: () => [],
+    },
+    allTags: {
+        type: Array,
+        default: () => [],
+    },
     tab: {
         type: String,
         default: 'all'
@@ -26,9 +32,6 @@ const props = defineProps({
 });
 
 const currentTab = ref(props.tab);
-
-const allCategories = computed(() => page.props.categories || []);
-const allTags = computed(() => page.props.tags || []);
 
 const activeDropdown = ref(null);
 const toggleDropdown = (id) => { activeDropdown.value = activeDropdown.value === id ? null : id; };

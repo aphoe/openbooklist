@@ -12,6 +12,7 @@
 - When creating a notification, do not implement ShouldQueue. Also, the class name should end with Notification. E.g., VerificationNotification.
 - Always use array in the rules definition of Form Request fields to validate the request data. eg: 'email' => ['required', 'email:dns,spoof,rfc', 'max:255']
 - Always simplify FQN and use the import statement what calling a class, interface, trait etc. Always use the import statement what calling a class, interface, trait etc. Arrange the import statements in alphabetical order.
+- Exception — route files: in `routes/*.php` (e.g. `routes/web.php`, `routes/api.php`) do NOT import controllers with a `use` statement. Reference every controller by its fully-qualified class name directly in the route definition, e.g. `Route::post('/bookmarks', \App\Http\Controllers\Users\Bookmarks\StoreBookmarkController::class)`. Non-controller symbols (the `Route` facade, `Illuminate\Http\Request`, middleware classes) are still imported normally.
 - When creating a new controller, except otherwise stated, always create an invokable controller and put it in the appropriate namespace.
 
 ### Type Declarations

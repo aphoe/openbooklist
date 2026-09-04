@@ -6,6 +6,7 @@ use App\Models\Bookmark;
 use App\Models\User;
 use App\Services\BookmarkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -43,6 +44,62 @@ class SetBookmarkImageControllerTest extends TestCase
             'id' => $bookmark->id,
             'image' => 'bookmarks/new-image.jpg',
         ]);
+    }
+
+    public function test_user_can_set_bookmark_image_from_upload(): void
+    {
+        $user = User::factory()->create();
+        $bookmark = Bookmark::factory()->create([
+            'user_id' => $user->id,
+            'image' => 'bookmarks/old.jpg',
+        ]);
+
+        $this->mock(BookmarkService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('storeUploadedImage')
+                ->once()
+                ->andReturn('bookmarks/uploaded.jpg');
+            $mock->shouldReceive('deleteStoredImage')
+                ->once()
+                ->with('bookmarks/old.jpg');
+        });
+
+        $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
+            'image_source' => 'upload',
+            'image_file' => UploadedFile::fake()->image('cover.jpg', 900, 900),
+        ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Bookmark image updated successfully.');
+
+        $this->assertDatabaseHas('bookmarks', [
+            'id' => $bookmark->id,
+            'image' => 'bookmarks/uploaded.jpg',
+        ]);
+    }
+
+    public function test_set_image_requires_a_file_when_upload_source_is_selected(): void
+    {
+        $user = User::factory()->create();
+        $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
+            'image_source' => 'upload',
+        ]);
+
+        $response->assertSessionHasErrors(['image_file']);
+    }
+
+    public function test_set_image_rejects_non_image_upload(): void
+    {
+        $user = User::factory()->create();
+        $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->post(route('bookmarks.set-image', $bookmark), [
+            'image_source' => 'upload',
+            'image_file' => UploadedFile::fake()->create('notes.pdf', 40, 'application/pdf'),
+        ]);
+
+        $response->assertSessionHasErrors(['image_file']);
     }
 
     public function test_user_cannot_set_image_for_another_users_bookmark(): void

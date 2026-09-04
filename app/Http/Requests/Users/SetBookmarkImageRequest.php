@@ -24,8 +24,9 @@ class SetBookmarkImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image_source' => ['required', 'string', Rule::in(['url', 'screenshot'])],
+            'image_source' => ['required', 'string', Rule::in(['url', 'screenshot', 'upload'])],
             'image_url' => ['nullable', 'required_if:image_source,url', 'url', 'max:2048'],
+            'image_file' => ['nullable', 'required_if:image_source,upload', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:10240'],
         ];
     }
 }

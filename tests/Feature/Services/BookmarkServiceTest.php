@@ -40,6 +40,24 @@ class BookmarkServiceTest extends TestCase
         Storage::disk('public')->assertExists($filename);
     }
 
+    public function test_it_stores_and_resizes_uploaded_image(): void
+    {
+        Storage::fake('public');
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('cover.jpg', 900, 700);
+
+        $service = new BookmarkService;
+        $filename = $service->storeUploadedImage($file);
+
+        $this->assertNotNull($filename);
+        $this->assertStringStartsWith('bookmarks/', $filename);
+        Storage::disk('public')->assertExists($filename);
+
+        [$width, $height] = getimagesizefromstring(Storage::disk('public')->get($filename));
+        $this->assertLessThanOrEqual(512, $width);
+        $this->assertLessThanOrEqual(512, $height);
+    }
+
     public function test_it_fetches_youtube_metadata_using_authenticated_user_language(): void
     {
         config()->set('project.youtube_api_key', 'youtube-api-key');
@@ -182,6 +200,34 @@ class BookmarkServiceTest extends TestCase
         $this->assertEquals('https://example.com/relative/img.png', $method->invoke($service, 'relative/img.png'));
         $this->assertEquals('https://other.com/img.jpg', $method->invoke($service, '//other.com/img.jpg'));
         $this->assertEquals('http://external.com/i.jpg', $method->invoke($service, 'http://external.com/i.jpg'));
+    }
+
+    public function test_clean_title_strips_github_prefix_for_github_urls(): void
+    {
+        $service = new BookmarkService;
+
+        // Stripped for github.com (and www.github.com)
+        $this->assertSame(
+            'laravel/framework: The PHP Framework',
+            $service->cleanTitle('GitHub - laravel/framework: The PHP Framework', 'https://github.com/laravel/framework')
+        );
+        $this->assertSame(
+            'vuejs/core',
+            $service->cleanTitle('GitHub - vuejs/core', 'https://www.github.com/vuejs/core')
+        );
+
+        // Untouched for other hosts
+        $this->assertSame(
+            'GitHub - something on another site',
+            $service->cleanTitle('GitHub - something on another site', 'https://example.com/page')
+        );
+
+        // Untouched when there is no prefix; null passes through
+        $this->assertSame(
+            'laravel/framework',
+            $service->cleanTitle('laravel/framework', 'https://github.com/laravel/framework')
+        );
+        $this->assertNull($service->cleanTitle(null, 'https://github.com/laravel/framework'));
     }
 
     public function test_guess_extension(): void

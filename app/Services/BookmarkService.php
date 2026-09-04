@@ -6,6 +6,7 @@ use Alaouy\Youtube\Youtube as YoutubeClient;
 use App\Managers\OpenRouterManager;
 use App\Models\Bookmark;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -218,6 +219,31 @@ class BookmarkService
     }
 
     /**
+     * Resize an uploaded image to a maximum of 512x512px and store it.
+     */
+    public function storeUploadedImage(UploadedFile $file): ?string
+    {
+        try {
+            $extension = $this->guessExtension($file->getMimeType(), $file->getClientOriginalName() ?? '');
+            $filename = 'bookmarks/'.Str::uuid().'.'.$extension;
+
+            $manager = new ImageManager(new Driver);
+            $image = $manager->read($file->getRealPath());
+            $image->scaleDown(512, 512);
+
+            $encodedImage = $image->encodeByExtension($extension);
+
+            Storage::disk('public')->put($filename, (string) $encodedImage);
+
+            return $filename;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return null;
+        }
+    }
+
+    /**
      * Capture a screenshot of a webpage as 512x269 JPEG.
      */
     public function takeWebsiteScreenshot(string $url): ?string
@@ -289,10 +315,35 @@ class BookmarkService
         $this->fetchHtml($url);
 
         return [
-            'title' => $this->getTitle(),
+            'title' => $this->cleanTitle($this->getTitle(), $url),
             'description' => $this->getDescription(),
             'image' => $this->getImage(),
         ];
+    }
+
+    /**
+     * Apply host-specific clean-ups to a page title before it is persisted.
+     *
+     * GitHub renders repository titles as "GitHub - owner/repo: description";
+     * the "GitHub - " prefix is noise, so strip it for github.com URLs.
+     * Shared by metadata fetching and the store/update endpoints.
+     */
+    public function cleanTitle(?string $title, string $url): ?string
+    {
+        if (! is_string($title)) {
+            return $title;
+        }
+
+        $title = trim($title);
+
+        $host = parse_url($url, PHP_URL_HOST);
+        $host = is_string($host) ? preg_replace('/^www\./', '', strtolower($host)) : '';
+
+        if ($host === 'github.com' && str_starts_with($title, 'GitHub - ')) {
+            $title = ltrim(substr($title, strlen('GitHub - ')));
+        }
+
+        return $title;
     }
 
     /**

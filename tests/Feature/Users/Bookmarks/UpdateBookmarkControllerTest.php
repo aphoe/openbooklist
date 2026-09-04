@@ -51,6 +51,22 @@ class UpdateBookmarkControllerTest extends TestCase
         ]);
     }
 
+    public function test_github_prefix_is_stripped_from_title_on_update(): void
+    {
+        $user = User::factory()->create();
+        $bookmark = Bookmark::factory()->create(['user_id' => $user->id, 'title' => 'Old Title']);
+
+        $this->actingAs($user)->put(route('bookmarks.update', $bookmark), [
+            'url' => 'https://github.com/vuejs/core',
+            'title' => 'GitHub - vuejs/core: Vue.js core',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('bookmarks', [
+            'id' => $bookmark->id,
+            'title' => 'vuejs/core: Vue.js core',
+        ]);
+    }
+
     public function test_user_cannot_update_another_users_bookmark(): void
     {
         $user1 = User::factory()->create();

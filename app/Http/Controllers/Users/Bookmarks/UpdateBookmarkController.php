@@ -43,7 +43,7 @@ class UpdateBookmarkController extends Controller
             user: $user,
             url: $validated->string('url'),
             category: $category,
-            title: $validated->string('title') ?: null,
+            title: $this->bookmarkService->cleanTitle($validated->string('title') ?: null, $validated->string('url')),
             description: $validated->string('description') ?: null,
             image: $imagePath,
         );
