@@ -14,6 +14,7 @@
   <a href="#self-hosting">Self-Hosting</a> •
   <a href="#configuration">Configuration</a> •
   <a href="#api">API</a> •
+  <a href="#changelog">Changelog</a> •
   <a href="#contributing">Contributing</a> •
   <a href="#support">Support</a>
 </p>
@@ -293,6 +294,10 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```bash
 php artisan test
 ```
+
+## Changelog
+
+All notable changes to OpenBookList are recorded in [CHANGELOG.md](CHANGELOG.md), following the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format and [Semantic Versioning](https://semver.org/).
 
 ## Contributing
 
