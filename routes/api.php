@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->prefix('v1/app')->group(function () {
         Route::post('/{bookmark}/refetch-metadata', \App\Http\Controllers\Api\V1\App\Bookmarks\RefetchMetadataController::class);
         Route::post('/{bookmark}/set-image', \App\Http\Controllers\Api\V1\App\Bookmarks\SetImageController::class);
     });
-});
+}); 
 
 Route::middleware('auth:sanctum')->prefix('v1/ext')->group(function () {
     Route::middleware(CheckReadAbility::class)->group(function () {
