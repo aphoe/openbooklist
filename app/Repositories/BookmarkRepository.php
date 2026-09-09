@@ -119,8 +119,8 @@ final class BookmarkRepository
      */
     public function updateMetadata(Bookmark $bookmark, ?string $title, ?string $description, ?string $image): Bookmark
     {
-        $bookmark->title = $title;
-        $bookmark->description = $description;
+        $bookmark->title = $title !== null ? Str::limit($title, self::getTitleMaxLength(), '') : null;
+        $bookmark->description = $description !== null ? Str::limit($description, self::getDescriptionMaxLength(), '') : null;
         $bookmark->image = $image;
 
         $bookmark->save();

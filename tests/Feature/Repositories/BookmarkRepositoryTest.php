@@ -153,6 +153,30 @@ class BookmarkRepositoryTest extends TestCase
         $this->assertSame($descriptionMaxLength, mb_strlen((string) $freshBookmark?->description));
     }
 
+    public function test_it_truncates_title_and_description_when_updating_metadata(): void
+    {
+        $user = User::factory()->create();
+        $bookmark = Bookmark::factory()->create(['user_id' => $user->id]);
+
+        $longTitle = str_repeat('m', 300);
+        $longDescription = str_repeat('n', 70000);
+
+        $repo = new BookmarkRepository;
+        $repo->updateMetadata(
+            bookmark: $bookmark,
+            title: $longTitle,
+            description: $longDescription,
+            image: null,
+        );
+
+        $freshBookmark = $bookmark->fresh();
+        $titleMaxLength = $this->getTitleMaxLength();
+        $descriptionMaxLength = $this->getDescriptionMaxLength();
+
+        $this->assertSame($titleMaxLength, mb_strlen((string) $freshBookmark?->title));
+        $this->assertSame($descriptionMaxLength, mb_strlen((string) $freshBookmark?->description));
+    }
+
     public function test_it_syncs_tags(): void
     {
         $user = User::factory()->create();
